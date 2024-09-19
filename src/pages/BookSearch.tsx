@@ -1,5 +1,5 @@
 import BackPageArrow from "@/components/BackPageArrow";
-import BookInfos from "@/components/bookInfos";
+import BookInfos from "@/components/BookInfos";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
