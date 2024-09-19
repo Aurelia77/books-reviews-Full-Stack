@@ -47,7 +47,7 @@ const BookSearch = () => {
     console.log(formData);
 
   const title = watch("bookTitle");
-  const author = watch("bookAuthors");
+  //const author = watch("bookAuthors");
   // const title = watch("bookTitle") || "aliénor d'aquitaine";
   // const author = watch("bookAuthors") || "elizabeth chadwick";
 
