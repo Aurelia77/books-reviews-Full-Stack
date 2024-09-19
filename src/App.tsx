@@ -1,8 +1,9 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import BookDetailPage from "./pages/BookDetailPage";
+import BookSearch from "./pages/BookSearch";
 import Home from "./pages/Home";
 import MyBooks from "./pages/MyBooks";
 import MyReadBooks from "./pages/MyReadBooks";
-import NewBook from "./pages/NewBook";
 
 const App = () => {
   return (
@@ -11,7 +12,11 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/mybooks" element={<MyBooks />} />
         <Route path="/mybooks/myreadbooks" element={<MyReadBooks />} />
-        <Route path="/mybooks/addbook" element={<NewBook />} />
+        <Route path="/mybooks/searchbook" element={<BookSearch />} />
+        <Route
+          path="/mybooks/searchbook/:bookId"
+          element={<BookDetailPage />}
+        />
       </Routes>
     </BrowserRouter>
   );
