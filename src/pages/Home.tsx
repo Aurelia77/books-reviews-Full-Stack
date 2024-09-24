@@ -1,24 +1,13 @@
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import CustomLinkButton from "@/components/CustomLinkButton";
 
 const Home = () => {
   return (
-    <div className="flex flex-col items-center gap-20 py-12">
-      <Link to="/mybooks">
-        <Button size="xxl" className="text-3xl text-primary-foreground">
-          Mes livres
-        </Button>
-      </Link>
-      <Link to="/mybooks">
-        <Button size="xxl" className="text-3xl text-primary-foreground">
-          Livres de mes amis
-        </Button>
-      </Link>
-      <Link to="/mybooks">
-        <Button size="xxl" className="text-3xl text-primary-foreground">
-          Suggestions
-        </Button>
-      </Link>
+    <div className="flex flex-col items-center gap-4  py-12">
+      <CustomLinkButton opacity={50} linkTo="/mybooks">
+        Mes livres
+      </CustomLinkButton>
+      <CustomLinkButton opacity={40}>Livres de mes amis</CustomLinkButton>
+      <CustomLinkButton opacity={60}>Suggestions</CustomLinkButton>
     </div>
   );
 };
