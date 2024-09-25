@@ -10,24 +10,44 @@ const CustomLinkButton = ({
   children: string;
   opacity?: number;
   linkTo?: string;
-}) => {
-  const opacityClass = `bg-primary/${opacity}`;
+}): JSX.Element => {
+  // Ajouter cet objet car TailwindCSS ne génére pas les classes dynamiques à la volée
+  const opacityClasses: { [key: number]: string } = {
+    0: "bg-muted-foreground/0",
+    5: "bg-muted-foreground/5",
+    10: "bg-muted-foreground/10",
+    15: "bg-muted-foreground/15",
+    20: "bg-muted-foreground/20",
+    25: "bg-muted-foreground/25",
+    30: "bg-muted-foreground/30",
+    35: "bg-muted-foreground/35",
+    40: "bg-muted-foreground/40",
+    45: "bg-muted-foreground/45",
+    50: "bg-muted-foreground/50",
+    55: "bg-muted-foreground/55",
+    60: "bg-muted-foreground/60",
+    65: "bg-muted-foreground/65",
+    70: "bg-muted-foreground/70",
+    75: "bg-muted-foreground/75",
+    80: "bg-muted-foreground/80",
+    85: "bg-muted-foreground/85",
+    90: "bg-muted-foreground/90",
+    95: "bg-muted-foreground/95",
+    100: "bg-muted-foreground/100",
+  };
+
   return (
-    console.log("opacity", opacity),
-    (
-      <Link to={linkTo} className="w-full">
-        <Button
-          size="xxl"
-          // className={`w-full text-3xl text-primary-foreground bg-primary/${opacity}`}
-          className={cn(
-            "w-full text-3xl text-primary-foreground",
-            opacityClass
-          )}
-        >
-          {children}
-        </Button>
-      </Link>
-    )
+    <Link to={linkTo} className="w-full">
+      <Button
+        size="xxl"
+        className={cn(
+          "w-full text-3xl text-muted-foreground-foreground",
+          opacityClasses[opacity]
+        )}
+      >
+        {children}
+      </Button>
+    </Link>
   );
 };
 

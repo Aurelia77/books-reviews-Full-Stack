@@ -1,30 +1,37 @@
+import { ThemeProvider } from "@/components/Theme-provider";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import NavBar from "./components/NavBar";
 import AccountPage from "./pages/AccountPage";
 import BookDetailPage from "./pages/BookDetailPage";
-import BookSearch from "./pages/BookSearch";
-import Home from "./pages/Home";
-import MyBooks from "./pages/MyBooks";
-import MyReadBooks from "./pages/MyReadBooks";
+import BooksSearchPage from "./pages/BooksSearchPage";
+import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
+import MyBooksPage from "./pages/MyBooksPage";
+import MyReadBooksPage from "./pages/MyReadBooksPage";
+import RegisterPage from "./pages/RegisterPage";
 
-const App = () => {
+const App = (): JSX.Element => {
   return (
-    <div className="bg-purple-200">
-      <BrowserRouter>
-        <NavBar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/mybooks" element={<MyBooks />} />
-          <Route path="/mybooks/myreadbooks" element={<MyReadBooks />} />
-          <Route path="/mybooks/searchbook" element={<BookSearch />} />
-          <Route
-            path="/mybooks/searchbook/:bookId"
-            element={<BookDetailPage />}
-          />
-          <Route path="/account" element={<AccountPage />} />
-        </Routes>
-      </BrowserRouter>
-    </div>
+    <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+      <div className="bg-background">
+        <BrowserRouter>
+          <NavBar />
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/mybooks" element={<MyBooksPage />} />
+            <Route path="/mybooks/myreadbooks" element={<MyReadBooksPage />} />
+            <Route path="/mybooks/searchbook" element={<BooksSearchPage />} />
+            <Route
+              path="/mybooks/searchbook/:bookId"
+              element={<BookDetailPage />}
+            />
+            <Route path="/account" element={<AccountPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+          </Routes>
+        </BrowserRouter>
+      </div>
+    </ThemeProvider>
   );
 };
 
