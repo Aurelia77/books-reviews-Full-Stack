@@ -5,20 +5,31 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { ArrowLeft, CircleUserRound, House, Search } from "lucide-react";
+import {
+  ArrowLeft,
+  CircleUserRound,
+  House,
+  LogIn,
+  LogOut,
+  Search,
+} from "lucide-react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { DarkModeToggle } from "./DarkModeToggle";
 
-const NavBar = () => {
+const NavBar = (): JSX.Element => {
   const navigate = useNavigate();
+  const [, setIsConnected] = useState(false); // A SUPP QD AUTH FAIT
+
   return (
-    <div>
+    <div className="sticky top-0 flex h-12 bg-primary text-primary-foreground shadow-md">
       <ArrowLeft
-        className="absolute left-1 top-1 z-30 cursor-pointer text-primary/50"
+        className="absolute left-1 top-1 z-30 cursor-pointer text-foreground"
         size={36}
         onClick={() => navigate(-1)}
       />
-      <NavigationMenu className="sticky top-0 h-12 border shadow-md">
-        <NavigationMenuList className="">
+      <NavigationMenu>
+        <NavigationMenuList>
           <NavigationMenuItem>
             <Link to="/">
               <NavigationMenuLink asChild>
@@ -37,17 +48,41 @@ const NavBar = () => {
               </NavigationMenuLink>
             </Link>
           </NavigationMenuItem>
+          {/* {isConnected ? ( */}
+          <div className="flex gap-1">
+            <NavigationMenuItem>
+              <Link to="/account">
+                <NavigationMenuLink asChild>
+                  <span className={navigationMenuTriggerStyle()}>
+                    <CircleUserRound />
+                  </span>
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Link to="/" onClick={() => setIsConnected(false)}>
+                <NavigationMenuLink asChild>
+                  <span className={navigationMenuTriggerStyle()}>
+                    <LogOut />
+                  </span>
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+          </div>
+          {/* ) : ( */}
           <NavigationMenuItem>
-            <Link to="/account">
+            <Link to="/login" onClick={() => setIsConnected(true)}>
               <NavigationMenuLink asChild>
                 <span className={navigationMenuTriggerStyle()}>
-                  <CircleUserRound />
+                  <LogIn />
                 </span>
               </NavigationMenuLink>
             </Link>
           </NavigationMenuItem>
+          {/* )} */}
         </NavigationMenuList>
       </NavigationMenu>
+      <DarkModeToggle />
     </div>
   );
 };

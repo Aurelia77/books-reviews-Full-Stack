@@ -1,6 +1,6 @@
 import CustomLinkButton from "@/components/CustomLinkButton";
 
-const Home = () => {
+const HomePage = (): JSX.Element => {
   return (
     <div className="flex flex-col items-center gap-4  py-12">
       <CustomLinkButton opacity={50} linkTo="/mybooks">
@@ -12,4 +12,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default HomePage;

@@ -25,18 +25,18 @@ export const books: BookType[] = [
     imageLink: "https://upload.wikimedia.org/wikipedia/en/c/c3/1984first.jpg",
     language: "en"
   },
-  // {
-  //   id: "3",
-  //   title: "Moby Dick",
-  //   author: "Herman Melville",
-  //   description: "Une aventure épique en mer.",
-  //   categories: ["Adventure"],
-  //   pageCount: 635,
-  //   publishedDate: "1851-10-18",
-  //   publisher: "Harper & Brothers",
-  //   imageLink: "https://upload.wikimedia.org/wikipedia/commons/4/41/Moby-Dick_FE_title_page.jpg",
-  //   language: "en"
-  // },
+  {
+    id: "3",
+    title: "Moby Dick",
+    author: "Herman Melville",
+    description: "Une aventure épique en mer.",
+    categories: ["Adventure"],
+    pageCount: 635,
+    publishedDate: "1851-10-18",
+    publisher: "Harper & Brothers",
+    imageLink: "https://upload.wikimedia.org/wikipedia/commons/4/41/Moby-Dick_FE_title_page.jpg",
+    language: "en"
+  },
   // {
   //   id: "4",
   //   title: "Pride and Prejudice",
