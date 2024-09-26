@@ -22,7 +22,7 @@ const NavBar = (): JSX.Element => {
   const [, setIsConnected] = useState(false); // A SUPP QD AUTH FAIT
 
   return (
-    <div className="sticky top-0 flex h-12 bg-primary text-primary-foreground shadow-md">
+    <div className="sticky top-0 flex h-12 items-center bg-primary p-1 text-primary-foreground shadow-md">
       <ArrowLeft
         className="absolute left-1 top-1 z-30 cursor-pointer text-foreground"
         size={36}
