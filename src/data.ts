@@ -140,7 +140,7 @@ export const users: UserType[] = [
   {
     "id": "1",
     "email": "user1@example.com",
-    "username": "user1",
+    "username": "Titi",
     "password": "password1",
     "booksRead": ["1", "2", "3"],
     "booksInProgress": ["4"],
@@ -149,7 +149,7 @@ export const users: UserType[] = [
   {
     "id": "2",
     "email": "user2@example.com",
-    "username": "user2",
+    "username": "Loulou",
     "password": "password2",
     "booksRead": ["1", "4"],
     "booksInProgress": ["2"],
@@ -158,7 +158,7 @@ export const users: UserType[] = [
   {
     "id": "3",
     "email": "user3@example.com",
-    "username": "user3",
+    "username": "Lolo",
     "password": "password3",
     "booksRead": ["5", "6", "7", "8"],
     "booksInProgress": ["9"],
@@ -167,7 +167,7 @@ export const users: UserType[] = [
   {
     "id": "4",
     "email": "user4@example.com",
-    "username": "user4",
+    "username": "Coco",
     "password": "password4",
     "booksRead": [],
     "booksInProgress": ["1", "2"],
@@ -176,7 +176,7 @@ export const users: UserType[] = [
   {
     "id": "5",
     "email": "user5@example.com",
-    "username": "user5",
+    "username": "Bubu",
     "password": "password5",
     "booksRead": ["9", "10"],
     "booksInProgress": ["6"],

@@ -25,7 +25,7 @@ const MyReadBooksPage = (): JSX.Element => {
                 <BookInfos
                   key={readBook.id}
                   book={readBook}
-                  friendsWhoReadBook={["2"]}
+                  friendsWhoReadBook={["Loulou"]}
                 />
               )
           )}
