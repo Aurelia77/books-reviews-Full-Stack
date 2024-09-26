@@ -23,10 +23,7 @@ const BookInfos = ({
   //console.log("friendsWhoReadBook", friendsWhoReadBook);
 
   return (
-    <Link
-      to={`/mybooks/searchbook/${book.id}`}
-      state={{ book, friendsWhoReadBook }}
-    >
+    <Link to={`/books/${book.id}`} state={{ book, friendsWhoReadBook }}>
       <Card className="mb-3">
         <div
           className={cn(

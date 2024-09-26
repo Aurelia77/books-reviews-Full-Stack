@@ -1,3 +1,4 @@
+import CustomLinkButton from "@/components/CustomLinkButton";
 import {
   Card,
   CardContent,
@@ -26,7 +27,7 @@ const BookDetailPage = (): JSX.Element => {
     <div
     // className="my-6 flex gap-4 shadow-xl shadow-primary/30"
     >
-      <Card className="mb-3">
+      <Card className="m-4">
         <div
           className={cn(
             "flex gap-4 shadow-xl shadow-primary/30 p-2 bg-ring/55 text-foreground",
@@ -47,9 +48,12 @@ const BookDetailPage = (): JSX.Element => {
           <p>Card Content</p>
         </CardContent> */}
         </div>
+        <CardContent className="mt-6">
+          <p>{book.description}</p>
+        </CardContent>
         {friendsWhoReadBook.length > 0 && (
           <CardFooter>
-            <div className="mt-6 flex flex-row gap-5">
+            <div className="flex flex-row gap-5">
               <p className="font-semibold">Dans liste :</p>
 
               {friendsWhoReadBook.map((friend, index) => (
@@ -59,43 +63,7 @@ const BookDetailPage = (): JSX.Element => {
           </CardFooter>
         )}
       </Card>
-      <Card className="m-4">
-        <CardHeader>
-          <CardTitle>Card Title</CardTitle>
-          <CardDescription>Card Description</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p>Card Content</p>
-        </CardContent>
-        <CardFooter>
-          <p>Card Footer</p>
-        </CardFooter>
-      </Card>
-
-      <div className="m-4 flex flex-col items-center gap-4 bg-foreground p-2">
-        <p className="text-lg font-semibold">{book.title}</p>
-        <div>
-          <img
-            src={imageUrl}
-            // className={cn(imageUrl == defaultImage ? "w-32" : "")}
-            className="w-32" // ???
-            alt="Image de couverture du livre"
-          />
-        </div>
-        <p className="text-lg">{book.author}</p>
-        <p className="line-clamp-3">{book.description}</p>
-        {book.categories &&
-          book.categories.map((cat: string) => {
-            return <p key="cat">{cat}</p>;
-          })}
-        <p>{book.language}</p>
-        <div className="">
-          <p className="font-semibold">Liste de mes amis :</p>
-          {friendsWhoReadBook.map((friend, index) => (
-            <p key={index}>{friend}</p>
-          ))}
-        </div>
-      </div>
+      <CustomLinkButton linkTo="/">Ajouter à mes livres</CustomLinkButton>
     </div>
   );
 };
