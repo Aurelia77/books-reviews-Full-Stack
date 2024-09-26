@@ -161,7 +161,7 @@ const BooksSearchPage = (): JSX.Element => {
       <div className="flex flex-col gap-6">
         <Form {...form}>
           <form
-            className="flex flex-col gap-3 bg-foreground py-4"
+            className="flex flex-col gap-3 py-6 dark:bg-foreground"
             onSubmit={form.handleSubmit(onSubmit)}
           >
             <FormField

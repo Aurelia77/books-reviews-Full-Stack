@@ -48,7 +48,7 @@ const BookInfos = ({
         {friendsWhoReadBook.length > 0 && (
           <CardFooter>
             <div className="mt-6 flex flex-row gap-5">
-              <p className="font-semibold">Dans liste :</p>
+              <p className="font-semibold">Dans liste de :</p>
 
               {friendsWhoReadBook.map((friend, index) => (
                 <p key={index}>{friend}</p>
