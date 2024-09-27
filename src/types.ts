@@ -1,22 +1,24 @@
-  export type BookType = {
-    id: string;
-    title: string;
-    author: string;
-    description: string;
-    categories: string[];
-    pageCount: number;
-    publishedDate: string;
-    publisher: string;
-    imageLink: string;
-    language: string;    
-  }
+export type BookType = {
+  bookId: string;
+  bookTitle: string;
+  bookAuthor: string;
+  bookDescription: string;
+  bookCategories: string[];
+  bookPageCount: number;
+  bookPublishedDate: string;
+  bookPublisher: string;
+  bookImageLink: string;
+  bookLanguage: string;
+  bookIsFromAPI: boolean;
+};
 
-  export type UserType = {
-    id: string;
-    email: string;
-    username: string;
-    password: string;
-    booksRead: string[];
-    booksInProgress: string[];
-    booksToRead: string[];
-  }
+// Mettre USER devant !
+export type UserType = {
+  id: string;
+  email: string;
+  username: string;
+  password: string;
+  booksRead: string[];
+  booksInProgress: string[];
+  booksToRead: string[];
+};

@@ -1,42 +1,93 @@
 import { BookType, UserType } from "./types";
 
-export const books: BookType[] = [
+export const users: UserType[] = [
   {
     id: "1",
-    title: "Le Petit Prince",
-    author: "Antoine de Saint-Exupéry",
-    description: "Un conte poétique et philosophique.",
-    categories: ["Fiction"],
-    pageCount: 96,
-    publishedDate: "1943-04-06",
-    publisher: "Reynal & Hitchcock",
-    imageLink: "https://upload.wikimedia.org/wikipedia/en/0/05/Littleprince.JPG",
-    language: "fr"
+    email: "user1@example.com",
+    username: "Lala",
+    password: "password1",
+    booksRead: ["fW2xEAAAQBAJ", "lA7MDwAAQBAJ", "ZwboDwAAQBAJ", "NsgKEAAAQBAJ"],
+    booksInProgress: ["4"],
+    booksToRead: ["5", "6"],
   },
-   {
+  {
     id: "2",
-    title: "1984",
-    author: "George Orwell",
-    description: "Un roman dystopique.",
-    categories: ["Dystopian"],
-    pageCount: 328,
-    publishedDate: "1949-06-08",
-    publisher: "Secker & Warburg",
-    imageLink: "https://upload.wikimedia.org/wikipedia/en/c/c3/1984first.jpg",
-    language: "en"
+    email: "user2@example.com",
+    username: "Loulou",
+    password: "password2",
+    booksRead: ["fW2xEAAAQBAJ", "4"],
+    booksInProgress: ["2"],
+    booksToRead: ["3", "7"],
   },
   {
     id: "3",
-    title: "Moby Dick",
-    author: "Herman Melville",
-    description: "Une aventure épique en mer.",
-    categories: ["Adventure"],
-    pageCount: 635,
-    publishedDate: "1851-10-18",
-    publisher: "Harper & Brothers",
-    imageLink: "https://upload.wikimedia.org/wikipedia/commons/4/41/Moby-Dick_FE_title_page.jpg",
-    language: "en"
+    email: "user3@example.com",
+    username: "Lolo",
+    password: "password3",
+    booksRead: ["ZwboDwAAQBAJ", "NsgKEAAAQBAJ", "7", "8"],
+    booksInProgress: ["9"],
+    booksToRead: ["10"],
   },
+  {
+    id: "4",
+    email: "user4@example.com",
+    username: "Coco",
+    password: "password4",
+    booksRead: [],
+    booksInProgress: ["1", "2"],
+    booksToRead: ["3", "4", "5"],
+  },
+  {
+    id: "5",
+    email: "user5@example.com",
+    username: "Bubu",
+    password: "password5",
+    booksRead: ["lA7MDwAAQBAJ", "10"],
+    booksInProgress: ["6"],
+    booksToRead: ["7", "8"],
+  },
+];
+
+export const books: BookType[] = [
+  // {
+  //   id: "1",
+  //   title: "Le Petit Prince",
+  //   author: "Antoine de Saint-Exupéry",
+  //   description: "Un conte poétique et philosophique.",
+  //   categories: ["Fiction"],
+  //   pageCount: 96,
+  //   publishedDate: "1943-04-06",
+  //   publisher: "Reynal & Hitchcock",
+  //   imageLink: "https://upload.wikimedia.org/wikipedia/en/0/05/Littleprince.JPG",
+  //   language: "fr",
+  //   isFromAPI: false
+  // },
+  //  {
+  //   id: "2",
+  //   title: "1984",
+  //   author: "George Orwell",
+  //   description: "Un roman dystopique.",
+  //   categories: ["Dystopian"],
+  //   pageCount: 328,
+  //   publishedDate: "1949-06-08",
+  //   publisher: "Secker & Warburg",
+  //   imageLink: "https://upload.wikimedia.org/wikipedia/en/c/c3/1984first.jpg",
+  //   language: "en",
+  //   isFromAPI: false
+  // },
+  // {
+  //   id: "3",
+  //   title: "Moby Dick",
+  //   author: "Herman Melville",
+  //   description: "Une aventure épique en mer.",
+  //   categories: ["Adventure"],
+  //   pageCount: 635,
+  //   publishedDate: "1851-10-18",
+  //   publisher: "Harper & Brothers",
+  //   imageLink: "https://upload.wikimedia.org/wikipedia/commons/4/41/Moby-Dick_FE_title_page.jpg",
+  //   language: "en",
+  //   isFromAPI: true
+  //},
   // {
   //   id: "4",
   //   title: "Pride and Prejudice",
@@ -134,52 +185,3 @@ export const books: BookType[] = [
   //   language: "fr"
   // }
 ];
-
-
-export const users: UserType[] = [
-  {
-    "id": "1",
-    "email": "user1@example.com",
-    "username": "Titi",
-    "password": "password1",
-    "booksRead": ["1", "2", "3"],
-    "booksInProgress": ["4"],
-    "booksToRead": ["5", "6"]
-  },
-  {
-    "id": "2",
-    "email": "user2@example.com",
-    "username": "Loulou",
-    "password": "password2",
-    "booksRead": ["1", "4"],
-    "booksInProgress": ["2"],
-    "booksToRead": ["3", "7"]
-  },
-  {
-    "id": "3",
-    "email": "user3@example.com",
-    "username": "Lolo",
-    "password": "password3",
-    "booksRead": ["5", "6", "7", "8"],
-    "booksInProgress": ["9"],
-    "booksToRead": ["10"]
-  },
-  {
-    "id": "4",
-    "email": "user4@example.com",
-    "username": "Coco",
-    "password": "password4",
-    "booksRead": [],
-    "booksInProgress": ["1", "2"],
-    "booksToRead": ["3", "4", "5"]
-  },
-  {
-    "id": "5",
-    "email": "user5@example.com",
-    "username": "Bubu",
-    "password": "password5",
-    "booksRead": ["9", "10"],
-    "booksInProgress": ["6"],
-    "booksToRead": ["7", "8"]
-  }
-] 
