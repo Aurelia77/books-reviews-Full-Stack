@@ -41,7 +41,7 @@ const MyReadBooksPage = (): JSX.Element => {
     <div>
       <Title>Mes livres lus</Title>
       {myReadBooksIds && myReadBooksIds.length > 0 && (
-        <ul>
+        <ul className="pb-16">
           {myReadBooksIds.map(
             (bookId) =>
               bookId && (

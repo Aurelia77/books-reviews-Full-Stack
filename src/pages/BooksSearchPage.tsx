@@ -9,8 +9,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { getDocsByQueryFirebase } from "@/firebase";
-//import { books } from "@/data";
 import { friendsWhoReadBook } from "@/lib/utils";
+//import { books } from "@/data";
 import { BookType } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useRef, useState } from "react";
@@ -292,10 +292,14 @@ const BooksSearchPage = (): JSX.Element => {
   return (
     <div className="h-full">
       <div className="flex h-full flex-col gap-6">
+        <p>coucou</p>
+        <p>coucou</p>
+        <p>coucou</p>
+        <p>coucou</p>
         <Form {...form}>
           <form
             ref={formRef}
-            className="sticky top-0 z-10 flex flex-col gap-3 bg-border/50 py-4"
+            className="sticky top-10 z-10 flex flex-col gap-3 bg-border/50 py-4"
             onSubmit={form.handleSubmit(onSubmit)}
           >
             <Title>Recherche de livre</Title>
