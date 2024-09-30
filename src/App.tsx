@@ -1,6 +1,5 @@
 import { ThemeProvider } from "@/components/Theme-provider";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import NavBar from "./components/NavBar";
 import AccountPage from "./pages/AccountPage";
 import BookDetailPage from "./pages/BookDetailPage";
 import BooksSearchPage from "./pages/BooksSearchPage";
@@ -9,11 +8,12 @@ import LoginPage from "./pages/LoginPage";
 import MyBooksPage from "./pages/MyBooksPage";
 import MyReadBooksPage from "./pages/MyReadBooksPage";
 import RegisterPage from "./pages/RegisterPage";
+import NavBar from "./components/NavBar";
 
 const App = (): JSX.Element => {
   return (
     <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-      <div className="bg-background">
+      <div className="inline h-auto bg-background">
         <BrowserRouter>
           <NavBar />
           <Routes>

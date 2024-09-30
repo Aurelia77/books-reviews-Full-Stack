@@ -5,7 +5,18 @@
 html,
 body,
 #root {
-  height: 100%;
+  height: auto;
+}
+
+form.form-sticky-active {
+  gap: 0;
+  transition: gap 0.4s;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+h1.form-sticky-active {
+  display: none;
 }
 
 @layer base {

@@ -36,7 +36,7 @@ const BookDetailPage = (): JSX.Element => {
           <img
             src={bookInfo.bookImageLink || defaultImage}
             onError={(e) => (e.currentTarget.src = defaultImage)}
-            className="w-32 rounded-sm"
+            className="w-32 rounded-sm object-contain"
             alt="Image de couverture du livre"
           />
           <CardHeader className="">

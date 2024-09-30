@@ -9,7 +9,7 @@ import { defaultImage } from "@/constants";
 import { getDocsByQueryFirebase } from "@/firebase";
 import { cn } from "@/lib/utils";
 import { BookType } from "@/types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useSWR from "swr";
 
@@ -26,13 +26,16 @@ const BookInfos = ({
     book || undefined
   );
 
-  console.log("bookInfo", bookInfo?.bookTitle);
+  //console.log("bookInfo", bookInfo?.bookTitle);
+
+  // VOIR !!!!!!!!!! avec hook Preso !!!!!!
+  /////////////////////////
+  //const { data: bookFromId, error, isLoading } = useBookId(bookId);
 
   const fetchBookInfo = async (bookId: string): Promise<BookType | null> => {
     try {
       const books = await getDocsByQueryFirebase("books", "bookId", bookId);
       if (books.length > 0) {
-        setBookInfo(books[0]);
         return books[0];
       } else {
         return null;
@@ -50,12 +53,18 @@ const BookInfos = ({
   } = useSWR<BookType | null>(bookId, fetchBookInfo);
   // } = useSWR<BookType>(bookId, fetcher);
 
-  console.log("data", bookFromId?.bookTitle);
-  console.log("data", bookFromId?.bookImageLink);
+  useEffect(() => {
+    if (bookFromId) {
+      setBookInfo(bookFromId);
+    }
+  }, [bookFromId]);
 
+  // BIEN ?????????
   if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
-  if (!bookInfo) return <div>No book information available.</div>;
+  // comment l'afficher ??
+  if (error) return <div className="text-cyan-300">{error}</div>;
+  if (!bookInfo)
+    return <div className="text-cyan-300">No book information available.</div>;
 
   return (
     bookInfo && (
@@ -63,22 +72,35 @@ const BookInfos = ({
         to={`/books/${bookInfo.bookId}`}
         state={{ bookInfo, friendsWhoReadBook }}
       >
-        <Card className="mb-3">
+        <Card className="relative mb-3">
+          <CardDescription className="absolute right-2 top-1 rounded-full bg-secondary px-3 py-1">
+            {bookInfo.bookLanguage}
+          </CardDescription>
           <div
             className={cn(
-              "flex gap-4 shadow-xl shadow-primary/30 p-2 bg-ring/55 text-foreground",
+              "flex gap-1 shadow-xl shadow-primary/30 p-3 bg-ring/55 text-foreground",
               friendsWhoReadBook.length > 0 && "bg-ring/80"
             )}
           >
             <img
               src={bookInfo.bookImageLink || defaultImage}
               onError={(e) => (e.currentTarget.src = defaultImage)}
-              className="w-32 rounded-sm"
+              className="w-32 rounded-sm object-contain"
               alt="Image de couverture du livre"
             />
             <CardHeader>
-              <CardTitle>{bookInfo.bookTitle}</CardTitle>
-              <CardDescription>{bookInfo.bookAuthor}</CardDescription>
+              <CardTitle className="line-clamp-4">
+                {bookInfo.bookTitle}
+              </CardTitle>
+              <CardDescription className="line-clamp-2">
+                {bookInfo.bookAuthor}
+              </CardDescription>
+              <CardDescription className="overflow-hidden text-input">
+                {bookInfo.bookCategories &&
+                  bookInfo.bookCategories.map((cat, index) => (
+                    <span key={index}>{index > 0 ? ` / ${cat}` : cat}</span>
+                  ))}
+              </CardDescription>
             </CardHeader>
             {/* <CardContent>
           <p>Card Content</p>

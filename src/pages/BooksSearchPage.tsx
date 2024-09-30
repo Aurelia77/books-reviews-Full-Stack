@@ -1,6 +1,5 @@
 import BookInfos from "@/components/BookInfos";
 import Title from "@/components/Title";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -9,20 +8,18 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { getDocsByQueryFirebase } from "@/firebase";
 //import { books } from "@/data";
 import { friendsWhoReadBook } from "@/lib/utils";
 import { BookType } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { useEffect, useRef, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { ClipLoader } from "react-spinners";
 import useSWR from "swr";
 import { z } from "zod";
 
-const MAX_RESULTS = 20; // pas plus de 40
+const MAX_RESULTS = 10; // pas plus de 40
 
 type BookAPIType = {
   id: string;
@@ -66,12 +63,12 @@ const bookFormSchema = z
   });
 
 const BooksSearchPage = (): JSX.Element => {
-  const [booksFromBDD, setBooksFromBDD] = useState<BookType[]>([]);
-  console.log("books from BDD", booksFromBDD);
-  const [booksFromBDDandAPI, setBooksFromBDDandAPI] = useState<BookType[]>([]);
-  console.log("books from BDD and API", booksFromBDDandAPI);
+  const [databaseBooks, setDatabaseBooks] = useState<BookType[]>([]);
+  //console.log("books from BDD", databaseBooks);
+  const [allSearchBooks, setAllSearchBooks] = useState<BookType[]>([]);
+  //console.log("books from BDD and API", allSearchBooks);
 
-  // FORMULAIRE
+  // FORMULAIRE (hook perso ?)
   const form = useForm<SearchBooksFormType>({
     resolver: zodResolver(bookFormSchema),
     // Tjs mettre des valeurs par défaut sinon ERREUR : Warning: A component is changing an uncontrolled input to be controlled
@@ -88,7 +85,7 @@ const BooksSearchPage = (): JSX.Element => {
   const onSubmit: SubmitHandler<SearchBooksFormType> = (formData) =>
     console.log(formData);
 
-  // APPEL API
+  // APPEL API (hook perso ?)
   const [booksApiUrl, setBooksApiUrl] = useState(
     `https://www.googleapis.com/books/v1/volumes?q=subject:general&maxResults=${MAX_RESULTS}`
   );
@@ -133,7 +130,6 @@ const BooksSearchPage = (): JSX.Element => {
       //.then((res) => res.json())    // idem sans TS
       .then((data) => data.items)
       .then((items) => {
-        console.log("items", items);
         const booksFromAPI: BookType[] = items.map((book: BookAPIType) => {
           return {
             bookId: book.id,
@@ -157,12 +153,12 @@ const BooksSearchPage = (): JSX.Element => {
       });
 
   const {
-    data: booksFromAPI,
+    data: apiBooks,
     error,
     isLoading,
   } = useSWR<BookType[]>(booksApiUrl, fetchAPIBooks);
 
-  console.log("booksFromAPI", booksFromAPI);
+  //console.log("booksFromAPI", apiBooks);
 
   const getRandomChar = (): string => {
     const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -177,7 +173,7 @@ const BooksSearchPage = (): JSX.Element => {
         "bookIsFromAPI",
         true
       );
-      setBooksFromBDD(books);
+      setDatabaseBooks(books);
     };
 
     fetchBooks();
@@ -214,8 +210,8 @@ const BooksSearchPage = (): JSX.Element => {
       const fetchBooks = () => {
         getDocsByQueryFirebase("books", "bookIsFromAPI", true)
           .then((books) => {
-            console.log("books from BDD", books);
-            setBooksFromBDD(books);
+            //console.log("books from BDD", books);
+            setDatabaseBooks(books);
           })
           .catch((error) => {
             console.error("Error fetching books: ", error);
@@ -240,8 +236,8 @@ const BooksSearchPage = (): JSX.Element => {
       setBooksApiUrl(
         `https://www.googleapis.com/books/v1/volumes?q=${title}&maxResults=${MAX_RESULTS}`
       );
-      setBooksFromBDD(
-        booksFromBDD.filter((book: BookType) =>
+      setDatabaseBooks(
+        databaseBooks.filter((book: BookType) =>
           book.bookTitle.toLowerCase().includes(title.toLowerCase())
         )
       );
@@ -250,22 +246,59 @@ const BooksSearchPage = (): JSX.Element => {
   }, [title]);
 
   useEffect(() => {
-    if (booksFromAPI) {
-      setBooksFromBDDandAPI(
-        shuffle2ArraysPreserveOrder(booksFromBDD, booksFromAPI)
+    if (apiBooks) {
+      ////////////////////////// TEST
+      const twoCats = apiBooks.filter(
+        (book) => book.bookCategories?.[1] !== undefined
       );
+      console.log("twoCats", twoCats);
+      /////////////////////////////////
+      setAllSearchBooks(shuffle2ArraysPreserveOrder(databaseBooks, apiBooks));
     }
-  }, [booksFromAPI, booksFromBDD]);
+  }, [apiBooks, databaseBooks]);
+
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // Au montage du composant, on ajoute un écouteur d'événement sur la fenêtre pour gérer le scroll
+  useEffect(() => {
+    // console.log("useEffect");
+    const handleScroll = () => {
+      if (formRef.current) {
+        // console.log("formRef.current", formRef.current.offsetHeight);
+        // console.log("formRef.current", formRef.current.offsetTop);
+        // console.log("window.scrollY", window.scrollY);
+        if (window.scrollY > formRef.current.offsetHeight) {
+          formRef.current.classList.add("form-sticky-active");
+          formRef.current.querySelectorAll("*").forEach((child) => {
+            child.classList.add("form-sticky-active");
+          });
+          // console.log("ADD CLASS");
+        } else {
+          formRef.current.classList.remove("form-sticky-active");
+          formRef.current.querySelectorAll("*").forEach((child) => {
+            child.classList.remove("form-sticky-active");
+          });
+          // console.log("REMOVE CLASS");
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   return (
-    <div>
-      <Title>Recherche de livre</Title>
-      <div className="flex flex-col gap-6">
+    <div className="h-full">
+      <div className="flex h-full flex-col gap-6">
         <Form {...form}>
           <form
-            className="flex flex-col gap-3 bg-foreground py-4"
+            ref={formRef}
+            className="sticky top-0 z-10 flex flex-col gap-3 bg-border/50 py-4"
             onSubmit={form.handleSubmit(onSubmit)}
           >
+            <Title>Recherche de livre</Title>
             <FormField
               control={form.control}
               name="bookTitle"
@@ -290,7 +323,9 @@ const BooksSearchPage = (): JSX.Element => {
                 </FormItem>
               )}
             />
-            <RadioGroup defaultValue={BookStatusEnum.read}>
+          </form>
+        </Form>
+        {/* <RadioGroup defaultValue={BookStatusEnum.read}>
               <Controller
                 name="bookStatus"
                 control={form.control}
@@ -321,10 +356,8 @@ const BooksSearchPage = (): JSX.Element => {
                   </RadioGroup>
                 )}
               />
-            </RadioGroup>
-            <Button type="submit">Ajouter</Button>
-          </form>
-        </Form>
+            </RadioGroup> */}
+        {/* <Button type="submit">Ajouter</Button> */}
         {/* <Search className="text-primary/60 drop-shadow-lg" size={40} /> */}
         {/*  */}
         {isLoading ? (
@@ -337,18 +370,15 @@ const BooksSearchPage = (): JSX.Element => {
         ) : (
           <div className="mb-40 p-1">
             <ul>
-              {booksFromBDDandAPI &&
-                booksFromBDDandAPI.map((book: BookType) => {
-                  console.log("!!! BOOK", book);
-                  return (
-                    <li key={book.bookId}>
-                      <BookInfos
-                        book={book}
-                        friendsWhoReadBook={friendsWhoReadBook(book.bookId)}
-                      />
-                    </li>
-                  );
-                })}
+              {allSearchBooks &&
+                allSearchBooks.map((book: BookType) => (
+                  <li key={book.bookId}>
+                    <BookInfos
+                      book={book}
+                      friendsWhoReadBook={friendsWhoReadBook(book.bookId)}
+                    />
+                  </li>
+                ))}
             </ul>
           </div>
         )}
