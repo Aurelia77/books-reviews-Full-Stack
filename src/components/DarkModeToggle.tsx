@@ -6,8 +6,6 @@ import { Button } from "@/components/ui/button";
 export function DarkModeToggle(): JSX.Element {
   const { theme, setTheme } = useTheme();
 
-  console.log("theme", theme);
-
   const inverseTheme = () =>
     theme === "light" ? setTheme("dark") : setTheme("light");
 

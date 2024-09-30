@@ -21,7 +21,7 @@ import { ClipLoader } from "react-spinners";
 import useSWR from "swr";
 import { z } from "zod";
 
-const MAX_RESULTS = 2; // pas plus de 40
+const MAX_RESULTS = 20; // pas plus de 40
 
 type BookAPIType = {
   id: string;
@@ -107,6 +107,7 @@ const BooksSearchPage = (): JSX.Element => {
       //.then((res) => res.json())    // idem sans TS
       .then((data) => data.items)
       .then((items) => {
+        console.log("items", items);
         const booksFromAPI: BookType[] = items.map((book: BookAPIType) => {
           return {
             id: book.id,
@@ -128,7 +129,9 @@ const BooksSearchPage = (): JSX.Element => {
         return shuffleBooksArray(books);
       });
 
-  const { data, error, isLoading } = useSWR(searchUrl, fetcher);
+  const { data: apiBooks, error, isLoading } = useSWR(searchUrl, fetcher);
+
+  console.log("apiBooks", apiBooks);
 
   const getRandomChar = (): string => {
     const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -233,10 +236,10 @@ const BooksSearchPage = (): JSX.Element => {
             size={36}
           />
         ) : (
-          data && (
+          apiBooks && (
             <div className="mb-40 p-1">
               <ul>
-                {data.map((book: BookType) => {
+                {apiBooks.map((book: BookType) => {
                   return (
                     <li key={book.id}>
                       <BookInfos

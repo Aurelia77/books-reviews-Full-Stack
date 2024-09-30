@@ -27,19 +27,21 @@ const BookInfos = ({
       <Card className="mb-3">
         <div
           className={cn(
-            "flex gap-4 shadow-xl shadow-primary/30 p-2 bg-ring/55 text-foreground",
+            "flex gap-1 shadow-xl shadow-primary/30 p-3 bg-ring/55 text-foreground",
             friendsWhoReadBook.length > 0 && "bg-ring/80"
           )}
         >
           <img
             src={imageUrl}
             onError={() => setImageUrl(defaultImage)}
-            className="w-32 rounded-sm"
+            className="w-32 rounded-sm object-contain"
             alt="Image de couverture du livre"
           />
           <CardHeader>
-            <CardTitle>{book.title}</CardTitle>
-            <CardDescription>{book.author}</CardDescription>
+            <CardTitle className="line-clamp-3">{book.title}</CardTitle>
+            <CardDescription className="line-clamp-2">
+              {book.author}
+            </CardDescription>
           </CardHeader>
           {/* <CardContent>
           <p>Card Content</p>

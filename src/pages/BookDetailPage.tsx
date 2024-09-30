@@ -21,7 +21,7 @@ const BookDetailPage = (): JSX.Element => {
 
   const [imageUrl, setImageUrl] = useState(book.imageLink || defaultImage);
 
-  console.log("book", book);
+  //console.log("book", book);
 
   return (
     <div
@@ -30,17 +30,24 @@ const BookDetailPage = (): JSX.Element => {
       <Card className="m-4">
         <div
           className={cn(
-            "flex gap-4 shadow-xl shadow-primary/30 p-2 bg-ring/55 text-foreground",
+            "flex gap-1 shadow-xl shadow-primary/30 p-3 bg-ring/55 text-foreground ",
             friendsWhoReadBook.length > 0 && "bg-ring/80"
           )}
         >
           <img
             src={imageUrl}
             onError={() => setImageUrl(defaultImage)}
-            className="w-32 rounded-sm"
+            className="w-32 rounded-sm object-contain"
             alt="Image de couverture du livre"
           />
           <CardHeader>
+            <CardTitle>{book.title}</CardTitle>
+            <CardTitle>{book.title}</CardTitle>
+            <CardTitle>{book.title}</CardTitle>
+            <CardTitle>{book.title}</CardTitle>
+            <CardTitle>{book.title}</CardTitle>
+            <CardTitle>{book.title}</CardTitle>
+            <CardTitle>{book.title}</CardTitle>
             <CardTitle>{book.title}</CardTitle>
             <CardDescription>{book.author}</CardDescription>
           </CardHeader>
