@@ -8,20 +8,19 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { defaultImage } from "@/constants";
+import { addBookToReadFirebase } from "@/firebase";
 import { cn } from "@/lib/utils";
 import { BookType } from "@/types";
-import { useState } from "react";
 import { useLocation } from "react-router-dom";
 
 const BookDetailPage = (): JSX.Element => {
   const location = useLocation();
-  const { book }: { book: BookType } = location.state || {};
+  const { bookInfo }: { bookInfo: BookType } = location.state || {};
   const { friendsWhoReadBook }: { friendsWhoReadBook: string[] } =
     location.state || {};
 
-  const [imageUrl, setImageUrl] = useState(book.imageLink || defaultImage);
-
-  //console.log("book", book);
+  console.log("book", bookInfo);
+  console.log("img", bookInfo.bookImageLink);
 
   return (
     <div
@@ -30,33 +29,32 @@ const BookDetailPage = (): JSX.Element => {
       <Card className="m-4">
         <div
           className={cn(
-            "flex gap-1 shadow-xl shadow-primary/30 p-3 bg-ring/55 text-foreground ",
+            "flex gap-1 shadow-xl shadow-primary/30 p-3 bg-ring/55",
             friendsWhoReadBook.length > 0 && "bg-ring/80"
           )}
         >
           <img
-            src={imageUrl}
-            onError={() => setImageUrl(defaultImage)}
-            className="w-32 rounded-sm object-contain"
+            src={bookInfo.bookImageLink || defaultImage}
+            onError={(e) => (e.currentTarget.src = defaultImage)}
+            className="w-32 rounded-sm"
             alt="Image de couverture du livre"
           />
-          <CardHeader>
-            <CardTitle>{book.title}</CardTitle>
-            <CardTitle>{book.title}</CardTitle>
-            <CardTitle>{book.title}</CardTitle>
-            <CardTitle>{book.title}</CardTitle>
-            <CardTitle>{book.title}</CardTitle>
-            <CardTitle>{book.title}</CardTitle>
-            <CardTitle>{book.title}</CardTitle>
-            <CardTitle>{book.title}</CardTitle>
-            <CardDescription>{book.author}</CardDescription>
+          <CardHeader className="">
+            <CardTitle>{bookInfo?.bookTitle}</CardTitle>
+            <CardDescription>{bookInfo?.bookAuthor}</CardDescription>
+            <CardDescription>{bookInfo?.bookLanguage}</CardDescription>
+            {bookInfo?.bookCategories?.map((cat) => (
+              <div key={bookInfo.bookId} className="flex gap-2">
+                <CardDescription>{cat}</CardDescription>
+              </div>
+            ))}
           </CardHeader>
           {/* <CardContent>
           <p>Card Content</p>
         </CardContent> */}
         </div>
         <CardContent className="mt-6">
-          <p>{book.description}</p>
+          <p>{bookInfo.bookDescription}</p>
         </CardContent>
         {friendsWhoReadBook.length > 0 && (
           <CardFooter>
@@ -70,7 +68,12 @@ const BookDetailPage = (): JSX.Element => {
           </CardFooter>
         )}
       </Card>
-      <CustomLinkButton linkTo="/">Ajouter à mes livres</CustomLinkButton>
+      <CustomLinkButton
+        //linkTo="/"
+        onClick={() => addBookToReadFirebase(bookInfo)}
+      >
+        Ajouter à mes livres
+      </CustomLinkButton>
     </div>
   );
 };

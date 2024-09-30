@@ -1,30 +1,53 @@
 import BookInfos from "@/components/BookInfos";
 import Title from "@/components/Title";
-import { books as booksFromBDD, users } from "@/data";
+import { users } from "@/data";
 
 import { UserType } from "@/types";
+import { useEffect, useState } from "react";
 
 const MyReadBooksPage = (): JSX.Element => {
-  const myReadBooks =
-    users
-      .find((user: UserType) => user.id === "1")
-      ?.booksRead.map((bookId) =>
-        booksFromBDD.find((book) => book.id === bookId)
-      ) ?? [];
+  const [myReadBooksIds, setMyReadBooksIds] = useState<string[] | undefined>(
+    []
+  );
 
-  console.log("myReadBooks", myReadBooks);
+  // const fetcher = (bookId: string) => {
+  //   getDocsByQueryFirebase("books", "bookId", bookId).then((books) => {
+  //     setMyReadBooks((prevBooks) => [...prevBooks, ...books]);
+  //   });
+  // };
+
+  // const {
+  //   data: booksFromAPI,
+  //   error,
+  //   isLoading,
+  // } = useSWR<BookType[]>(searchUrl, fetcher);
+
+  useEffect(() => {
+    setMyReadBooksIds(
+      users.find((user: UserType) => user.id === "1")?.booksRead
+    );
+  }, []);
+
+  // const myReadBooks =
+  //   users
+  //     .find((user: UserType) => user.id === "1")
+  //     ?.booksRead.map((bookId) =>
+  //       booksFromBDD.find((book) => book.bookId === bookId)
+  //     ) ?? [];
+
+  console.log("myReadBooks", myReadBooksIds);
 
   return (
     <div>
       <Title>Mes livres lus</Title>
-      {myReadBooks && myReadBooks.length > 0 && (
+      {myReadBooksIds && myReadBooksIds.length > 0 && (
         <ul>
-          {myReadBooks.map(
-            (readBook) =>
-              readBook && (
+          {myReadBooksIds.map(
+            (bookId) =>
+              bookId && (
                 <BookInfos
-                  key={readBook.id}
-                  book={readBook}
+                  key={bookId}
+                  bookId={bookId}
                   friendsWhoReadBook={["Loulou"]}
                 />
               )
