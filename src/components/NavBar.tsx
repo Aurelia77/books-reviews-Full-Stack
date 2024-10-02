@@ -23,9 +23,9 @@ const NavBar = (): JSX.Element => {
   const [isConnected, setIsConnected] = useState(false); // A SUPP QD AUTH FAIT
 
   return (
-    <div className="sticky top-0 z-20 flex h-12 items-center bg-secondary/70 p-1 text-primary-foreground shadow-md">
+    <div className="sticky top-0 z-20 flex h-12 items-center bg-primary/70 p-1 text-muted shadow-md">
       <ArrowLeft
-        className="absolute left-1 top-1 z-20 cursor-pointer text-foreground"
+        className="absolute left-1 top-1 z-20 cursor-pointer text-muted/60"
         size={36}
         //onClick={handleBackClick}
         onClick={() => navigate(-1)}
