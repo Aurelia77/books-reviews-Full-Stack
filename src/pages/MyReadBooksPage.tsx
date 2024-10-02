@@ -38,10 +38,10 @@ const MyReadBooksPage = (): JSX.Element => {
   console.log("myReadBooks", myReadBooksIds);
 
   return (
-    <div>
+    <div className="h-full">
       <Title>Mes livres lus</Title>
       {myReadBooksIds && myReadBooksIds.length > 0 && (
-        <ul className="pb-16">
+        <ul className="flex h-full flex-col pb-16">
           {myReadBooksIds.map(
             (bookId) =>
               bookId && (

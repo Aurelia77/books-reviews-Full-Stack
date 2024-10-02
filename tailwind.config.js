@@ -6,6 +6,11 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      textStroke: {
+        default: "1px black",
+        md: "2px black",
+        lg: "3px black",
+      },
       fontFamily: {
         display: "Inter, ui-sans-serif",
         heading: "Inter, ui-serif",
@@ -59,5 +64,23 @@ export default {
       },
     },
   },
-  plugins: [tailwindcssAnimate],
+  plugins: [
+    tailwindcssAnimate,
+    function ({ addUtilities }) {
+      addUtilities({
+        ".text-stroke": {
+          "-webkit-text-stroke-width": "1px",
+          "-webkit-text-stroke-color": "black",
+        },
+        ".text-stroke-md": {
+          "-webkit-text-stroke-width": "2px",
+          "-webkit-text-stroke-color": "black",
+        },
+        ".text-stroke-lg": {
+          "-webkit-text-stroke-width": "3px",
+          "-webkit-text-stroke-color": "black",
+        },
+      });
+    },
+  ],
 };

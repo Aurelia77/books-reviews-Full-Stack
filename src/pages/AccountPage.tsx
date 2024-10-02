@@ -54,7 +54,7 @@ const AccountPage = (): JSX.Element => {
   };
 
   return (
-    <div className="p-1">
+    <div className="sm:p-2">
       <Title>Mon compte</Title>
       <Form {...form}>
         <form
@@ -109,12 +109,10 @@ const AccountPage = (): JSX.Element => {
               </FormItem>
             )}
           />
-          <Button type="submit">Enregistrer mes modifications</Button>
+          <Button type="submit">Enregistrer</Button>
         </form>
       </Form>
-      <CustomLinkButton opacity={50} linkTo="/mybooks">
-        Mes livres
-      </CustomLinkButton>
+      <CustomLinkButton linkTo="/mybooks">Mes livres</CustomLinkButton>
     </div>
   );
 };
