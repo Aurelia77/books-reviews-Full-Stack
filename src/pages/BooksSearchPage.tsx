@@ -19,7 +19,7 @@ import { ClipLoader } from "react-spinners";
 import useSWR from "swr";
 import { z } from "zod";
 
-const MAX_RESULTS = 10; // pas plus de 40
+const MAX_RESULTS = 5; // jusqu'à 40
 
 type BookAPIType = {
   id: string;
@@ -124,33 +124,39 @@ const BooksSearchPage = (): JSX.Element => {
     return shuffledArray;
   };
 
-  const fetchAPIBooks = (booksApiUrl: string): Promise<BookType[]> =>
-    fetch(booksApiUrl)
-      .then((res: Response): Promise<{ items: BookAPIType[] }> => res.json())
-      //.then((res) => res.json())    // idem sans TS
-      .then((data) => data.items)
-      .then((items) => {
-        const booksFromAPI: BookType[] = items.map((book: BookAPIType) => {
-          return {
-            bookId: book.id,
-            bookTitle: book.volumeInfo.title,
-            bookAuthor: book.volumeInfo?.authors?.[0] ?? "Auteur inconnu",
-            bookDescription: book.volumeInfo.description,
-            bookCategories: book.volumeInfo.categories,
-            bookPageCount: book.volumeInfo.pageCount,
-            bookPublishedDate: book.volumeInfo.publishedDate,
-            bookPublisher: book.volumeInfo.publisher,
-            bookImageLink: book.volumeInfo.imageLinks?.thumbnail,
-            bookLanguage: book.volumeInfo.language,
-            bookIsFromAPI: true,
-          };
-        });
-        return booksFromAPI;
-      })
-      .catch((error) => {
-        console.error("Error fetching books:", error);
-        return [];
-      });
+  const fetchAPIBooks = (booksApiUrl: string): Promise<BookType[]> => {
+    // throw new Error(
+    //   "Erreur simulée lors de la récupération des informations du livre"
+    // );
+    return (
+      fetch(booksApiUrl)
+        .then((res: Response): Promise<{ items: BookAPIType[] }> => res.json())
+        //.then((res) => res.json())    // idem sans TS
+        .then((data) => data.items)
+        .then((items) => {
+          const booksFromAPI: BookType[] = items.map((book: BookAPIType) => {
+            return {
+              bookId: book.id,
+              bookTitle: book.volumeInfo.title,
+              bookAuthor: book.volumeInfo?.authors?.[0] ?? "Auteur inconnu",
+              bookDescription: book.volumeInfo.description,
+              bookCategories: book.volumeInfo.categories,
+              bookPageCount: book.volumeInfo.pageCount,
+              bookPublishedDate: book.volumeInfo.publishedDate,
+              bookPublisher: book.volumeInfo.publisher,
+              bookImageLink: book.volumeInfo.imageLinks?.thumbnail,
+              bookLanguage: book.volumeInfo.language,
+              bookIsFromAPI: true,
+            };
+          });
+          return booksFromAPI;
+        })
+        .catch((error) => {
+          console.error("Error fetching books:", error);
+          return [];
+        })
+    );
+  };
 
   const {
     data: apiBooks,
@@ -290,16 +296,12 @@ const BooksSearchPage = (): JSX.Element => {
   }, []);
 
   return (
-    <div className="h-full">
+    <div className="h-full sm:p-2">
       <div className="flex h-full flex-col gap-6">
-        <p>coucou</p>
-        <p>coucou</p>
-        <p>coucou</p>
-        <p>coucou</p>
         <Form {...form}>
           <form
             ref={formRef}
-            className="sticky top-10 z-10 flex flex-col gap-3 bg-border/50 py-4"
+            className="sticky top-10 z-10 flex flex-col gap-3 bg-background/70 duration-500"
             onSubmit={form.handleSubmit(onSubmit)}
           >
             <Title>Recherche de livre</Title>
@@ -321,7 +323,7 @@ const BooksSearchPage = (): JSX.Element => {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input placeholder="Auteur" {...field} />
+                    <Input placeholder="Auteur(e)" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -366,13 +368,19 @@ const BooksSearchPage = (): JSX.Element => {
         {/*  */}
         {isLoading ? (
           <ClipLoader
-            className="m-auto"
+            className="m-auto mt-16"
             color="#09f"
             loading={isLoading}
-            size={36}
+            size={70}
           />
         ) : (
-          <div className="mb-40 p-1">
+          <div className="mb-40">
+            {error && (
+              <p className="p-3 text-destructive-foreground">
+                Un problème est survenu lors de la recherche de livres :{" "}
+                {error.message}
+              </p>
+            )}
             <ul>
               {allSearchBooks &&
                 allSearchBooks.map((book: BookType) => (
@@ -385,11 +393,6 @@ const BooksSearchPage = (): JSX.Element => {
                 ))}
             </ul>
           </div>
-        )}
-        {error && (
-          <p className="text-destructive">
-            Un problème est survenu lors de la recherche de livres.
-          </p>
         )}
       </div>
     </div>

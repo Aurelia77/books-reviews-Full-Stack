@@ -1,4 +1,4 @@
-import CustomLinkButton from "@/components/CustomLinkButton";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,8 +9,8 @@ import {
 } from "@/components/ui/card";
 import { defaultImage } from "@/constants";
 import { addBookToReadFirebase } from "@/firebase";
-import { cn } from "@/lib/utils";
 import { BookType } from "@/types";
+import { Star } from "lucide-react";
 import { useLocation } from "react-router-dom";
 
 const BookDetailPage = (): JSX.Element => {
@@ -23,37 +23,59 @@ const BookDetailPage = (): JSX.Element => {
   console.log("img", bookInfo.bookImageLink);
 
   return (
-    <div
-    // className="my-6 flex gap-4 shadow-xl shadow-primary/30"
-    >
-      <Card className="m-4">
-        <div
-          className={cn(
-            "flex gap-1 shadow-xl shadow-primary/30 p-3 bg-ring/55",
-            friendsWhoReadBook.length > 0 && "bg-ring/80"
-          )}
-        >
+    <div className="pb-4">
+      <Card className="relative m-4">
+        {friendsWhoReadBook.length > 0 && (
+          <div className="relative">
+            <Star
+              size={65}
+              strokeWidth={2}
+              className="absolute left-[3.25rem] top-[0.54rem] drop-shadow-sm text-stroke-lg"
+              color="white"
+            />
+            <Star
+              className="absolute left-[3.56rem] top-[0.9rem] drop-shadow-sm text-stroke-lg"
+              size={55}
+              color="gray"
+            />
+          </div>
+        )}
+        <CardDescription className="absolute right-2 top-2 rounded-full bg-secondary/60 px-3 py-1 text-secondary-foreground shadow-sm shadow-foreground">
+          {bookInfo.bookLanguage}
+        </CardDescription>
+
+        <div className="flex gap-5 p-5 py-12 shadow-xl shadow-primary/30">
           <img
             src={bookInfo.bookImageLink || defaultImage}
             onError={(e) => (e.currentTarget.src = defaultImage)}
             className="w-32 rounded-sm object-contain"
-            alt="Image de couverture du livre"
+            alt={`Image de couverture du livre ${bookInfo?.bookTitle}`}
           />
-          <CardHeader className="">
+
+          {/* Sozialwissenschaftliche */}
+
+          <CardHeader className="items-start gap-3 overflow-hidden">
             <CardTitle>{bookInfo?.bookTitle}</CardTitle>
-            <CardDescription>{bookInfo?.bookAuthor}</CardDescription>
-            <CardDescription>{bookInfo?.bookLanguage}</CardDescription>
-            {bookInfo?.bookCategories?.map((cat) => (
-              <div key={bookInfo.bookId} className="flex gap-2">
-                <CardDescription>{cat}</CardDescription>
-              </div>
-            ))}
+            <CardDescription className="text-muted">
+              {bookInfo?.bookAuthor}
+            </CardDescription>
+            <div className="grid grid-cols-2 gap-x-8">
+              {bookInfo?.bookCategories?.map((cat, index) => (
+                <CardDescription key={index}>{cat}</CardDescription>
+              ))}
+            </div>
           </CardHeader>
           {/* <CardContent>
           <p>Card Content</p>
         </CardContent> */}
         </div>
-        <CardContent className="mt-6">
+        <CardContent className="relative bg-secondary/30 pb-6 pt-12 shadow-xl shadow-primary/30">
+          <Button
+            onClick={() => addBookToReadFirebase(bookInfo)}
+            className="absolute -top-5 left-1/4 h-12 w-1/2 bg-secondary/70"
+          >
+            Ajouter à mes livres
+          </Button>
           <p>{bookInfo.bookDescription}</p>
         </CardContent>
         {friendsWhoReadBook.length > 0 && (
@@ -68,12 +90,6 @@ const BookDetailPage = (): JSX.Element => {
           </CardFooter>
         )}
       </Card>
-      <CustomLinkButton
-        //linkTo="/"
-        onClick={() => addBookToReadFirebase(bookInfo)}
-      >
-        Ajouter à mes livres
-      </CustomLinkButton>
     </div>
   );
 };

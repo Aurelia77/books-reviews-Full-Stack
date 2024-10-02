@@ -7,10 +7,11 @@ import {
 } from "@/components/ui/card";
 import { defaultImage } from "@/constants";
 import { getDocsByQueryFirebase } from "@/firebase";
-import { cn } from "@/lib/utils";
 import { BookType } from "@/types";
+import { Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { ClipLoader } from "react-spinners";
 import useSWR from "swr";
 
 type BookInfosProps =
@@ -33,17 +34,22 @@ const BookInfos = ({
   //const { data: bookFromId, error, isLoading } = useBookId(bookId);
 
   const fetchBookInfo = async (bookId: string): Promise<BookType | null> => {
-    try {
-      const books = await getDocsByQueryFirebase("books", "bookId", bookId);
-      if (books.length > 0) {
-        return books[0];
-      } else {
+    throw new Error(
+      "Erreur simulée lors de la récupération des informations du livre"
+    );
+
+    return getDocsByQueryFirebase("books", "bookId", bookId)
+      .then((books) => {
+        if (books.length > 0) {
+          return books[0];
+        } else {
+          return null;
+        }
+      })
+      .catch((error) => {
+        console.error(`Error fetching book with bookId: ${bookId}`, error);
         return null;
-      }
-    } catch (error) {
-      console.error(`Error fetching book with bookId: ${bookId}`, error);
-      return null;
-    }
+      });
   };
 
   const {
@@ -59,66 +65,84 @@ const BookInfos = ({
     }
   }, [bookFromId]);
 
-  // BIEN ?????????
-  if (isLoading) return <div>Loading...</div>;
-  // comment l'afficher ??
-  if (error) return <div className="text-cyan-300">{error}</div>;
-  if (!bookInfo)
-    return <div className="text-cyan-300">No book information available.</div>;
-
-  return (
+  return isLoading || !bookInfo ? (
+    <ClipLoader className="m-auto my-8" color="#09f" loading={true} size={50} />
+  ) : (
     bookInfo && (
-      <Link
-        to={`/books/${bookInfo.bookId}`}
-        state={{ bookInfo, friendsWhoReadBook }}
-      >
-        <Card className="relative mb-3">
-          <CardDescription className="absolute right-2 top-1 rounded-full bg-secondary px-3 py-1">
-            {bookInfo.bookLanguage}
-          </CardDescription>
-          <div
-            className={cn(
-              "flex gap-1 shadow-xl shadow-primary/30 p-3 bg-ring/55 text-foreground",
-              friendsWhoReadBook.length > 0 && "bg-ring/80"
-            )}
-          >
-            <img
-              src={bookInfo.bookImageLink || defaultImage}
-              onError={(e) => (e.currentTarget.src = defaultImage)}
-              className="w-32 rounded-sm object-contain"
-              alt="Image de couverture du livre"
-            />
-            <CardHeader>
-              <CardTitle className="line-clamp-4">
-                {bookInfo.bookTitle}
-              </CardTitle>
-              <CardDescription className="line-clamp-2">
-                {bookInfo.bookAuthor}
-              </CardDescription>
-              <CardDescription className="overflow-hidden text-input">
-                {bookInfo.bookCategories &&
-                  bookInfo.bookCategories.map((cat, index) => (
-                    <span key={index}>{index > 0 ? ` / ${cat}` : cat}</span>
-                  ))}
-              </CardDescription>
-            </CardHeader>
-            {/* <CardContent>
-          <p>Card Content</p>
-        </CardContent> */}
-          </div>
-          {friendsWhoReadBook.length > 0 && (
-            <CardFooter>
-              <div className="mt-6 flex flex-row gap-5">
-                <p className="font-semibold">Dans liste de :</p>
-
-                {friendsWhoReadBook.map((friend, index) => (
-                  <p key={index}>{friend}</p>
-                ))}
+      <div>
+        <Link
+          to={`/books/${bookInfo.bookId}`}
+          state={{ bookInfo, friendsWhoReadBook }}
+        >
+          <Card className="relative mb-4">
+            {friendsWhoReadBook.length > 0 && (
+              <div className="relative">
+                <Star
+                  size={48}
+                  strokeWidth={3}
+                  className="absolute left-[3.8rem] top-3 drop-shadow-sm text-stroke-lg"
+                  color="white"
+                />
+                <Star
+                  className="absolute left-16 top-[0.95rem] drop-shadow-sm text-stroke-lg"
+                  size={42}
+                  color="gray"
+                />
               </div>
-            </CardFooter>
-          )}
-        </Card>
-      </Link>
+            )}
+            <CardDescription className="absolute right-2 top-2 rounded-full bg-secondary/60 px-3 py-1 text-secondary-foreground shadow-sm shadow-foreground">
+              {bookInfo.bookLanguage}
+            </CardDescription>
+            <div className="flex items-start gap-5 p-5 pt-10 shadow-xl shadow-primary/30">
+              <img
+                src={bookInfo.bookImageLink || defaultImage}
+                onError={(e) => (e.currentTarget.src = defaultImage)}
+                className="w-32 rounded-sm object-contain"
+                alt={`Image de couverture du livre ${bookInfo?.bookTitle}`}
+              />
+              <CardHeader className="gap-3 overflow-hidden">
+                <CardTitle className="line-clamp-4">
+                  {bookInfo.bookTitle}
+                </CardTitle>
+                <CardDescription className="line-clamp-2 text-muted">
+                  {bookInfo.bookAuthor}
+                </CardDescription>
+                <CardDescription className="overflow-hidden">
+                  {bookInfo.bookCategories &&
+                    bookInfo.bookCategories.map((cat, index) => (
+                      <span key={index}>{index > 0 ? ` / ${cat}` : cat}</span>
+                    ))}
+                </CardDescription>
+              </CardHeader>
+            </div>
+            {friendsWhoReadBook.length > 0 && (
+              <CardFooter
+              // className={
+              //   friendsWhoReadBook.length > 0
+              //     ? "border-4 border-secondary bg-secondary/50"
+              //     : ""
+              // }
+              >
+                <div className="flex flex-row gap-2">
+                  <p className="font-semibold">Dans liste de :</p>
+
+                  {friendsWhoReadBook.map((friend, index) => (
+                    <p key={index} className="font-semibold text-muted">
+                      {friend}
+                    </p>
+                  ))}
+                </div>
+              </CardFooter>
+            )}
+          </Card>
+        </Link>
+        {error && (
+          <div className="text-pink-300">
+            Un problème est survenu dans la récupération du livre :{" "}
+            {error.message}
+          </div>
+        )}
+      </div>
     )
   );
 };

@@ -49,7 +49,7 @@ const RegisterPage = (): JSX.Element => {
   };
 
   return (
-    <div className="p-1">
+    <div className="sm:p-2">
       <Title>Inscription</Title>
       <Form {...form}>
         <form

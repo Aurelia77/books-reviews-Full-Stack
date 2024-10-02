@@ -6,16 +6,28 @@ const MyBooksPage = (): JSX.Element => {
     <div>
       <Title>Mes livres</Title>
       <div className="flex flex-col items-center gap-4 pb-12">
-        <CustomLinkButton linkTo="/mybooks/myreadbooks" opacity={50}>
+        <CustomLinkButton
+          linkTo="/mybooks/myreadbooks"
+          className="bg-primary/70"
+        >
           Livres lus
         </CustomLinkButton>
-        <CustomLinkButton linkTo="/mybooks/myreadbooks" opacity={40}>
+        <CustomLinkButton
+          linkTo="/mybooks/myreadbooks"
+          className="bg-primary/50"
+        >
           Livres en cours
         </CustomLinkButton>
-        <CustomLinkButton linkTo="/mybooks/myreadbooks" opacity={65}>
+        <CustomLinkButton
+          linkTo="/mybooks/myreadbooks"
+          className="bg-primary/75"
+        >
           Livres à lire
         </CustomLinkButton>
-        <CustomLinkButton linkTo="/mybooks/myreadbooks" opacity={40}>
+        <CustomLinkButton
+          linkTo="/mybooks/myreadbooks"
+          className="bg-primary/45"
+        >
           TOUS mes livres
         </CustomLinkButton>
       </div>
