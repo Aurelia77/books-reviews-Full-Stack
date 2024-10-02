@@ -22,11 +22,11 @@ h1.form-sticky-active {
 
 @layer base {
   :root {
-    --background: 229.16 49.08% 76%;
+    --background: 30 20% 90%;
     --foreground: 197.9 87.4% 7.7%;
-    --card: 229.16 49.08% 76%;
+    --card: 30 20% 90%;
     --card-foreground: 197.9 87.4% 7.7%;
-    --popover: 229.16 49.08% 76%;
+    --popover: 30 20% 90%;
     --popover-foreground: 197.9 87.4% 7.7%;
     --primary: 187.9 47.7% 65.1%;
     --primary-foreground: 270 94% 28%;
@@ -49,19 +49,19 @@ h1.form-sticky-active {
     --intermediate-color-3: hsl(208.74 48.62% 79%);
     --intermediate-color-4: hsl(188.32 48.16% 82%);      
     --COULEUR SYMPA !!!: hsl(198.9, 83.2%, 19.9%);
-  --background: hsl(188, 88%, 90%);
+  --background: hsl(30 20% 90%);
     --foreground: hsl(197.9, 87.4%, 7.7%);
-    --card: hsl(204.9, 42.4%, 94.5%);
+    --card: hsl(30 20% 90%);
     --card-foreground: hsl(197.9, 87.4%, 7.7%);
-    --popover: hsl(204.9, 42.4%, 94.5%);
+    --popover: hsl(30 20% 90%);
     --popover-foreground: hsl(197.9, 87.4%, 7.7%);
     --primary: hsl(187.9 47.7% 65.1%);
    --primary-foreground: hsl(270 94% 28%);
-    --secondary: hsl(270, 50%, 70%);
+    --secondary: hsl(276, 100%, 95%);
     --secondary-foreground: hsl(16.9, 71.8%, 0.3%);
     --muted: hsl(270 94% 28%);    
     --muted-foreground: hsl(192.9, 59.1%, 14.6%);
-    --accent: hsl(270, 50%, 70%);
+    --accent: hsl(276, 100%, 95%);
     --accent-foreground: hsl(16.9, 71.8%, 0.3%);
     --destructive: hsl(187.9, 47.7%, 65.1%);    
     --destructive-foreground: hsl(hsl(357, 100%, 31%)%);

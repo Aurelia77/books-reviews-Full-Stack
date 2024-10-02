@@ -34,9 +34,9 @@ const BookInfos = ({
   //const { data: bookFromId, error, isLoading } = useBookId(bookId);
 
   const fetchBookInfo = async (bookId: string): Promise<BookType | null> => {
-    throw new Error(
-      "Erreur simulée lors de la récupération des informations du livre"
-    );
+    // throw new Error(
+    //   "Erreur simulée lors de la récupération des informations du livre"
+    // );
 
     return getDocsByQueryFirebase("books", "bookId", bookId)
       .then((books) => {
