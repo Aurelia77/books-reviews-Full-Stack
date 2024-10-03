@@ -1,23 +1,14 @@
 import BookInfos from "@/components/BookInfos";
+import FeedbackMessage from "@/components/FeedbackMessage";
 import Title from "@/components/Title";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getDocsByQueryFirebase } from "@/firebase";
 import { friendsWhoReadBook } from "@/lib/utils";
 //import { books } from "@/data";
 import { BookType } from "@/types";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useRef, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { ClipLoader } from "react-spinners";
 import useSWR from "swr";
-import { z } from "zod";
 
 const MAX_RESULTS = 5; // jusqu'à 40
 
@@ -39,28 +30,30 @@ type BookAPIType = {
   };
 };
 
-type SearchBooksFormType = {
-  bookTitle: string;
-  bookAuthors: string;
-  bookStatus: BookStatusEnum;
-};
+//////////// Mettre dans DETAILS ???
 
-enum BookStatusEnum {
-  read = "read",
-  inProgress = "inProgress",
-  toRead = "toRead",
-}
+// type SearchBooksFormType = {
+//   bookTitle: string;
+//   bookAuthors: string;
+//   bookStatus: BookStatusEnum;
+// };
 
-const bookFormSchema = z
-  .object({
-    bookTitle: z.string().optional(),
-    bookAuthors: z.string().optional(),
-    bookStatus: z.nativeEnum(BookStatusEnum),
-  })
-  .refine((data) => data.bookTitle || data.bookAuthors, {
-    message: "Entrez un titre ou un auteur.",
-    path: ["bookTitle"],
-  });
+// enum BookStatusEnum {
+//   read = "read",
+//   inProgress = "inProgress",
+//   toRead = "toRead",
+// }
+
+// const bookFormSchema = z
+//   .object({
+//     bookTitle: z.string().optional(),
+//     bookAuthors: z.string().optional(),
+//     bookStatus: z.nativeEnum(BookStatusEnum),
+//   })
+//   .refine((data) => data.bookTitle || data.bookAuthors, {
+//     message: "Entrez un titre ou un auteur.",
+//     path: ["bookTitle"],
+//   });
 
 const BooksSearchPage = (): JSX.Element => {
   const [databaseBooks, setDatabaseBooks] = useState<BookType[]>([]);
@@ -68,27 +61,30 @@ const BooksSearchPage = (): JSX.Element => {
   const [allSearchBooks, setAllSearchBooks] = useState<BookType[]>([]);
   //console.log("books from BDD and API", allSearchBooks);
 
-  // FORMULAIRE (hook perso ?)
-  const form = useForm<SearchBooksFormType>({
-    resolver: zodResolver(bookFormSchema),
-    // Tjs mettre des valeurs par défaut sinon ERREUR : Warning: A component is changing an uncontrolled input to be controlled
-    defaultValues: {
-      bookTitle: "",
-      bookAuthors: "",
-      bookStatus: BookStatusEnum.read,
-    },
-  });
+  // // FORMULAIRE (hook perso ?)
+  // const form = useForm<SearchBooksFormType>({
+  //   resolver: zodResolver(bookFormSchema),
+  //   // Tjs mettre des valeurs par défaut sinon ERREUR : Warning: A component is changing an uncontrolled input to be controlled
+  //   defaultValues: {
+  //     bookTitle: "",
+  //     bookAuthors: "",
+  //     bookStatus: BookStatusEnum.read,
+  //   },
+  // });
 
-  const title = form.watch("bookTitle");
-  const author = form.watch("bookAuthors");
+  // const title = form.watch("bookTitle");
+  // const author = form.watch("bookAuthors");
 
-  const onSubmit: SubmitHandler<SearchBooksFormType> = (formData) =>
-    console.log(formData);
+  // const onSubmit: SubmitHandler<SearchBooksFormType> = (formData) =>
+  //   console.log(formData);
 
   // APPEL API (hook perso ?)
   const [booksApiUrl, setBooksApiUrl] = useState(
     `https://www.googleapis.com/books/v1/volumes?q=subject:general&maxResults=${MAX_RESULTS}`
   );
+
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
 
   const shuffle2ArraysPreserveOrder = <T, U>(
     array1: T[],
@@ -126,7 +122,7 @@ const BooksSearchPage = (): JSX.Element => {
 
   const fetchAPIBooks = (booksApiUrl: string): Promise<BookType[]> => {
     // throw new Error(
-    //   "Erreur simulée lors de la récupération des informations du livre"
+    //   "Erreur simulée !"
     // );
     return (
       fetch(booksApiUrl)
@@ -163,6 +159,8 @@ const BooksSearchPage = (): JSX.Element => {
     error,
     isLoading,
   } = useSWR<BookType[]>(booksApiUrl, fetchAPIBooks);
+
+  const message = `Un problème est survenu dans la récupération du livre => ${error?.message}`;
 
   //console.log("booksFromAPI", apiBooks);
 
@@ -263,7 +261,7 @@ const BooksSearchPage = (): JSX.Element => {
     }
   }, [apiBooks, databaseBooks]);
 
-  const formRef = useRef<HTMLFormElement>(null);
+  const formRef = useRef<HTMLDivElement>(null);
 
   // Au montage du composant, on ajoute un écouteur d'événement sur la fenêtre pour gérer le scroll
   useEffect(() => {
@@ -296,103 +294,100 @@ const BooksSearchPage = (): JSX.Element => {
   }, []);
 
   return (
-    <div className="h-full sm:p-2">
+    <div className="h-full min-h-screen sm:p-2">
       <div className="flex h-full flex-col gap-6">
-        <Form {...form}>
+        {/* <Form {...form}>
           <form
             ref={formRef}
             className="sticky top-10 z-10 flex flex-col gap-3 bg-background/70 duration-500"
             onSubmit={form.handleSubmit(onSubmit)}
-          >
-            <Title>Recherche de livre</Title>
-            <FormField
+          > */}
+        <div
+          ref={formRef}
+          className="sticky top-10 z-10 flex flex-col gap-3 bg-background/70 duration-500"
+        >
+          <Title>Recherche de livre</Title>
+          {/* <FormField
               control={form.control}
               name="bookTitle"
               render={({ field }) => (
                 <FormItem>
-                  <FormControl>
-                    <Input placeholder="Titre" {...field} />
-                  </FormControl>
+                  <FormControl> */}
+          <Input
+            placeholder="Titre"
+            onChange={(e) => setTitle(e.target.value)}
+          />
+          {/* <Input placeholder="Titre" {...field} /> */}
+          {/* </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
-            />
-            <FormField
+            /> */}
+          {/* <FormField
               control={form.control}
               name="bookAuthors"
               render={({ field }) => (
                 <FormItem>
-                  <FormControl>
-                    <Input placeholder="Auteur(e)" {...field} />
-                  </FormControl>
+                  <FormControl> */}
+          <Input
+            placeholder="Auteur(e)"
+            onChange={(e) => setAuthor(e.target.value)}
+          />
+          {/* <Input placeholder="Auteur(e)" {...field} /> */}
+          {/* </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
-            />
-          </form>
-        </Form>
-        {/* <RadioGroup defaultValue={BookStatusEnum.read}>
-              <Controller
-                name="bookStatus"
-                control={form.control}
-                defaultValue={BookStatusEnum.read}
-                render={({ field }) => (
-                  <RadioGroup
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value={BookStatusEnum.read} id="read" />
-                      <Label htmlFor="read">Lu</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem
-                        value={BookStatusEnum.inProgress}
-                        id="inProgress"
-                      />
-                      <Label htmlFor="inProgress">En cours</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem
-                        value={BookStatusEnum.toRead}
-                        id="toRead"
-                      />
-                      <Label htmlFor="toRead">À lire</Label>
-                    </div>
-                  </RadioGroup>
-                )}
-              />
-            </RadioGroup> */}
+            /> */}
+        </div>
         {/* <Button type="submit">Ajouter</Button> */}
         {/* <Search className="text-primary/60 drop-shadow-lg" size={40} /> */}
-        {/*  */}
-        {isLoading ? (
-          <ClipLoader
-            className="m-auto mt-16"
-            color="#09f"
-            loading={isLoading}
-            size={70}
-          />
-        ) : (
-          <div className="mb-40">
-            {error && (
-              <p className="p-3 text-destructive-foreground">
-                Un problème est survenu lors de la recherche de livres :{" "}
-                {error.message}
-              </p>
-            )}
-            <ul>
-              {allSearchBooks &&
-                allSearchBooks.map((book: BookType) => (
-                  <li key={book.bookId}>
-                    <BookInfos
-                      book={book}
-                      friendsWhoReadBook={friendsWhoReadBook(book.bookId)}
-                    />
-                  </li>
-                ))}
-            </ul>
+        {isLoading && (
+          // <ClipLoader
+          //   className="m-auto mt-16"
+          //   color="#09f"
+          //   loading={isLoading}
+          //   size={70}
+          // />
+          <div>
+            <div className="flex gap-4 p-5 pt-10">
+              <Skeleton className="h-48 w-32 rounded-md" />
+              <div className="grow space-y-7">
+                <Skeleton className="h-5 w-32" />
+                <Skeleton className="h-2 w-[100px]" />
+                <Skeleton className="h-2 w-[80px]" />
+              </div>
+            </div>
+            <div className="flex gap-4 p-5 pt-10">
+              <Skeleton className="h-48 w-32 rounded-md" />
+              <div className="grow space-y-7">
+                <Skeleton className="h-5 w-32" />
+                <Skeleton className="h-2 w-[100px]" />
+                <Skeleton className="h-2 w-[80px]" />
+              </div>
+            </div>
+            <div className="flex gap-4 p-5 pt-10">
+              <Skeleton className="h-48 w-32 rounded-md" />
+              <div className="grow space-y-7">
+                <Skeleton className="h-5 w-32" />
+                <Skeleton className="h-2 w-[100px]" />
+                <Skeleton className="h-2 w-[80px]" />
+              </div>
+            </div>
           </div>
+        )}
+        {error && <FeedbackMessage message={message} type="error" />}
+        {allSearchBooks && (
+          <ul className="pb-40">
+            {allSearchBooks.map((book: BookType) => (
+              <li key={book.bookId}>
+                <BookInfos
+                  book={book}
+                  friendsWhoReadBook={friendsWhoReadBook(book.bookId)}
+                />
+              </li>
+            ))}
+          </ul>
         )}
       </div>
     </div>

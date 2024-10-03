@@ -5,8 +5,10 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+import { cn } from "@/lib/utils";
 import {
   ArrowLeft,
+  BookOpen,
   CircleUserRound,
   House,
   LogIn,
@@ -14,11 +16,12 @@ import {
   Search,
 } from "lucide-react";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { DarkModeToggle } from "./DarkModeToggle";
 
 const NavBar = (): JSX.Element => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [isConnected, setIsConnected] = useState(false); // A SUPP QD AUTH FAIT
 
@@ -30,13 +33,33 @@ const NavBar = (): JSX.Element => {
         //onClick={handleBackClick}
         onClick={() => navigate(-1)}
       />
-      <NavigationMenu>
+      <NavigationMenu className="ml-8">
         <NavigationMenuList>
           <NavigationMenuItem>
             <Link to="/">
               <NavigationMenuLink asChild>
-                <span className={navigationMenuTriggerStyle()}>
+                <span
+                  className={cn(
+                    navigationMenuTriggerStyle(),
+                    location.pathname === "/" && "bg-primary/90 text-foreground"
+                  )}
+                >
                   <House />
+                </span>
+              </NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <Link to="/mybooks">
+              <NavigationMenuLink asChild>
+                <span
+                  className={cn(
+                    navigationMenuTriggerStyle(),
+                    location.pathname === "/mybooks" &&
+                      "bg-primary/90 text-foreground"
+                  )}
+                >
+                  <BookOpen />
                 </span>
               </NavigationMenuLink>
             </Link>
@@ -44,7 +67,13 @@ const NavBar = (): JSX.Element => {
           <NavigationMenuItem>
             <Link to="/mybooks/searchbook">
               <NavigationMenuLink asChild>
-                <span className={navigationMenuTriggerStyle()}>
+                <span
+                  className={cn(
+                    navigationMenuTriggerStyle(),
+                    location.pathname === "/mybooks/searchbook" &&
+                      "bg-primary/90 text-foreground"
+                  )}
+                >
                   <Search />
                 </span>
               </NavigationMenuLink>
@@ -55,7 +84,13 @@ const NavBar = (): JSX.Element => {
               <NavigationMenuItem>
                 <Link to="/account">
                   <NavigationMenuLink asChild>
-                    <span className={navigationMenuTriggerStyle()}>
+                    <span
+                      className={cn(
+                        navigationMenuTriggerStyle(),
+                        location.pathname === "/account" &&
+                          "bg-primary/90 text-foreground"
+                      )}
+                    >
                       <CircleUserRound />
                     </span>
                   </NavigationMenuLink>
@@ -75,7 +110,13 @@ const NavBar = (): JSX.Element => {
             <NavigationMenuItem>
               <Link to="/login" onClick={() => setIsConnected(true)}>
                 <NavigationMenuLink asChild>
-                  <span className={navigationMenuTriggerStyle()}>
+                  <span
+                    className={cn(
+                      navigationMenuTriggerStyle(),
+                      location.pathname === "/login" &&
+                        "bg-primary/90 text-foreground" // Ajout de classes conditionnelles pour l'élément actif
+                    )}
+                  >
                     <LogIn />
                   </span>
                 </NavigationMenuLink>
