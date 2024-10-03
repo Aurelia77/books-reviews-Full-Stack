@@ -29,7 +29,7 @@ h1.form-sticky-active {
     --popover: 30 20% 90%;
     --popover-foreground: 197.9 87.4% 7.7%;
     --primary: 187.9 47.7% 65.1%;
-    --primary-foreground: 270 94% 28%;
+    --primary-foreground: 197.9 87.4% 7.7%;
     --secondary: 270 50% 70%;
     --secondary-foreground: 16.9 71.8% 0.3%;
     --muted: 270 94% 28%;
@@ -56,7 +56,7 @@ h1.form-sticky-active {
     --popover: hsl(30 20% 90%);
     --popover-foreground: hsl(197.9, 87.4%, 7.7%);
     --primary: hsl(187.9 47.7% 65.1%);
-   --primary-foreground: hsl(270 94% 28%);
+   --primary-foreground: hsl(197.9, 87.4%, 7.7%);
     --secondary: hsl(276, 100%, 95%);
     --secondary-foreground: hsl(16.9, 71.8%, 0.3%);
     --muted: hsl(270 94% 28%);    
@@ -80,14 +80,15 @@ h1.form-sticky-active {
     --popover-foreground: 272.3 16.2% 92.3%;
     --primary: 194 76% 37%;
     --primary-foreground: 275.2 2.8% 85.5%;
-    --secondary: 279 71% 42%;
+    /* --secondary: 343 94% 82%; ROSE AU LIEU DE VIOLET A VOIR !!!!!!!!!!! */
+    --secondary: 279 71% 32%;
     --secondary-foreground: 272.3 16.2% 92.3%;
     --muted: 277.2 96.1% 82.2%;
     --muted-foreground: 279 71% 42%;
     --accent: 279 71% 42%;
     --accent-foreground: 272.3 16.2% 92.3%;
     --destructive: 277.3 45.6% 42.4%;
-    --destructive-foreground: 343 100% 86%;
+    --destructive-foreground: 343 94% 82%;
     --border: 279 71% 42%;
     --input: 279 71% 42%;
     --ring: 279.2 74.7% 69.8%;
@@ -99,14 +100,15 @@ h1.form-sticky-active {
     --popover-foreground: hsl(272.3, 16.2%, 92.3%);
     --primary: hsl(194, 76%, 37%);
     --primary-foreground: hsl(275.2, 2.8%, 85.5%);
-    --secondary: hsl(279, 71%, 42%);
+    --secondary: hsl(279, 71%, 32%);
     --secondary-foreground: hsl(272.3, 16.2%, 92.3%);
     --muted: hsl(277.2, 96.1%, 82.2%);
     --muted-foreground: hsl(268, 60%, 45%);
     --accent: hsl(268, 60%, 45%);
     --accent-foreground: hsl(272.3, 16.2%, 92.3%);
     --destructive: hsl(277.3, 45.6%, 42.4%);
-    --destructive-foreground: hsl(343, 100%, 86%);
+    --destructive-foreground: hsl(343, 94%, 82%);
+    
     --border: hsl(268, 60%, 45%);
     --input: hsl(268, 60%, 45%);
     --ring: hsl(279.2, 74.7%, 69.8%); */

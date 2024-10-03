@@ -58,7 +58,7 @@ const AccountPage = (): JSX.Element => {
       <Title>Mon compte</Title>
       <Form {...form}>
         <form
-          className="mb-12 flex flex-col gap-3"
+          className="mb-20 flex flex-col gap-3"
           onSubmit={form.handleSubmit(onSubmit)}
         >
           <FormField
@@ -109,10 +109,17 @@ const AccountPage = (): JSX.Element => {
               </FormItem>
             )}
           />
-          <Button type="submit">Enregistrer</Button>
+          <Button
+            type="submit"
+            className="m-auto mt-7 w-4/5 text-lg font-semibold"
+          >
+            Enregistrer
+          </Button>
         </form>
       </Form>
-      <CustomLinkButton linkTo="/mybooks">Mes livres</CustomLinkButton>
+      <CustomLinkButton className="bg-secondary/70" linkTo="/mybooks">
+        Mes livres
+      </CustomLinkButton>
     </div>
   );
 };

@@ -43,9 +43,10 @@ const LoginPage = (): JSX.Element => {
   return (
     <div className="sm:p-2">
       <Title>Connexion</Title>
+      {/* Utiliser INPUT OTM de shadcn */}
       <Form {...form}>
         <form
-          className="flex flex-col gap-3"
+          className="mb-20 flex flex-col gap-3"
           onSubmit={form.handleSubmit(onSubmit)}
         >
           <FormField
@@ -72,11 +73,18 @@ const LoginPage = (): JSX.Element => {
               </FormItem>
             )}
           />
-          <Button type="submit">Se connecter</Button>
+          <Button
+            type="submit"
+            className="m-auto mt-7 w-4/5 text-lg font-semibold"
+          >
+            Se connecter
+          </Button>
         </form>
       </Form>
-      <p>Pas encore inscrit ?</p>
-      <CustomLinkButton linkTo="/register">S'inscrire</CustomLinkButton>
+      <p className="ml-1">Pas encore inscrit ?</p>
+      <CustomLinkButton className="bg-secondary/70" linkTo="/register">
+        S'inscrire
+      </CustomLinkButton>
     </div>
   );
 };

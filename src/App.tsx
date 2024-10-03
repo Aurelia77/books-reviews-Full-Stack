@@ -1,5 +1,6 @@
 import { ThemeProvider } from "@/components/Theme-provider";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Footer from "./components/Footer";
 import NavBar from "./components/NavBar";
 import AccountPage from "./pages/AccountPage";
 import BookDetailPage from "./pages/BookDetailPage";
@@ -26,6 +27,7 @@ const App = (): JSX.Element => {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
           </Routes>
+          <Footer />
         </BrowserRouter>
       </div>
     </ThemeProvider>
