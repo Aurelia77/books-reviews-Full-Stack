@@ -63,7 +63,7 @@ const BookDetailPage = (): JSX.Element => {
     console.log(formData);
 
   const formatDescription = (description: string) => {
-    return description.replace(/([.!?])\s*(?=[A-Z])/g, "$1\n");
+    return description?.replace(/([.!?])\s*(?=[A-Z])/g, "$1\n");
   };
 
   return (
@@ -114,7 +114,7 @@ const BookDetailPage = (): JSX.Element => {
             </div>
           </CardHeader>
         </div>
-        <CardContent className="relative bg-secondary/30 pb-6 pt-12 shadow-xl shadow-primary/30">
+        <CardContent className="relative bg-secondary/30 pb-6 pt-12 shadow-md shadow-primary/30">
           <Button
             onClick={() => addBookToReadFirebase(bookInfo)}
             className="absolute -top-6 left-1/4 h-12 w-1/2 border border-border bg-secondary/60 shadow-md shadow-foreground/70"
@@ -190,7 +190,7 @@ const BookDetailPage = (): JSX.Element => {
           </p>
         </CardContent>
         {friendsWhoReadBook.length > 0 && (
-          <CardFooter>
+          <CardFooter className="bg-gray-500/40">
             <div className="flex flex-row gap-5">
               <p className="font-semibold">Dans liste :</p>
               {friendsWhoReadBook.map((friend, index) => (

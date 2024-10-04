@@ -19,7 +19,7 @@ const CustomLinkButton = ({
       <Button
         size="xxl"
         className={cn(
-          "w-full sm:w-[50%] text-3xl rounded-none sm:rounded-md border border-border shadow-md shadow-foreground/70",
+          "w-full sm:w-[50%] text-3xl rounded-none sm:rounded-md border border-border shadow-md shadow-foreground/30",
           className
         )}
       >

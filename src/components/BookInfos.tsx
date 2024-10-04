@@ -140,7 +140,7 @@ const BookInfos = ({
             <CardDescription className="absolute right-2 top-2 rounded-full bg-secondary/60 px-3 py-1 text-secondary-foreground shadow-sm shadow-foreground">
               {bookInfo.bookLanguage}
             </CardDescription>
-            <div className="flex items-start gap-5 p-5 pt-10 shadow-lg shadow-secondary/60">
+            <div className="flex items-start gap-5 p-5 pt-10 shadow-md shadow-secondary/60">
               <img
                 src={bookInfo.bookImageLink || defaultImage}
                 onError={(e) => (e.currentTarget.src = defaultImage)}
@@ -164,13 +164,14 @@ const BookInfos = ({
             </div>
             {friendsWhoReadBook.length > 0 && (
               <CardFooter
-              // className={
-              //   friendsWhoReadBook.length > 0
-              //     ? "border-4 border-secondary bg-secondary/50"
-              //     : ""
-              // }
+                // className={
+                //   friendsWhoReadBook.length > 0
+                //     ? "border-4 border-secondary bg-secondary/50"
+                //     : ""
+                // }
+                className="bg-gray-500/40"
               >
-                <div className="flex flex-row gap-2">
+                <div className="flex flex-row gap-2 ">
                   <p className="font-semibold">Dans liste de :</p>
 
                   {friendsWhoReadBook.map((friend, index) => (

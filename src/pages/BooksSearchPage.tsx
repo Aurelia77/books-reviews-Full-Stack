@@ -11,6 +11,7 @@ import { useEffect, useRef, useState } from "react";
 import useSWR from "swr";
 
 const MAX_RESULTS = 5; // jusqu'à 40
+const GOOGLE_BOOKS_API_BASE_URL = "https://www.googleapis.com/books/v1/volumes";
 
 type BookAPIType = {
   id: string;
@@ -30,96 +31,20 @@ type BookAPIType = {
   };
 };
 
-//////////// Mettre dans DETAILS ???
-
-// type SearchBooksFormType = {
-//   bookTitle: string;
-//   bookAuthors: string;
-//   bookStatus: BookStatusEnum;
-// };
-
-// enum BookStatusEnum {
-//   read = "read",
-//   inProgress = "inProgress",
-//   toRead = "toRead",
-// }
-
-// const bookFormSchema = z
-//   .object({
-//     bookTitle: z.string().optional(),
-//     bookAuthors: z.string().optional(),
-//     bookStatus: z.nativeEnum(BookStatusEnum),
-//   })
-//   .refine((data) => data.bookTitle || data.bookAuthors, {
-//     message: "Entrez un titre ou un auteur.",
-//     path: ["bookTitle"],
-//   });
-
 const BooksSearchPage = (): JSX.Element => {
-  const [databaseBooks, setDatabaseBooks] = useState<BookType[]>([]);
+  const [dbBooks, setDbBooks] = useState<BookType[]>([]);
   //console.log("books from BDD", databaseBooks);
-  const [allSearchBooks, setAllSearchBooks] = useState<BookType[]>([]);
-  //console.log("books from BDD and API", allSearchBooks);
-
-  // // FORMULAIRE (hook perso ?)
-  // const form = useForm<SearchBooksFormType>({
-  //   resolver: zodResolver(bookFormSchema),
-  //   // Tjs mettre des valeurs par défaut sinon ERREUR : Warning: A component is changing an uncontrolled input to be controlled
-  //   defaultValues: {
-  //     bookTitle: "",
-  //     bookAuthors: "",
-  //     bookStatus: BookStatusEnum.read,
-  //   },
-  // });
-
-  // const title = form.watch("bookTitle");
-  // const author = form.watch("bookAuthors");
-
-  // const onSubmit: SubmitHandler<SearchBooksFormType> = (formData) =>
-  //   console.log(formData);
-
-  // APPEL API (hook perso ?)
   const [booksApiUrl, setBooksApiUrl] = useState(
     `https://www.googleapis.com/books/v1/volumes?q=subject:general&maxResults=${MAX_RESULTS}`
   );
+  const [bdAndApiBooks, setDbAndApiBooks] = useState<BookType[]>([]);
+  //console.log("books from BDD and API", allSearchBooks);
 
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
+  const [titleInput, setTitleInput] = useState("");
+  const titleInputRef = useRef<HTMLInputElement>(null);
+  const [authorInput, setAuthorInput] = useState("");
 
-  const shuffle2ArraysPreserveOrder = <T, U>(
-    array1: T[],
-    array2: U[]
-  ): (T | U)[] => {
-    const combinedArray = [
-      ...array1.map((item) => ({ item, from: "array1" })),
-      ...array2.map((item) => ({ item, from: "array2" })),
-    ];
-
-    // Mélanger le tableau combiné
-    for (let i = combinedArray.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [combinedArray[i], combinedArray[j]] = [
-        combinedArray[j],
-        combinedArray[i],
-      ];
-    }
-
-    // Extraire les éléments mélangés tout en conservant l'ordre relatif
-    const shuffledArray: (T | U)[] = [];
-    let array1Index = 0;
-    let array2Index = 0;
-
-    for (const element of combinedArray) {
-      if (element.from === "array1") {
-        shuffledArray.push(array1[array1Index++]);
-      } else {
-        shuffledArray.push(array2[array2Index++]);
-      }
-    }
-
-    return shuffledArray;
-  };
-
+  // APPEL API (hook perso ?)
   const fetchAPIBooks = (booksApiUrl: string): Promise<BookType[]> => {
     // throw new Error(
     //   "Erreur simulée !"
@@ -159,10 +84,42 @@ const BooksSearchPage = (): JSX.Element => {
     error,
     isLoading,
   } = useSWR<BookType[]>(booksApiUrl, fetchAPIBooks);
+  //console.log("booksFromAPI", apiBooks);
 
   const message = `Un problème est survenu dans la récupération du livre => ${error?.message}`;
 
-  //console.log("booksFromAPI", apiBooks);
+  const shuffle2ArraysPreserveOrder = <T, U>(
+    array1: T[],
+    array2: U[]
+  ): (T | U)[] => {
+    const combinedArray = [
+      ...array1.map((item) => ({ item, from: "array1" })),
+      ...array2.map((item) => ({ item, from: "array2" })),
+    ];
+
+    // Mélanger le tableau combiné
+    for (let i = combinedArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [combinedArray[i], combinedArray[j]] = [
+        combinedArray[j],
+        combinedArray[i],
+      ];
+    }
+
+    // Extraire les éléments mélangés tout en conservant l'ordre relatif
+    const shuffledArray: (T | U)[] = [];
+    let array1Index = 0;
+    let array2Index = 0;
+
+    for (const element of combinedArray) {
+      if (element.from === "array1") {
+        shuffledArray.push(array1[array1Index++]);
+      } else {
+        shuffledArray.push(array2[array2Index++]);
+      }
+    }
+    return shuffledArray;
+  };
 
   const getRandomChar = (): string => {
     const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -171,95 +128,71 @@ const BooksSearchPage = (): JSX.Element => {
   };
 
   useEffect(() => {
-    const fetchBooks = async () => {
-      const books = await getDocsByQueryFirebase(
-        "books",
-        "bookIsFromAPI",
-        true
-      );
-      setDatabaseBooks(books);
-    };
+    if (titleInputRef.current) {
+      titleInputRef.current.focus();
+    }
 
-    fetchBooks();
+    getDocsByQueryFirebase("books", "bookIsFromAPI", true)
+      .then((books) => {
+        setDbBooks(books);
+      })
+      .catch((error) => {
+        console.error("Error fetching books: ", error);
+      });
   }, []);
 
-  // useEffect(() => {
-  //   if (!title) {
-  //     setSearchUrl(
-  //       //`https://www.googleapis.com/books/v1/volumes?q=subject:general&maxResults=${MAX_RESULTS}` => Tous les livres, mais toujours les mêmes résultats (même ordre)
-  //       `https://www.googleapis.com/books/v1/volumes?q=${getRandomChar()}&maxResults=${MAX_RESULTS}`
-  //     );
-  //     setBooksFromBDD(books);
-  //   } else {
-  //     setSearchUrl(
-  //       `https://www.googleapis.com/books/v1/volumes?q=${title}&maxResults=${MAX_RESULTS}`
-  //     );
-  //     setBooksFromBDD(
-  //       books.filter((book) =>
-  //         book.title.toLowerCase().includes(title.toLowerCase())
-  //       )
-  //     );
-  //   }
-  // }, [title]);
-
   useEffect(() => {
-    //if (!title) {
-    if (!title && !author) {
-      setBooksApiUrl(
-        //`https://www.googleapis.com/books/v1/volumes?q=subject:general&maxResults=${MAX_RESULTS}` => Tous les livres, mais toujours les mêmes résultats (même ordre)
-        // On rechercher des livres aléatoires en fonction d'un caractère aléatoire
-        `https://www.googleapis.com/books/v1/volumes?q=${getRandomChar()}&maxResults=${MAX_RESULTS}`
-      );
+    let query = "";
+    let dbSearchBooks: BookType[] = [];
 
-      const fetchBooks = () => {
-        getDocsByQueryFirebase("books", "bookIsFromAPI", true)
-          .then((books) => {
-            //console.log("books from BDD", books);
-            setDatabaseBooks(books);
-          })
-          .catch((error) => {
-            console.error("Error fetching books: ", error);
-          });
-      };
+    if (!titleInput && !authorInput) {
+      query = getRandomChar(); // pour résultats alléatoires si pas de recherche
 
-      fetchBooks();
+      // REVOIR CETTE FONCTION !!!!!!!!
+      getDocsByQueryFirebase("books", "bookIsFromAPI", true)
+        .then((books: BookType[]) => {
+          //console.log("books from BDD", books);
+          dbSearchBooks = books;
+          //setDbBooks(books);
+        })
+        .catch((error) => {
+          console.error("Error fetching books: ", error);
+        });
     } else {
-      // let query = "";
-      // if (title) {
-      //   query += `${encodeURIComponent(title)}`;
-      // }
-      // if (author) {
-      //   if (query) query += "+";
-      //   query += `inauthor:${author}`;
-      // }
-      // console.log("**query", query);
-      // setSearchUrl(
-      //   `https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=${MAX_RESULTS}`
-      // );
+      if (titleInput) {
+        query += `+intitle:${encodeURIComponent(titleInput)}`;
+      }
+      if (authorInput) {
+        query += `+inauthor:${encodeURIComponent(authorInput)}`;
+      }
 
-      setBooksApiUrl(
-        `https://www.googleapis.com/books/v1/volumes?q=${title}&maxResults=${MAX_RESULTS}`
+      dbSearchBooks = dbBooks.filter((book: BookType) =>
+        book.bookTitle.toLowerCase().includes(titleInput.toLowerCase())
       );
-      setDatabaseBooks(
-        databaseBooks.filter((book: BookType) =>
-          book.bookTitle.toLowerCase().includes(title.toLowerCase())
-        )
-      );
+
+      //setDbBooks(dbBooks123)
     }
+
+    // console.log("query", query);
+    console.log(
+      "url",
+      `${GOOGLE_BOOKS_API_BASE_URL}?q=${query}&maxResults=${MAX_RESULTS}`
+    );
+    console.log("dbBooks123", dbSearchBooks);
+
+    setBooksApiUrl(
+      `${GOOGLE_BOOKS_API_BASE_URL}?q=${query}&maxResults=${MAX_RESULTS}`
+    );
+    setDbBooks(dbSearchBooks);
+
     // `https://www.googleapis.com/books/v1/volumes?q=${title}+inauthor:${author}&maxResults=${MAX_RESULTS}`;
-  }, [title]);
+  }, [titleInput, authorInput]);
 
   useEffect(() => {
     if (apiBooks) {
-      ////////////////////////// TEST
-      const twoCats = apiBooks.filter(
-        (book) => book.bookCategories?.[1] !== undefined
-      );
-      console.log("twoCats", twoCats);
-      /////////////////////////////////
-      setAllSearchBooks(shuffle2ArraysPreserveOrder(databaseBooks, apiBooks));
+      setDbAndApiBooks(shuffle2ArraysPreserveOrder(dbBooks, apiBooks));
     }
-  }, [apiBooks, databaseBooks]);
+  }, [apiBooks, dbBooks]);
 
   const formRef = useRef<HTMLDivElement>(null);
 
@@ -314,8 +247,9 @@ const BooksSearchPage = (): JSX.Element => {
                 <FormItem>
                   <FormControl> */}
           <Input
+            ref={titleInputRef}
             placeholder="Titre"
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => setTitleInput(e.target.value)}
           />
           {/* <Input placeholder="Titre" {...field} /> */}
           {/* </FormControl>
@@ -331,7 +265,7 @@ const BooksSearchPage = (): JSX.Element => {
                   <FormControl> */}
           <Input
             placeholder="Auteur(e)"
-            onChange={(e) => setAuthor(e.target.value)}
+            onChange={(e) => setAuthorInput(e.target.value)}
           />
           {/* <Input placeholder="Auteur(e)" {...field} /> */}
           {/* </FormControl>
@@ -377,9 +311,9 @@ const BooksSearchPage = (): JSX.Element => {
           </div>
         )}
         {error && <FeedbackMessage message={message} type="error" />}
-        {allSearchBooks && (
+        {bdAndApiBooks && (
           <ul className="pb-40">
-            {allSearchBooks.map((book: BookType) => (
+            {bdAndApiBooks.map((book: BookType) => (
               <li key={book.bookId}>
                 <BookInfos
                   book={book}
