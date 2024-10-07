@@ -51,7 +51,8 @@ const BookDetailPage = (): JSX.Element => {
 
   // A VOIR UNDEFINED OU NULL ???????????????????
   const [bookInfo, setBookInfo] = useState<BookType | undefined>(undefined);
-  const [friendsWhoReadBook, setFriendsWhoReadBook] = useState<string[]>([]);
+  const [friendsWhoReadBook] = useState<string[]>([]);
+  // const [friendsWhoReadBook, setFriendsWhoReadBook] = useState<string[]>([]);
 
   // console.log("book", bookInfo);
   // console.log("img", bookInfo.bookImageLink);
