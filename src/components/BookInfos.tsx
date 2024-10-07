@@ -34,7 +34,8 @@ const BookInfos = ({
     book || undefined
   );
 
-  //console.log("bookInfo", bookInfo?.bookTitle);
+  // console.log("bookInfo", bookInfo?.bookTitle);
+  // console.log("bookInfo", bookInfo?.bookAuthor);
 
   // VOIR !!!!!!!!!! avec hook Preso !!!!!!
   /////////////////////////

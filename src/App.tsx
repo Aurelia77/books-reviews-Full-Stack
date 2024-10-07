@@ -14,7 +14,7 @@ import RegisterPage from "./pages/RegisterPage";
 const App = (): JSX.Element => {
   return (
     <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-      <div className="inline h-auto min-h-screen bg-background text-foreground">
+      <div className="h-auto min-h-screen bg-background text-foreground">
         <BrowserRouter>
           <NavBar />
           <Routes>
