@@ -7,10 +7,11 @@ import { getDocsByQueryFirebase } from "@/firebase";
 import { friendsWhoReadBook } from "@/lib/utils";
 //import { books } from "@/data";
 import { BookType } from "@/types";
+import { X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import useSWR from "swr";
 
-const MAX_RESULTS = 5; // jusqu'à 40
+const MAX_RESULTS = 4; // jusqu'à 40
 const GOOGLE_BOOKS_API_BASE_URL = "https://www.googleapis.com/books/v1/volumes";
 
 type BookAPIType = {
@@ -31,18 +32,65 @@ type BookAPIType = {
   };
 };
 
+// const useDebounce = <T extends string[]>(
+//   callback: (...args: T) => void,
+//   delay: number
+// ) => {
+//   const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+//   const onDebounce = (...args: T) => {
+//     if (timeout.current) {
+//       clearTimeout(timeout.current);
+//     }
+//     timeout.current = setTimeout(() => {
+//       callback(...args);
+//     }, delay);
+//   };
+
+//   return onDebounce;
+// };
+
+const useDebounceEffect = (
+  effect: () => void,
+  deps: (string | boolean)[],
+  delay: number
+) => {
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      effect();
+    }, delay);
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [...deps, delay]);
+};
+
 const BooksSearchPage = (): JSX.Element => {
   const [dbBooks, setDbBooks] = useState<BookType[]>([]);
-  //console.log("books from BDD", databaseBooks);
+  console.log("**1-books from BDD", dbBooks.length);
   const [booksApiUrl, setBooksApiUrl] = useState(
     `https://www.googleapis.com/books/v1/volumes?q=subject:general&maxResults=${MAX_RESULTS}`
   );
   const [bdAndApiBooks, setDbAndApiBooks] = useState<BookType[]>([]);
-  //console.log("books from BDD and API", allSearchBooks);
+  console.log("ALL-books from BDD and API", bdAndApiBooks.length);
 
-  const [titleInput, setTitleInput] = useState("");
+  const [titleInput, setTitleInput] = useState<string>(
+    localStorage.getItem("titleInput") || ""
+  );
+  console.log("titleInput", titleInput);
   const titleInputRef = useRef<HTMLInputElement>(null);
-  const [authorInput, setAuthorInput] = useState("");
+  const [authorInput, setAuthorInput] = useState<string>("");
+  // const [inFriendsLists, setInFriendsLists] = useState(true);
+  // const [inApi, setInApi] = useState(true);
 
   // APPEL API (hook perso ?)
   const fetchAPIBooks = (booksApiUrl: string): Promise<BookType[]> => {
@@ -51,9 +99,18 @@ const BooksSearchPage = (): JSX.Element => {
     // );
     return (
       fetch(booksApiUrl)
-        .then((res: Response): Promise<{ items: BookAPIType[] }> => res.json())
         //.then((res) => res.json())    // idem sans TS
-        .then((data) => data.items)
+        .then((res: Response): Promise<{ items: BookAPIType[] }> => res.json())
+        //.then((data) => data.items)
+        // Gérer erreur ci-dessous ???
+        .then((data) => {
+          console.log("DATA", data);
+          if (!data.items) {
+            return [];
+            //throw new Error("No items found in the response");
+          }
+          return data.items;
+        })
         .then((items) => {
           const booksFromAPI: BookType[] = items.map((book: BookAPIType) => {
             return {
@@ -79,14 +136,35 @@ const BooksSearchPage = (): JSX.Element => {
     );
   };
 
+  // // Utiliser useDebounce pour retarder la mise à jour de l'URL de l'API
+  // const debounceUpdateUrl = useDebounce((title: string, author: string) => {
+  //   let query = "";
+  //   if (title) {
+  //     query += `+intitle:${encodeURIComponent(title)}`;
+  //   }
+  //   if (author) {
+  //     query += `+inauthor:${encodeURIComponent(author)}`;
+  //   }
+  //   if (query) {
+  //     setBooksApiUrl(
+  //       `${GOOGLE_BOOKS_API_BASE_URL}?q=${query}&maxResults=${MAX_RESULTS}`
+  //     );
+  //   }
+  // }, 300);
+
+  // // Mettre à jour l'URL de l'API lorsque les entrées changent
+  // useEffect(() => {
+  //   debounceUpdateUrl(titleInput, authorInput);
+  // }, [titleInput, authorInput, debounceUpdateUrl]);
+
   const {
     data: apiBooks,
     error,
     isLoading,
   } = useSWR<BookType[]>(booksApiUrl, fetchAPIBooks);
-  //console.log("booksFromAPI", apiBooks);
+  console.log("2-booksFromAPI", apiBooks?.length);
 
-  const message = `Un problème est survenu dans la récupération du livre => ${error?.message}`;
+  const message = `Un problème est survenu dans la récupération de livres de Google Books => ${error?.message}`;
 
   const shuffle2ArraysPreserveOrder = <T, U>(
     array1: T[],
@@ -127,6 +205,7 @@ const BooksSearchPage = (): JSX.Element => {
     return chars[randomIndex];
   };
 
+  // Mis à jour de dbBooks au montage du composant
   useEffect(() => {
     if (titleInputRef.current) {
       titleInputRef.current.focus();
@@ -141,62 +220,154 @@ const BooksSearchPage = (): JSX.Element => {
       });
   }, []);
 
-  useEffect(() => {
-    let query = "";
-    let dbSearchBooks: BookType[] = [];
+  // // Mise à jour de booksApiUrl et dbBooks en fonction de la recherche
+  // useEffect(() => {
+  //   let queryApi = "";
+  //   let dbSearchBooks: BookType[] = [];
 
-    if (!titleInput && !authorInput) {
-      query = getRandomChar(); // pour résultats alléatoires si pas de recherche
+  //   if (!titleInput && !authorInput) {
+  //     queryApi = getRandomChar(); // pour résultats alléatoires si pas de recherche
 
-      // REVOIR CETTE FONCTION !!!!!!!!
-      getDocsByQueryFirebase("books", "bookIsFromAPI", true)
-        .then((books: BookType[]) => {
-          //console.log("books from BDD", books);
-          dbSearchBooks = books;
-          //setDbBooks(books);
-        })
-        .catch((error) => {
-          console.error("Error fetching books: ", error);
-        });
-    } else {
-      if (titleInput) {
-        query += `+intitle:${encodeURIComponent(titleInput)}`;
+  //     // REVOIR CETTE FONCTION !!!!!!!!
+  //     getDocsByQueryFirebase("books", "bookIsFromAPI", true)
+  //       .then((books: BookType[]) => {
+  //         //console.log("books from BDD", books);
+  //         dbSearchBooks = books;
+  //         //setDbBooks(books);
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error fetching books: ", error);
+  //       });
+  //   } else {
+  //     if (titleInput) {
+  //       queryApi += `+intitle:${encodeURIComponent(titleInput)}`;
+  //       dbSearchBooks = dbBooks.filter((book: BookType) =>
+  //         book.bookTitle.toLowerCase().includes(titleInput.toLowerCase())
+  //       );
+  //     }
+  //     if (authorInput) {
+  //       queryApi += `+inauthor:${encodeURIComponent(authorInput)}`;
+  //       dbSearchBooks = dbBooks.filter((book: BookType) =>
+  //         book.bookAuthor.toLowerCase().includes(authorInput.toLowerCase())
+  //       );
+  //     }
+
+  //     if (titleInput && authorInput) {
+  //       dbSearchBooks = dbBooks.filter(
+  //         (book: BookType) =>
+  //           book.bookTitle.toLowerCase().includes(titleInput.toLowerCase()) &&
+  //           book.bookAuthor.toLowerCase().includes(authorInput.toLowerCase())
+  //       );
+  //     }
+  //   }
+
+  //   // console.log("query", query);
+  //   console.log(
+  //     "url",
+  //     `${GOOGLE_BOOKS_API_BASE_URL}?q=${queryApi}&maxResults=${MAX_RESULTS}`
+  //   );
+  //   //console.log("dbSearchBooks", dbSearchBooks);
+
+  //   setBooksApiUrl(
+  //     `${GOOGLE_BOOKS_API_BASE_URL}?q=${queryApi}&maxResults=${MAX_RESULTS}`
+  //   );
+  //   setDbBooks(dbSearchBooks);
+
+  //   // `https://www.googleapis.com/books/v1/volumes?q=${title}+inauthor:${author}&maxResults=${MAX_RESULTS}`;
+  // }, [titleInput, authorInput]);
+
+  // Mise à jour de booksApiUrl et dbBooks en fonction de la recherche avec délai
+  // 3 arguments : fonction à exécuter, dépendances, délai
+  useDebounceEffect(
+    () => {
+      let queryApi = "";
+      let dbSearchBooks: BookType[] = [];
+
+      if (!titleInput && !authorInput) {
+        queryApi = getRandomChar(); // pour résultats alléatoires si pas de recherche
+
+        // REVOIR CETTE FONCTION !!!!!!!!
+        getDocsByQueryFirebase("books", "bookIsFromAPI", true)
+          .then((books: BookType[]) => {
+            console.log("**books from BDD", books);
+            setDbBooks(books);
+            //dbSearchBooks = books;
+            //console.log("**1/dbSearchBooks", dbSearchBooks);
+          })
+          .catch((error) => {
+            console.error("Error fetching books: ", error);
+          });
+      } else {
+        if (titleInput) {
+          queryApi += `+intitle:${encodeURIComponent(titleInput)}`;
+          dbSearchBooks = dbBooks.filter((book: BookType) =>
+            book.bookTitle.toLowerCase().includes(titleInput.toLowerCase())
+          );
+        }
+        if (authorInput) {
+          queryApi += `+inauthor:${encodeURIComponent(authorInput)}`;
+          dbSearchBooks = dbBooks.filter((book: BookType) =>
+            book.bookAuthor.toLowerCase().includes(authorInput.toLowerCase())
+          );
+        }
+        // if (titleInput && authorInput) {
+        //   dbSearchBooks = dbBooks.filter(
+        //     (book: BookType) =>
+        //       book.bookTitle.toLowerCase().includes(titleInput.toLowerCase()) &&
+        //       book.bookAuthor.toLowerCase().includes(authorInput.toLowerCase())
+        //   );
+        // }
+
+        setDbBooks(dbSearchBooks);
       }
-      if (authorInput) {
-        query += `+inauthor:${encodeURIComponent(authorInput)}`;
-      }
 
-      dbSearchBooks = dbBooks.filter((book: BookType) =>
-        book.bookTitle.toLowerCase().includes(titleInput.toLowerCase())
+      console.log("**query", queryApi);
+      console.log(
+        "url",
+        `${GOOGLE_BOOKS_API_BASE_URL}?q=${queryApi}&maxResults=${MAX_RESULTS}`
+      );
+      console.log("**2/dbSearchBooks", dbSearchBooks);
+
+      setBooksApiUrl(
+        `${GOOGLE_BOOKS_API_BASE_URL}?q=${queryApi}&maxResults=${MAX_RESULTS}`
       );
 
-      //setDbBooks(dbBooks123)
-    }
+      // Pk opérateur ternaire ne marche pas !!!!???
+      //inFriendsLists ? setDbBooks(dbSearchBooks) : setDbBooks([]);
+      // if (inFriendsLists) {
+      //   console.log("/////////////");
+      //setDbBooks(dbSearchBooks);
+      // } else {
+      //   setDbBooks([]);
+      // }
 
-    // console.log("query", query);
-    console.log(
-      "url",
-      `${GOOGLE_BOOKS_API_BASE_URL}?q=${query}&maxResults=${MAX_RESULTS}`
-    );
-    console.log("dbBooks123", dbSearchBooks);
+      // `https://www.googleapis.com/books/v1/volumes?q=${title}+inauthor:${author}&maxResults=${MAX_RESULTS}`;
+    },
+    [
+      titleInput,
+      authorInput,
+      //inFriendsLists
+    ],
+    500
+  );
 
-    setBooksApiUrl(
-      `${GOOGLE_BOOKS_API_BASE_URL}?q=${query}&maxResults=${MAX_RESULTS}`
-    );
-    setDbBooks(dbSearchBooks);
-
-    // `https://www.googleapis.com/books/v1/volumes?q=${title}+inauthor:${author}&maxResults=${MAX_RESULTS}`;
-  }, [titleInput, authorInput]);
-
+  // Mise à jour de bdAndApiBooks
   useEffect(() => {
-    if (apiBooks) {
+    if (
+      apiBooks
+      // && inApi
+    ) {
       setDbAndApiBooks(shuffle2ArraysPreserveOrder(dbBooks, apiBooks));
     }
-  }, [apiBooks, dbBooks]);
+  }, [
+    apiBooks,
+    dbBooks,
+    //inApi
+  ]);
 
   const formRef = useRef<HTMLDivElement>(null);
 
-  // Au montage du composant, on ajoute un écouteur d'événement sur la fenêtre pour gérer le scroll
+  // Au montage du composant, on ajoute un écouteur d'événement sur la fenêtre pour ajouter une classe sur le formulaire qui le diminue lors du scroll
   useEffect(() => {
     // console.log("useEffect");
     const handleScroll = () => {
@@ -226,6 +397,31 @@ const BooksSearchPage = (): JSX.Element => {
     };
   }, []);
 
+  // utiliser un useCallback ???
+  const handleChangeInput = (
+    key: "titleInput" | "authorInput",
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = e.target.value;
+    if (key === "titleInput") {
+      setTitleInput(value);
+    } else if (key === "authorInput") {
+      setAuthorInput(value);
+    }
+    localStorage.setItem(key, value);
+  };
+
+  // console.log("LOCAL STORAGE TITLE", localStorage.getItem("titleInput"));
+  // console.log("LOCAL STORAGE AUTHOR", localStorage.getItem("authorInput"));
+
+  const handleClearInput = (
+    key: string,
+    setState: React.Dispatch<React.SetStateAction<string>>
+  ) => {
+    setState("");
+    localStorage.removeItem(key);
+  };
+
   return (
     <div className="h-full min-h-screen sm:p-2">
       <div className="flex h-full flex-col gap-6">
@@ -240,17 +436,43 @@ const BooksSearchPage = (): JSX.Element => {
           className="sticky top-10 z-10 flex flex-col gap-3 bg-background/70 duration-500"
         >
           <Title>Recherche de livre</Title>
+          {/* <div className="flex justify-around">
+            <div className="flex items-center gap-3">
+              <Switch
+                checked={inFriendsLists}
+                onCheckedChange={(e) => setInFriendsLists(e)}
+                id="inFriendsLists"
+              />
+              <Label htmlFor="inFriendsLists">Listes de mes amis</Label>
+            </div>
+            <div className="flex items-center gap-3">
+              <Switch
+                checked={inApi}
+                onCheckedChange={(e) => setInApi(e)}
+                id="inFriendsLists"
+              />
+              <Label htmlFor="inFriendsLists">En ligne</Label>
+            </div>
+          </div> */}
           {/* <FormField
               control={form.control}
               name="bookTitle"
               render={({ field }) => (
                 <FormItem>
                   <FormControl> */}
-          <Input
-            ref={titleInputRef}
-            placeholder="Titre"
-            onChange={(e) => setTitleInput(e.target.value)}
-          />
+          <div className="relative">
+            <Input
+              value={titleInput}
+              ref={titleInputRef}
+              placeholder="Titre"
+              // onChange={(e) => setTitleInput(e.target.value)}
+              onChange={(e) => handleChangeInput("titleInput", e)}
+            />
+            <X
+              onClick={() => handleClearInput("titleInput", setTitleInput)}
+              className="absolute right-2 top-2 cursor-pointer"
+            />
+          </div>
           {/* <Input placeholder="Titre" {...field} /> */}
           {/* </FormControl>
                   <FormMessage />
@@ -263,10 +485,17 @@ const BooksSearchPage = (): JSX.Element => {
               render={({ field }) => (
                 <FormItem>
                   <FormControl> */}
-          <Input
-            placeholder="Auteur(e)"
-            onChange={(e) => setAuthorInput(e.target.value)}
-          />
+          <div className="relative">
+            <Input
+              value={authorInput}
+              placeholder="Auteur(e)"
+              onChange={(e) => handleChangeInput("authorInput", e)}
+            />
+            <X
+              onClick={() => handleClearInput("authorInput", setAuthorInput)}
+              className="absolute right-2 top-2 cursor-pointer"
+            />
+          </div>
           {/* <Input placeholder="Auteur(e)" {...field} /> */}
           {/* </FormControl>
                   <FormMessage />
@@ -311,7 +540,7 @@ const BooksSearchPage = (): JSX.Element => {
           </div>
         )}
         {error && <FeedbackMessage message={message} type="error" />}
-        {bdAndApiBooks && (
+        {bdAndApiBooks?.length > 0 ? (
           <ul className="pb-40">
             {bdAndApiBooks.map((book: BookType) => (
               <li key={book.bookId}>
@@ -322,6 +551,8 @@ const BooksSearchPage = (): JSX.Element => {
               </li>
             ))}
           </ul>
+        ) : (
+          <FeedbackMessage message="Aucun livre trouvé" type="info" />
         )}
       </div>
     </div>
