@@ -1,11 +1,11 @@
-import { getDocsByQueryFirebase } from "@/firebase";
+import { getBooksByQueryFirebase } from "@/firebase";
 import { BookType } from "@/types";
 import useSWR from "swr";
 
 const fetchBookInfo = async (bookId: string): Promise<BookType | null> => {
   // et avec .then ?????
   try {
-    const books = await getDocsByQueryFirebase("books", "bookId", bookId);
+    const books = await getBooksByQueryFirebase("books", "bookId", bookId);
     if (books.length > 0) {
       return books[0];
     } else {
