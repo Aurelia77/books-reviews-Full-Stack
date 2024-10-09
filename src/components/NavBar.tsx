@@ -6,6 +6,7 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { signoutFirebase } from "@/firebase";
+import useUserStore from "@/hooks/useUserStore";
 import { cn } from "@/lib/utils";
 import {
   ArrowLeft,
@@ -23,8 +24,12 @@ const NavBar = (): JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const { user } = useUserStore();
+  console.log("USER", user);
+
   return (
     <div className="sticky top-0 z-20 flex h-12 items-center bg-primary/70 p-1 text-muted shadow-md">
+      <p>{user?.email}</p>
       <ArrowLeft
         className="absolute left-1 top-1 z-20 cursor-pointer text-muted/60"
         size={36}

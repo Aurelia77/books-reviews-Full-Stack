@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import {
   createUserWithEmailAndPassword,
   getAuth,
+  onAuthStateChanged,
   signInWithEmailAndPassword,
   User,
 } from "firebase/auth";
@@ -16,6 +17,7 @@ import {
 } from "firebase/firestore";
 import { firebaseConfig } from "./firebase/firebaseConfig";
 import { BookType, UserType } from "./types";
+import useUserStore from "./hooks/useUserStore";
 
 const app = initializeApp(firebaseConfig);
 //const analytics = getAnalytics(app);
@@ -50,20 +52,17 @@ export const loginFirebase = (
     });
 };
 
-// Pour chacune des pages de votre application nécessitant des informations sur l'utilisateur connecté, attachez un observateur à l'objet d'authentification globale. Cet observateur est appelé chaque fois que l’état de connexion de l’utilisateur change.
-
-// Attachez l'observateur à l'aide de la méthode onAuthStateChanged . Lorsqu'un utilisateur se connecte avec succès, vous pouvez obtenir des informations sur l'utilisateur dans l'observateur.
-// onAuthStateChanged(auth, (user) => {
-//   if (user) {
-//     // User is signed in, see docs for a list of available properties
-//     // https://firebase.google.com/docs/reference/js/auth.user
-//     const uid = user.uid;
-//     // ...
-//   } else {
-//     // User is signed out
-//     // ...
-//   }
-// });
+//Avec useUserStore (Zustand), on met le user à jour à chaque changement d'état de l'utilisateur
+onAuthStateChanged(auth, (user) => {
+  const setUser = useUserStore.getState().setUser;
+  if (user) {
+    // User is signed in
+    setUser(user);
+  } else {
+    // User is signed out
+    setUser(null);
+  }
+});
 
 export const signoutFirebase = () => {
   return auth.signOut();

@@ -56,7 +56,8 @@ const BookDetailPage = (): JSX.Element => {
   // const { friendsWhoReadBook }: { friendsWhoReadBook: string[] } =
   //   location.state || {};
 
-  // A VOIR UNDEFINED OU NULL ???????????????????
+  // A VOIR UNDEFINED OU NULL ?????????(NULL !!)
+  // => undefined est généralement utilisé par JavaScript pour indiquer qu'une variable n'a pas été initialisée, tandis que null est utilisé par les développeurs pour indiquer explicitement l'absence de valeur.
   //const [bookInfos, setBookInfos] = useState<BookType | undefined>(undefined);
   //const [friendsWhoReadBook, setFriendsWhoReadBook] = useState<string[]>([]);
 

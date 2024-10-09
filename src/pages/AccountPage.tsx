@@ -9,6 +9,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import useUserStore from "@/hooks/useUserStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -53,9 +54,12 @@ const AccountPage = (): JSX.Element => {
     console.log(data);
   };
 
+  const { user } = useUserStore();
+
   return (
     <div className="sm:p-2">
       <Title>Mon compte</Title>
+      <p>Email : {user?.email}</p>
       <Form {...form}>
         <form
           className="mb-20 flex flex-col gap-3"
