@@ -12,7 +12,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { defaultImage } from "@/constants";
-import { getDocsByQueryFirebase } from "@/firebase";
+import {
+  getDocsByQueryFirebase,
+  getUsersWhoReadBookFirebase,
+} from "@/firebase";
 import { BookType } from "@/types";
 import { Star } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -21,18 +24,22 @@ import useSWR from "swr";
 import FeedbackMessage from "./FeedbackMessage";
 import { Skeleton } from "./ui/skeleton";
 
+// Soit dans BooksSearchPage => on passe un objet book en props
+// Soit dans MyReadBooksPage => on passe un bookId
 type BookInfosProps =
-  | { book: BookType; bookId?: never; friendsWhoReadBook: string[] }
-  | { book?: never; bookId: string; friendsWhoReadBook: string[] };
+  | { book: BookType; bookId?: never }
+  | { book?: never; bookId: string };
 
 const BookInfos = ({
   book,
   bookId,
-  friendsWhoReadBook,
-}: BookInfosProps): JSX.Element => {
-  const [bookInfo, setBookInfo] = useState<BookType | undefined>(
+}: //friendsWhoReadBook,
+BookInfosProps): JSX.Element => {
+  const [bookInfos, setBookInfos] = useState<BookType | undefined>(
     book || undefined
   );
+  const [friendsWhoReadBook, setFriendsWhoReadBook] = useState<string[]>([]);
+  console.log("friendsWhoReadBook", bookInfos?.bookTitle, friendsWhoReadBook);
 
   // console.log("bookInfo", bookInfo?.bookTitle);
   // console.log("bookInfo", bookInfo?.bookAuthor);
@@ -41,12 +48,14 @@ const BookInfos = ({
   /////////////////////////
   //const { data: bookFromId, error, isLoading } = useBookId(bookId);
 
+  // SI BOOKID PASSE EN PROPS
+  // On recupère les infos du livre depuis la BDD grâce à son bookId
   const fetchBookInfo = async (bookId: string): Promise<BookType | null> => {
     // throw new Error(
     //   "Erreur simulée !"
     // );
 
-    return getDocsByQueryFirebase("books", "bookId", bookId)
+    return getDocsByQueryFirebase<BookType>("books", "bookId", bookId)
       .then((books) => {
         if (books.length > 0) {
           return books[0];
@@ -71,9 +80,18 @@ const BookInfos = ({
 
   useEffect(() => {
     if (bookFromId) {
-      setBookInfo(bookFromId);
+      setBookInfos(bookFromId);
     }
   }, [bookFromId]);
+
+  useEffect(() => {
+    if (bookInfos)
+      getUsersWhoReadBookFirebase(bookInfos.bookId).then((users) => {
+        console.log("FRIENDS", users);
+        const friends = users.map((user) => user.username);
+        setFriendsWhoReadBook(friends);
+      });
+  }, [bookInfos]);
 
   // {
   //   error && (
@@ -106,11 +124,12 @@ const BookInfos = ({
         </div>
       )}
       {error && <FeedbackMessage message={message} type="error" />}
-      {bookInfo && (
+      {bookInfos && (
         <Link
-          to={`/books/${bookInfo.bookId}`}
-          state={{ bookInfo, friendsWhoReadBook }}
+          to={`/books/${bookInfos.bookId}`}
+          state={{ bookInfos, friendsWhoReadBook }}
         >
+          {/* <Link to={`/books/${bookInfos.bookId}`} state={bookInfos.bookIsFromAPI}> */}
           <Card className="relative mb-4">
             {friendsWhoReadBook.length > 0 && (
               <TooltipProvider>
@@ -139,25 +158,25 @@ const BookInfos = ({
               </TooltipProvider>
             )}
             <CardDescription className="absolute right-2 top-2 rounded-full bg-secondary/60 px-3 py-1 text-secondary-foreground shadow-sm shadow-foreground">
-              {bookInfo.bookLanguage}
+              {bookInfos.bookLanguage}
             </CardDescription>
             <div className="flex items-start gap-5 p-5 pt-10 shadow-md shadow-secondary/60">
               <img
-                src={bookInfo.bookImageLink || defaultImage}
+                src={bookInfos.bookImageLink || defaultImage}
                 onError={(e) => (e.currentTarget.src = defaultImage)}
                 className="w-32 rounded-sm border border-border object-contain shadow-md shadow-foreground/70"
-                alt={`Image de couverture du livre ${bookInfo?.bookTitle}`}
+                alt={`Image de couverture du livre ${bookInfos?.bookTitle}`}
               />
               <CardHeader className="gap-3 overflow-hidden">
                 <CardTitle className="line-clamp-4">
-                  {bookInfo.bookTitle}
+                  {bookInfos.bookTitle}
                 </CardTitle>
                 <CardDescription className="line-clamp-2 text-muted">
-                  {bookInfo.bookAuthor}
+                  {bookInfos.bookAuthor}
                 </CardDescription>
                 <CardDescription className="overflow-hidden">
-                  {bookInfo.bookCategories &&
-                    bookInfo.bookCategories.map((cat, index) => (
+                  {bookInfos.bookCategories &&
+                    bookInfos.bookCategories.map((cat, index) => (
                       <span key={index}>{index > 0 ? ` / ${cat}` : cat}</span>
                     ))}
                 </CardDescription>

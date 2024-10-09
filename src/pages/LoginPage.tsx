@@ -9,8 +9,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { loginFirebase } from "@/firebase";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 type LoginFormType = {
@@ -22,12 +24,14 @@ const loginFormSchema = z.object({
   email: z.string().email({
     message: "Entrez une adresse email valide.",
   }),
-  password: z.string().min(8, {
-    message: "Entrez un mot de passe d'au moins 8 caractères.",
+  password: z.string().min(6, {
+    message: "Entrez un mot de passe d'au moins 6 caractères.",
   }),
 });
 
 const LoginPage = (): JSX.Element => {
+  const navigate = useNavigate();
+
   const form = useForm<LoginFormType>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
@@ -37,13 +41,14 @@ const LoginPage = (): JSX.Element => {
   });
 
   const onSubmit: SubmitHandler<LoginFormType> = (data) => {
-    console.log(data);
+    loginFirebase(data.email, data.password)
+      .then((user) => console.log("user login", user.email))
+      .then(() => navigate("/"));
   };
 
   return (
     <div className="sm:p-2">
       <Title>Connexion</Title>
-      {/* Utiliser INPUT OTM de shadcn */}
       <Form {...form}>
         <form
           className="mb-20 flex flex-col gap-3"

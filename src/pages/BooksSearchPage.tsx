@@ -4,7 +4,6 @@ import Title from "@/components/Title";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getDocsByQueryFirebase } from "@/firebase";
-import { friendsWhoReadBook } from "@/lib/utils";
 //import { books } from "@/data";
 import { BookType } from "@/types";
 import { X } from "lucide-react";
@@ -76,17 +75,17 @@ const useDebounceEffect = (
 
 const BooksSearchPage = (): JSX.Element => {
   const [dbBooks, setDbBooks] = useState<BookType[]>([]);
-  console.log("**1-books from BDD", dbBooks.length);
+  //console.log("**1-books from BDD", dbBooks.length);
   const [booksApiUrl, setBooksApiUrl] = useState(
     `https://www.googleapis.com/books/v1/volumes?q=subject:general&maxResults=${MAX_RESULTS}`
   );
   const [bdAndApiBooks, setDbAndApiBooks] = useState<BookType[]>([]);
-  console.log("ALL-books from BDD and API", bdAndApiBooks.length);
+  //console.log("ALL-books from BDD and API", bdAndApiBooks.length);
 
   const [titleInput, setTitleInput] = useState<string>(
     localStorage.getItem("titleInput") || ""
   );
-  console.log("titleInput", titleInput);
+  //console.log("titleInput", titleInput);
   const titleInputRef = useRef<HTMLInputElement>(null);
   const [authorInput, setAuthorInput] = useState<string>("");
   // const [inFriendsLists, setInFriendsLists] = useState(true);
@@ -104,7 +103,7 @@ const BooksSearchPage = (): JSX.Element => {
         //.then((data) => data.items)
         // Gérer erreur ci-dessous ???
         .then((data) => {
-          console.log("DATA", data);
+          //console.log("DATA", data);
           if (!data.items) {
             return [];
             //throw new Error("No items found in the response");
@@ -162,7 +161,7 @@ const BooksSearchPage = (): JSX.Element => {
     error,
     isLoading,
   } = useSWR<BookType[]>(booksApiUrl, fetchAPIBooks);
-  console.log("2-booksFromAPI", apiBooks?.length);
+  //console.log("2-booksFromAPI", apiBooks?.length);
 
   const message = `Un problème est survenu dans la récupération de livres de Google Books => ${error?.message}`;
 
@@ -211,11 +210,11 @@ const BooksSearchPage = (): JSX.Element => {
       titleInputRef.current.focus();
     }
 
-    getDocsByQueryFirebase("books", "bookIsFromAPI", true)
+    getDocsByQueryFirebase<BookType>("books", "bookIsFromAPI", true)
       .then((books) => {
         setDbBooks(books);
       })
-      .catch((error) => {
+      .catch((error: Error) => {
         console.error("Error fetching books: ", error);
       });
   }, []);
@@ -287,9 +286,9 @@ const BooksSearchPage = (): JSX.Element => {
         queryApi = getRandomChar(); // pour résultats alléatoires si pas de recherche
 
         // REVOIR CETTE FONCTION !!!!!!!!
-        getDocsByQueryFirebase("books", "bookIsFromAPI", true)
-          .then((books: BookType[]) => {
-            console.log("**books from BDD", books);
+        getDocsByQueryFirebase<BookType>("books", "bookIsFromAPI", true)
+          .then((books) => {
+            //console.log("**books from BDD", books);
             setDbBooks(books);
             //dbSearchBooks = books;
             //console.log("**1/dbSearchBooks", dbSearchBooks);
@@ -321,12 +320,12 @@ const BooksSearchPage = (): JSX.Element => {
         setDbBooks(dbSearchBooks);
       }
 
-      console.log("**query", queryApi);
-      console.log(
-        "url",
-        `${GOOGLE_BOOKS_API_BASE_URL}?q=${queryApi}&maxResults=${MAX_RESULTS}`
-      );
-      console.log("**2/dbSearchBooks", dbSearchBooks);
+      // console.log("**query", queryApi);
+      // console.log(
+      //   "url",
+      //   `${GOOGLE_BOOKS_API_BASE_URL}?q=${queryApi}&maxResults=${MAX_RESULTS}`
+      // );
+      // console.log("**2/dbSearchBooks", dbSearchBooks);
 
       setBooksApiUrl(
         `${GOOGLE_BOOKS_API_BASE_URL}?q=${queryApi}&maxResults=${MAX_RESULTS}`
@@ -544,9 +543,10 @@ const BooksSearchPage = (): JSX.Element => {
           <ul className="pb-40">
             {bdAndApiBooks.map((book: BookType) => (
               <li key={book.bookId}>
+                {/* Ici on passe le book en props (et pas le bookId comme dans MyReadBooksPage) */}
                 <BookInfos
                   book={book}
-                  friendsWhoReadBook={friendsWhoReadBook(book.bookId)}
+                  //friendsWhoReadBook={friendsWhoReadBook(book.bookId)}
                 />
               </li>
             ))}

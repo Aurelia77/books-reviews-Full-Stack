@@ -20,13 +20,12 @@ import { Form } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { defaultImage } from "@/constants";
-import { addBookToReadFirebase, getDocsByQueryFirebase } from "@/firebase";
+import { addBookFirebase } from "@/firebase";
 import { BookType } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Star } from "lucide-react";
-import { useEffect, useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { z } from "zod";
 
 type SearchBooksFormType = {
@@ -44,21 +43,30 @@ const bookFormSchema = z.object({
 });
 
 const BookDetailPage = (): JSX.Element => {
-  // const location = useLocation();
-  // const { bookInfo }: { bookInfo: BookType } = location.state || {};
+  const location = useLocation();
+  const {
+    bookInfos,
+    friendsWhoReadBook,
+  }: { bookInfos: BookType; friendsWhoReadBook: string[] } =
+    location.state || {};
+  console.log("book", bookInfos);
+  // const isBookFromApi: boolean = location.state || {};
+  //console.log("isBookFromApi", isBookFromApi);
+
   // const { friendsWhoReadBook }: { friendsWhoReadBook: string[] } =
   //   location.state || {};
 
-  // A VOIR UNDEFINED OU NULL ???????????????????
-  const [bookInfo, setBookInfo] = useState<BookType | undefined>(undefined);
-  const [friendsWhoReadBook] = useState<string[]>([]);
-  // const [friendsWhoReadBook, setFriendsWhoReadBook] = useState<string[]>([]);
+  // A VOIR UNDEFINED OU NULL ?????????(NULL !!)
+  // => undefined est généralement utilisé par JavaScript pour indiquer qu'une variable n'a pas été initialisée, tandis que null est utilisé par les développeurs pour indiquer explicitement l'absence de valeur.
+  //const [bookInfos, setBookInfos] = useState<BookType | undefined>(undefined);
+  //const [friendsWhoReadBook, setFriendsWhoReadBook] = useState<string[]>([]);
 
-  // console.log("book", bookInfo);
+  //console.log("book", bookInfos);
   // console.log("img", bookInfo.bookImageLink);
 
   // récupérer l'id de l'url
-  const { bookId } = useParams<{ bookId: string }>();
+  // const { bookId } = useParams<{ bookId: string }>();
+  // console.log("bookId", bookId);
 
   const form = useForm<SearchBooksFormType>({
     resolver: zodResolver(bookFormSchema),
@@ -75,23 +83,27 @@ const BookDetailPage = (): JSX.Element => {
     return description?.replace(/([.!?])\s*(?=[A-Z])/g, "$1\n");
   };
 
-  useEffect(() => {
-    if (bookId) {
-      getDocsByQueryFirebase("books", "bookId", bookId).then((books) => {
-        setBookInfo(books[0]);
-      });
+  // useEffect(() => {
+  //   if (bookId) {
+  //     console.log("useEffect");
 
-      // setFriendsWhoReadBook
-      ///////////////////////////////
-      ///////////////////////////////
-      ///////////////////////////////
-      ///////////////////////////////
-    }
-  }, [bookId]);
+  //     isBookFromApi ? getDocsByQueryFirebase("books", "bookId", bookId).then((books) => {
+  //       setBookInfo(books[0]);
+  //       console.log(books[0]);
+  //     }) :
+  //     });
+
+  //     // setFriendsWhoReadBook
+  //     ///////////////////////////////
+  //     ///////////////////////////////
+  //     ///////////////////////////////
+  //     ///////////////////////////////
+  //   }
+  // }, [bookId]);
 
   return (
     <div className="min-h-screen pb-4">
-      {bookInfo && (
+      {bookInfos && (
         <Card className="relative m-4">
           {friendsWhoReadBook.length > 0 && (
             <div className="relative">
@@ -109,15 +121,15 @@ const BookDetailPage = (): JSX.Element => {
             </div>
           )}
           <CardDescription className="absolute right-2 top-2 rounded-full bg-secondary/60 px-3 py-1 text-secondary-foreground shadow-sm shadow-foreground">
-            {bookInfo.bookLanguage}
+            {bookInfos.bookLanguage}
           </CardDescription>
 
           <div className="flex items-start gap-5 p-5 py-12 shadow-xl shadow-primary/30">
             <img
-              src={bookInfo.bookImageLink || defaultImage}
+              src={bookInfos.bookImageLink || defaultImage}
               onError={(e) => (e.currentTarget.src = defaultImage)}
               className="w-32 rounded-sm border border-border object-contain shadow-md shadow-foreground/70"
-              alt={`Image de couverture du livre ${bookInfo?.bookTitle}`}
+              alt={`Image de couverture du livre ${bookInfos?.bookTitle}`}
             />
             {/* Sozialwissenschaftliche */}
             {/* http://localhost:5173/books/FEKxFaJpFfwC   grand titre dc agrandit div img*/}
@@ -127,37 +139,34 @@ const BookDetailPage = (): JSX.Element => {
           abreviado de Geographia en donde se hallan los nombres de los reinos,
           ... Por Francisco Cormon, ... Tomo primero (-tercero) */}
             <CardHeader className="items-start gap-3 overflow-hidden">
-              <CardTitle>{bookInfo?.bookTitle}</CardTitle>
+              <CardTitle>{bookInfos?.bookTitle}</CardTitle>
               <CardDescription className="text-muted">
-                {bookInfo?.bookAuthor}
+                {bookInfos?.bookAuthor}
               </CardDescription>
               <div className="grid grid-cols-2 gap-x-8">
-                {bookInfo?.bookCategories?.map((cat, index) => (
+                {bookInfos?.bookCategories?.map((cat, index) => (
                   <CardDescription key={index}>{cat}</CardDescription>
                 ))}
               </div>
             </CardHeader>
           </div>
           <CardContent className="relative bg-secondary/30 pb-6 pt-12 shadow-md shadow-primary/30">
-            <Button
-              onClick={() => addBookToReadFirebase(bookInfo)}
+            {/* <Button
+              onClick={() => addBookFirebase(bookInfo)}
               className="absolute -top-6 left-1/4 h-12 w-1/2 border border-border bg-secondary/60 shadow-md shadow-foreground/70"
             >
               Ajouter à mes livres
-            </Button>
+            </Button> */}
             <Dialog>
               <DialogTrigger asChild>
-                <Button
-                  onClick={() => addBookToReadFirebase(bookInfo)}
-                  className="absolute -top-6 left-1/4 h-12 w-1/2 border border-border bg-secondary/60 shadow-md shadow-foreground/70"
-                >
+                <Button className="absolute -top-6 left-1/4 h-12 w-1/2 border border-border bg-secondary/60 shadow-md shadow-foreground/70">
                   Ajouter à mes livres
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                   <DialogTitle>Ajouter le livre :</DialogTitle>
-                  <DialogDescription>{bookInfo?.bookTitle}</DialogDescription>
+                  <DialogDescription>{bookInfos?.bookTitle}</DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                   <Form {...form}>
@@ -204,13 +213,18 @@ const BookDetailPage = (): JSX.Element => {
                   </Form>
                 </div>
                 <DialogFooter>
-                  <Button type="submit">Ajouter</Button>
+                  <Button
+                    type="submit"
+                    onClick={() => addBookFirebase(bookInfos)}
+                  >
+                    Ajouter
+                  </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
             {/* <p>{bookInfo.bookDescription}</p> */}
             <p style={{ whiteSpace: "pre-line" }}>
-              {formatDescription(bookInfo.bookDescription)}
+              {formatDescription(bookInfos.bookDescription)}
             </p>
           </CardContent>
           {friendsWhoReadBook.length > 0 && (

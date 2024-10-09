@@ -9,6 +9,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { addOrUpdateUserFirebase, registerFirebase } from "@/firebase";
+import { emptyUser } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -45,7 +47,15 @@ const RegisterPage = (): JSX.Element => {
   });
 
   const onSubmit: SubmitHandler<LoginFormType> = (data) => {
-    console.log(data);
+    //console.log(data);
+    registerFirebase(data.email, data.password).then((newUser) => {
+      addOrUpdateUserFirebase(newUser.uid, {
+        ...emptyUser,
+        email: data.email,
+        id: newUser.uid,
+      });
+      console.log("newUser", newUser.uid);
+    });
   };
 
   return (
@@ -95,7 +105,7 @@ const RegisterPage = (): JSX.Element => {
               </FormItem>
             )}
           />
-          <Button type="submit">Se connecter</Button>
+          <Button type="submit">S'inscrire</Button>
         </form>
       </Form>
       <p>Déja inscrit ?</p>

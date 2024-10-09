@@ -2,7 +2,7 @@ import BookInfos from "@/components/BookInfos";
 import CustomLinkButton from "@/components/CustomLinkButton";
 import FeedbackMessage from "@/components/FeedbackMessage";
 import Title from "@/components/Title";
-import { users } from "@/data";
+import { getDocsByQueryFirebase } from "@/firebase";
 import { UserType } from "@/types";
 import { useEffect, useState } from "react";
 
@@ -24,17 +24,12 @@ const MyReadBooksPage = (): JSX.Element => {
   // } = useSWR<BookType[]>(searchUrl, fetcher);
 
   useEffect(() => {
-    setMyReadBooksIds(
-      users.find((user: UserType) => user.id === "1")?.booksRead
-    );
+    getDocsByQueryFirebase<UserType>(
+      "users",
+      "id",
+      "YGZ3EAw9lFdGaCewuQhxyrqcFi42"
+    ).then((users) => setMyReadBooksIds(users[0].booksRead));
   }, []);
-
-  // const myReadBooks =
-  //   users
-  //     .find((user: UserType) => user.id === "1")
-  //     ?.booksRead.map((bookId) =>
-  //       booksFromBDD.find((book) => book.bookId === bookId)
-  //     ) ?? [];
 
   console.log("myReadBooks", myReadBooksIds);
 
@@ -46,10 +41,11 @@ const MyReadBooksPage = (): JSX.Element => {
           {myReadBooksIds.map(
             (bookId) =>
               bookId && (
+                // Ici on passe le bookId en props (et pas le book complet comme dans BooksSearchPage)
                 <BookInfos
                   key={bookId}
                   bookId={bookId}
-                  friendsWhoReadBook={["Loulou"]}
+                  //friendsWhoReadBook={["Loulou"]}
                 />
               )
           )}
