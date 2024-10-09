@@ -25,7 +25,7 @@ const NavBar = (): JSX.Element => {
   const location = useLocation();
 
   const { user } = useUserStore();
-  console.log("USER", user);
+  //console.log("USER", user);
 
   return (
     <div className="sticky top-0 z-20 flex h-12 items-center bg-primary/70 p-1 text-muted shadow-md">
@@ -82,47 +82,50 @@ const NavBar = (): JSX.Element => {
               </NavigationMenuLink>
             </Link>
           </NavigationMenuItem>
-          <div className="flex gap-1">
+          {user ? (
+            <div className="flex gap-1">
+              <NavigationMenuItem>
+                <Link to="/account">
+                  <NavigationMenuLink asChild>
+                    <span
+                      className={cn(
+                        navigationMenuTriggerStyle(),
+                        location.pathname === "/account" &&
+                          "bg-primary/90 text-foreground"
+                      )}
+                    >
+                      <CircleUserRound />
+                    </span>
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <Link to="/" onClick={signoutFirebase}>
+                  <NavigationMenuLink asChild>
+                    <span className={navigationMenuTriggerStyle()}>
+                      <X />
+                    </span>
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+            </div>
+          ) : (
             <NavigationMenuItem>
-              <Link to="/account">
+              <Link to="/login">
                 <NavigationMenuLink asChild>
                   <span
                     className={cn(
                       navigationMenuTriggerStyle(),
-                      location.pathname === "/account" &&
-                        "bg-primary/90 text-foreground"
+                      location.pathname === "/login" &&
+                        "bg-primary/90 text-foreground" // Ajout de classes conditionnelles pour l'élément actif
                     )}
                   >
-                    <CircleUserRound />
+                    <LogIn />
                   </span>
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
-            <NavigationMenuItem>
-              <Link to="/" onClick={signoutFirebase}>
-                <NavigationMenuLink asChild>
-                  <span className={navigationMenuTriggerStyle()}>
-                    <X />
-                  </span>
-                </NavigationMenuLink>
-              </Link>
-            </NavigationMenuItem>
-          </div>
-          <NavigationMenuItem>
-            <Link to="/login">
-              <NavigationMenuLink asChild>
-                <span
-                  className={cn(
-                    navigationMenuTriggerStyle(),
-                    location.pathname === "/login" &&
-                      "bg-primary/90 text-foreground" // Ajout de classes conditionnelles pour l'élément actif
-                  )}
-                >
-                  <LogIn />
-                </span>
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
+          )}
         </NavigationMenuList>
       </NavigationMenu>
       <DarkModeToggle />
