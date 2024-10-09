@@ -1,8 +1,8 @@
 import BookInfos from "@/components/BookInfos";
+import BookSkeleton from "@/components/BookSkeleton";
 import FeedbackMessage from "@/components/FeedbackMessage";
 import Title from "@/components/Title";
 import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
 import { getDocsByQueryFirebase } from "@/firebase";
 //import { books } from "@/data";
 import { BookType } from "@/types";
@@ -80,7 +80,7 @@ const BooksSearchPage = (): JSX.Element => {
     `https://www.googleapis.com/books/v1/volumes?q=subject:general&maxResults=${MAX_RESULTS}`
   );
   const [bdAndApiBooks, setDbAndApiBooks] = useState<BookType[]>([]);
-  //console.log("ALL-books from BDD and API", bdAndApiBooks.length);
+  console.log("ALL-books from BDD and API", bdAndApiBooks.length);
 
   const [titleInput, setTitleInput] = useState<string>(
     localStorage.getItem("titleInput") || ""
@@ -504,42 +504,15 @@ const BooksSearchPage = (): JSX.Element => {
         </div>
         {/* <Button type="submit">Ajouter</Button> */}
         {/* <Search className="text-primary/60 drop-shadow-lg" size={40} /> */}
-        {isLoading && (
-          // <ClipLoader
-          //   className="m-auto mt-16"
-          //   color="#09f"
-          //   loading={isLoading}
-          //   size={70}
-          // />
+        {isLoading ? (
           <div>
-            <div className="flex gap-4 p-5 pt-10">
-              <Skeleton className="h-48 w-32 rounded-md" />
-              <div className="grow space-y-7">
-                <Skeleton className="h-5 w-32" />
-                <Skeleton className="h-2 w-[100px]" />
-                <Skeleton className="h-2 w-[80px]" />
-              </div>
-            </div>
-            <div className="flex gap-4 p-5 pt-10">
-              <Skeleton className="h-48 w-32 rounded-md" />
-              <div className="grow space-y-7">
-                <Skeleton className="h-5 w-32" />
-                <Skeleton className="h-2 w-[100px]" />
-                <Skeleton className="h-2 w-[80px]" />
-              </div>
-            </div>
-            <div className="flex gap-4 p-5 pt-10">
-              <Skeleton className="h-48 w-32 rounded-md" />
-              <div className="grow space-y-7">
-                <Skeleton className="h-5 w-32" />
-                <Skeleton className="h-2 w-[100px]" />
-                <Skeleton className="h-2 w-[80px]" />
-              </div>
-            </div>
+            <BookSkeleton />
+            <BookSkeleton />
+            <BookSkeleton />
           </div>
-        )}
-        {error && <FeedbackMessage message={message} type="error" />}
-        {bdAndApiBooks?.length > 0 ? (
+        ) : error ? (
+          <FeedbackMessage message={message} type="error" />
+        ) : bdAndApiBooks?.length > 0 ? (
           <ul className="pb-40">
             {bdAndApiBooks.map((book: BookType) => (
               <li key={book.bookId}>

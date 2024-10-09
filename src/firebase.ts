@@ -16,8 +16,8 @@ import {
   where,
 } from "firebase/firestore";
 import { firebaseConfig } from "./firebase/firebaseConfig";
-import { BookType, UserType } from "./types";
 import useUserStore from "./hooks/useUserStore";
+import { BookType, UserType } from "./types";
 
 const app = initializeApp(firebaseConfig);
 //const analytics = getAnalytics(app);
