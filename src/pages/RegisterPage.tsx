@@ -1,5 +1,6 @@
 import CustomLinkButton from "@/components/CustomLinkButton";
-import Title from "@/components/Title";
+import FeedbackMessage from "@/components/FeedbackMessage";
+import Title from "@/components/TitleH1";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -12,7 +13,9 @@ import { Input } from "@/components/ui/input";
 import { addOrUpdateUserFirebase, registerFirebase } from "@/firebase";
 import { emptyUser } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 type LoginFormType = {
@@ -37,6 +40,9 @@ const registerFormSchema = z
   });
 
 const RegisterPage = (): JSX.Element => {
+  const navigate = useNavigate();
+  const [firebaseError, setFirebaseError] = useState<string | null>(null);
+
   const form = useForm<LoginFormType>({
     resolver: zodResolver(registerFormSchema),
     defaultValues: {
@@ -47,23 +53,32 @@ const RegisterPage = (): JSX.Element => {
   });
 
   const onSubmit: SubmitHandler<LoginFormType> = (data) => {
-    //console.log(data);
-    registerFirebase(data.email, data.password).then((newUser) => {
-      addOrUpdateUserFirebase(newUser.uid, {
-        ...emptyUser,
-        email: data.email,
-        id: newUser.uid,
+    console.log("data", data);
+    registerFirebase(data.email, data.password)
+      .then((newUser) => {
+        addOrUpdateUserFirebase(newUser.uid, {
+          ...emptyUser,
+          email: data.email,
+          id: newUser.uid,
+        });
+        navigate("/");
+      })
+      .catch((error) => {
+        console.error("Firebase register error:", error.message);
+        setFirebaseError("L'email est déjà utilisé.");
       });
-      console.log("newUser", newUser.uid);
-    });
   };
 
   return (
-    <div className="sm:p-2">
+    <div className="h-screen sm:p-2">
       <Title>Inscription</Title>
+      {firebaseError && (
+        <FeedbackMessage message={firebaseError} type="error" />
+      )}
+
       <Form {...form}>
         <form
-          className="flex flex-col gap-3"
+          className="mb-20 flex flex-col gap-3"
           onSubmit={form.handleSubmit(onSubmit)}
         >
           <FormField
@@ -105,11 +120,18 @@ const RegisterPage = (): JSX.Element => {
               </FormItem>
             )}
           />
-          <Button type="submit">S'inscrire</Button>
+          <Button
+            type="submit"
+            className="m-auto mt-7 w-4/5 text-lg font-semibold"
+          >
+            S'inscrire
+          </Button>
         </form>
       </Form>
       <p>Déja inscrit ?</p>
-      <CustomLinkButton linkTo="/login">Se connecter</CustomLinkButton>
+      <CustomLinkButton className="bg-secondary/70" linkTo="/login">
+        Se connecter
+      </CustomLinkButton>
     </div>
   );
 };

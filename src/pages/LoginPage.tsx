@@ -1,5 +1,6 @@
 import CustomLinkButton from "@/components/CustomLinkButton";
-import Title from "@/components/Title";
+import FeedbackMessage from "@/components/FeedbackMessage";
+import Title from "@/components/TitleH1";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -11,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { loginFirebase } from "@/firebase";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
@@ -31,6 +33,7 @@ const loginFormSchema = z.object({
 
 const LoginPage = (): JSX.Element => {
   const navigate = useNavigate();
+  const [firebaseError, setFirebaseError] = useState<string | null>(null);
 
   const form = useForm<LoginFormType>({
     resolver: zodResolver(loginFormSchema),
@@ -42,13 +45,22 @@ const LoginPage = (): JSX.Element => {
 
   const onSubmit: SubmitHandler<LoginFormType> = (data) => {
     loginFirebase(data.email, data.password)
-      .then((user) => console.log("user login", user.email))
-      .then(() => navigate("/"));
+      .then((user) => {
+        console.log("user login", user.email);
+        navigate("/");
+      })
+      .catch((error) => {
+        console.error("Firebase login error:", error.message);
+        setFirebaseError("Email ou mot de passe incorrect.");
+      });
   };
 
   return (
-    <div className="sm:p-2">
+    <div className="h-screen sm:p-2">
       <Title>Connexion</Title>
+      {firebaseError && (
+        <FeedbackMessage message={firebaseError} type="error" />
+      )}
       <Form {...form}>
         <form
           className="mb-20 flex flex-col gap-3"

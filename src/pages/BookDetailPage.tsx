@@ -1,3 +1,4 @@
+import StarRating from "@/components/StarRating";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,11 +17,18 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Form } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Textarea } from "@/components/ui/textarea";
 import { defaultImage } from "@/constants";
-import { addBookFirebase } from "@/firebase";
 import { BookType } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Star } from "lucide-react";
@@ -30,6 +38,9 @@ import { z } from "zod";
 
 type SearchBooksFormType = {
   bookStatus: BookStatusEnum;
+  year?: number;
+  note?: number;
+  description?: string;
 };
 
 enum BookStatusEnum {
@@ -38,8 +49,20 @@ enum BookStatusEnum {
   toRead = "toRead",
 }
 
+const currentYear = new Date().getFullYear();
+
 const bookFormSchema = z.object({
   bookStatus: z.nativeEnum(BookStatusEnum),
+  year: z
+    .number()
+    .int()
+    .min(1900, { message: "L'année doit être suppérieur à 1900" })
+    .max(currentYear, {
+      message: "Impossible d'ajouter une année dans le future !",
+    })
+    .optional(),
+  note: z.number().int().min(0).max(5).optional(),
+  description: z.string().optional(),
 });
 
 const BookDetailPage = (): JSX.Element => {
@@ -49,14 +72,14 @@ const BookDetailPage = (): JSX.Element => {
     friendsWhoReadBook,
   }: { bookInfos: BookType; friendsWhoReadBook: string[] } =
     location.state || {};
-  console.log("book", bookInfos);
+  console.log("bookInfos", bookInfos);
   // const isBookFromApi: boolean = location.state || {};
   //console.log("isBookFromApi", isBookFromApi);
 
   // const { friendsWhoReadBook }: { friendsWhoReadBook: string[] } =
   //   location.state || {};
 
-  // A VOIR UNDEFINED OU NULL ?????????(NULL !!)
+  // A VOIR UNDEFINED OU NULL ?????????(!!! NULL !!) => voir de partout où j'ai mis UNDEFINED
   // => undefined est généralement utilisé par JavaScript pour indiquer qu'une variable n'a pas été initialisée, tandis que null est utilisé par les développeurs pour indiquer explicitement l'absence de valeur.
   //const [bookInfos, setBookInfos] = useState<BookType | undefined>(undefined);
   //const [friendsWhoReadBook, setFriendsWhoReadBook] = useState<string[]>([]);
@@ -73,12 +96,40 @@ const BookDetailPage = (): JSX.Element => {
     // Tjs mettre des valeurs par défaut sinon ERREUR : Warning: A component is changing an uncontrolled input to be controlled
     defaultValues: {
       bookStatus: BookStatusEnum.read,
+      year: currentYear,
+      note: 0,
+      description: "",
     },
   });
 
-  const onSubmit: SubmitHandler<SearchBooksFormType> = (formData) =>
-    console.log(formData);
+  console.log("form WATCH", form.watch());
 
+  const onSubmit: SubmitHandler<SearchBooksFormType> = (formData) => {
+    console.log("SUBMIT !!! formData", formData);
+
+    // addBookFirebase(bookInfos).then(() => {
+    //   console.log("Livre ajouté ! ", bookInfos.bookTitle);
+    // });
+  };
+
+  // const onSubmit: SubmitHandler<LoginFormType> = (data) => {
+  //   console.log("data", data);
+  //   registerFirebase(data.email, data.password)
+  //     .then((newUser) => {
+  //       addOrUpdateUserFirebase(newUser.uid, {
+  //         ...emptyUser,
+  //         email: data.email,
+  //         id: newUser.uid,
+  //       });
+  //       navigate("/");
+  //     })
+  //     .catch((error) => {
+  //       console.error("Firebase register error:", error.message);
+  //       setFirebaseError("L'email est déjà utilisé.");
+  //     });
+  // };
+
+  // On revient à la ligne à chaque fin de phrase, sinon trop compacte
   const formatDescription = (description: string) => {
     return description?.replace(/([.!?])\s*(?=[A-Z])/g, "$1\n");
   };
@@ -165,7 +216,7 @@ const BookDetailPage = (): JSX.Element => {
               </DialogTrigger>
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                  <DialogTitle>Ajouter le livre :</DialogTitle>
+                  <DialogTitle>AJOUTER LIVRE</DialogTitle>
                   <DialogDescription>{bookInfos?.bookTitle}</DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
@@ -174,6 +225,7 @@ const BookDetailPage = (): JSX.Element => {
                       className="sticky top-10 z-10 flex flex-col gap-3 bg-background/70 duration-500"
                       onSubmit={form.handleSubmit(onSubmit)}
                     >
+                      {/* Sans FORMFIELD mais avec CONTROLLER (normalement pareil ms moins lisible...)
                       <RadioGroup defaultValue={BookStatusEnum.read}>
                         <Controller
                           name="bookStatus"
@@ -208,18 +260,116 @@ const BookDetailPage = (): JSX.Element => {
                             </RadioGroup>
                           )}
                         />
-                      </RadioGroup>
+                      </RadioGroup> */}
+                      <FormField
+                        control={form.control}
+                        name="bookStatus"
+                        render={({ field }) => (
+                          <RadioGroup
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          >
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="read" id="read" />
+                              <Label htmlFor="read">Lu</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem
+                                value="inProgress"
+                                id="inProgress"
+                              />
+                              <Label htmlFor="inProgress">En cours</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="toRead" id="toRead" />
+                              <Label htmlFor="toRead">À lire</Label>
+                            </div>
+                          </RadioGroup>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="year"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Input
+                                placeholder="Année"
+                                type="number"
+                                {...field}
+                                //On converti en number sinon : "Expected number, received string" (sinon on pt enlever le onChange)
+                                onChange={(e) =>
+                                  field.onChange(
+                                    e.target.value
+                                      ? parseFloat(e.target.value)
+                                      : null
+                                  )
+                                }
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="note"
+                        render={() => (
+                          <FormItem className="m-auto">
+                            <FormControl>
+                              <Controller
+                                name="note"
+                                control={form.control}
+                                render={({ field }) => (
+                                  <StarRating
+                                    value={field.value ?? 0}
+                                    //On converti en number sinon : "Expected number, received string"
+                                    onChange={(value: string) =>
+                                      field.onChange(parseInt(value))
+                                    }
+                                  />
+                                )}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="description"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Textarea
+                                placeholder="Mes commentaires"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Input placeholder="Email" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      /> */}
+
+                      <DialogFooter>
+                        <Button type="submit">Ajouter</Button>
+                      </DialogFooter>
                     </form>
                   </Form>
                 </div>
-                <DialogFooter>
-                  <Button
-                    type="submit"
-                    onClick={() => addBookFirebase(bookInfos)}
-                  >
-                    Ajouter
-                  </Button>
-                </DialogFooter>
               </DialogContent>
             </Dialog>
             {/* <p>{bookInfo.bookDescription}</p> */}

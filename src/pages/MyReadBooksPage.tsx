@@ -2,7 +2,7 @@ import BookInfos from "@/components/BookInfos";
 import BookSkeleton from "@/components/BookSkeleton";
 import CustomLinkButton from "@/components/CustomLinkButton";
 import FeedbackMessage from "@/components/FeedbackMessage";
-import Title from "@/components/Title";
+import Title from "@/components/TitleH1";
 import { getDocsByQueryFirebase } from "@/firebase";
 import useUserStore from "@/hooks/useUserStore";
 import { UserType } from "@/types";
@@ -10,7 +10,9 @@ import useSWR from "swr";
 
 const MyReadBooksPage = (): JSX.Element => {
   const { user } = useUserStore();
-  const fetcher = (userId: string | null) => {
+
+  const fetcher = async (userId: string | null) => {
+    //throw new Error("Erreur simulée !");
     if (userId)
       return getDocsByQueryFirebase<UserType>("users", "id", userId).then(
         (users) => {
@@ -35,6 +37,7 @@ const MyReadBooksPage = (): JSX.Element => {
   console.log("isLoading", isLoading);
   console.log("myReadBooksIds", myReadBooksIds);
 
+  // ici on utilise une constante et pas un state car les message ne change pas et s'affiche seulement si useSWR renvoie une erreur
   const message = `Un problème est survenu dans la récupération de vos livres lus => ${error?.message}`;
 
   return (
