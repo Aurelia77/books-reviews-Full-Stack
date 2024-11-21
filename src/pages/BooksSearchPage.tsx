@@ -1,7 +1,7 @@
 import BookInfos from "@/components/BookInfos";
 import BookSkeleton from "@/components/BookSkeleton";
 import FeedbackMessage from "@/components/FeedbackMessage";
-import Title from "@/components/Title";
+import Title from "@/components/TitleH1";
 import { Input } from "@/components/ui/input";
 import { getDocsByQueryFirebase } from "@/firebase";
 //import { books } from "@/data";
@@ -163,6 +163,7 @@ const BooksSearchPage = (): JSX.Element => {
   } = useSWR<BookType[]>(booksApiUrl, fetchAPIBooks);
   //console.log("2-booksFromAPI", apiBooks?.length);
 
+  // ici on utilise une constante et pas un state car les message ne change pas et s'affiche seulement si useSWR renvoie une erreur
   const message = `Un problème est survenu dans la récupération de livres de Google Books => ${error?.message}`;
 
   const shuffle2ArraysPreserveOrder = <T, U>(

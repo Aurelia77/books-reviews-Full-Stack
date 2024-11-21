@@ -3,6 +3,7 @@ import {
   createUserWithEmailAndPassword,
   getAuth,
   onAuthStateChanged,
+  // onAuthStateChanged,
   signInWithEmailAndPassword,
   User,
 } from "firebase/auth";
@@ -18,6 +19,7 @@ import {
 import { firebaseConfig } from "./firebase/firebaseConfig";
 import useUserStore from "./hooks/useUserStore";
 import { BookType, UserType } from "./types";
+//import useUserStore from "./hooks/useUserStore";
 
 const app = initializeApp(firebaseConfig);
 //const analytics = getAnalytics(app);
@@ -52,6 +54,7 @@ export const loginFirebase = (
     });
 };
 
+// ??????????? Comprendre !!!!!!!! (si j'enlève ça marche plus)
 //Avec useUserStore (Zustand), on met le user à jour à chaque changement d'état de l'utilisateur
 onAuthStateChanged(auth, (user) => {
   const setUser = useUserStore.getState().setUser;
@@ -123,6 +126,7 @@ export const addBookFirebase = (book: BookType) => {
 // setDoc(cityRef, { capital: true }, { merge: true });
 
 export const addOrUpdateUserFirebase = (userId: string, data: UserType) => {
+  console.log("data", data);
   return setDoc(doc(db, "users", userId), data).catch((error) => {
     console.error("Error adding user to Firestore: ", error);
     throw error;
@@ -154,24 +158,28 @@ export const getDocsByQueryFirebase = <T extends BookType | UserType>(
     });
 };
 
-export const getUsersWhoReadBookFirebase = (
+export const getOtherUsersWhoReadBookFirebase = (
   bookId: string
+  //, userId
 ): Promise<UserType[]> => {
   const q = query(
     collection(db, "users"),
     where("booksRead", "array-contains", bookId)
   );
 
-  return getDocs(q)
-    .then((querySnapshot) => {
-      const docs: UserType[] = [];
-      querySnapshot.forEach((doc) => {
-        docs.push(doc.data() as UserType);
-      });
-      return docs;
-    })
-    .catch((error) => {
-      console.error("Error getting documents: ", error);
-      throw error;
-    });
+  return (
+    getDocs(q)
+      .then((querySnapshot) => {
+        const users: UserType[] = [];
+        querySnapshot.forEach((doc) => {
+          users.push(doc.data() as UserType);
+        });
+        return users;
+      })
+      //.then((users) => { users.filter(user => user.id !== userId) })
+      .catch((error) => {
+        console.error("Error getting documents: ", error);
+        throw error;
+      })
+  );
 };

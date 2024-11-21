@@ -14,7 +14,7 @@ import {
 import { defaultImage } from "@/constants";
 import {
   getDocsByQueryFirebase,
-  getUsersWhoReadBookFirebase,
+  getOtherUsersWhoReadBookFirebase,
 } from "@/firebase";
 import { BookType } from "@/types";
 import { Star } from "lucide-react";
@@ -23,6 +23,7 @@ import { Link } from "react-router-dom";
 import useSWR from "swr";
 import BookSkeleton from "./BookSkeleton";
 import FeedbackMessage from "./FeedbackMessage";
+import { Button } from "./ui/button";
 
 // Soit dans BooksSearchPage => on passe un objet book en props
 // Soit dans MyReadBooksPage => on passe un bookId
@@ -37,17 +38,22 @@ const BookInfos = ({
 BookInfosProps): JSX.Element => {
   const [bookInfos, setBookInfos] = useState<BookType | null>(book || null);
   const [friendsWhoReadBook, setFriendsWhoReadBook] = useState<string[]>([]);
-  //console.log("friendsWhoReadBook", bookInfos?.bookTitle, friendsWhoReadBook);
+  // <console.log("friendsWhoReadBook", bookInfos?.bookTitle, friendsWhoReadBook);
+
+  ///////////////////////
+  ///////////////////////
+  ///////////////////////
 
   // console.log("bookInfo", bookInfo?.bookTitle);
   // console.log("bookInfo", bookInfo?.bookAuthor);
 
-  // VOIR !!!!!!!!!! avec hook Preso !!!!!!
+  // VOIR !!!!!!!!!! avec hook Perso !!!!!!
   /////////////////////////
   //const { data: bookFromId, error, isLoading } = useBookId(bookId);
 
-  // SI BOOKID PASSE EN PROPS
+  // SI BOOKID PASSE EN PROPS (donc on est sur MyReadBooksPage) :
   // On recupère les infos du livre depuis la BDD grâce à son bookId
+  // Sinon => on a déjà les infos
   const fetchBookInfo = async (bookId: string): Promise<BookType | null> => {
     // throw new Error(
     //   "Erreur simulée !"
@@ -74,6 +80,7 @@ BookInfosProps): JSX.Element => {
   } = useSWR<BookType | null>(bookId, fetchBookInfo);
   // } = useSWR<BookType>(bookId, fetcher);
 
+  // ici on utilise une constante et pas un state car les message ne change pas et s'affiche seulement si useSWR renvoie une erreur
   const message = `Un problème est survenu dans la récupération du livre => ${error?.message}`;
 
   useEffect(() => {
@@ -84,7 +91,7 @@ BookInfosProps): JSX.Element => {
 
   useEffect(() => {
     if (bookInfos)
-      getUsersWhoReadBookFirebase(bookInfos.bookId).then((users) => {
+      getOtherUsersWhoReadBookFirebase(bookInfos.bookId).then((users) => {
         //console.log("FRIENDS", users);
         const friends = users.map((user) => user.username);
         setFriendsWhoReadBook(friends);
@@ -163,6 +170,20 @@ BookInfosProps): JSX.Element => {
                         <span key={index}>{index > 0 ? ` / ${cat}` : cat}</span>
                       ))}
                   </CardDescription>
+                  {bookId && (
+                    <div>
+                      <div className="flex items-center gap-4">
+                        <h2 className="font-semibold text-muted">Mes infos</h2>
+
+                        <Button className="border border-border bg-secondary/40 shadow-sm shadow-foreground/70">
+                          Modifier
+                        </Button>
+                      </div>
+                      <p>année</p>
+                      <p>note</p>
+                      <p>commentaires</p>
+                    </div>
+                  )}
                 </CardHeader>
               </div>
               {friendsWhoReadBook.length > 0 && (

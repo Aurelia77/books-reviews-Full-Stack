@@ -1,5 +1,5 @@
 import CustomLinkButton from "@/components/CustomLinkButton";
-import Title from "@/components/Title";
+import Title from "@/components/TitleH1";
 import { BookOpen } from "lucide-react";
 
 const MyBooksPage = (): JSX.Element => {

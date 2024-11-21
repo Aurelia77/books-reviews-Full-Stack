@@ -1,5 +1,5 @@
 import CustomLinkButton from "@/components/CustomLinkButton";
-import Title from "@/components/Title";
+import Title from "@/components/TitleH1";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -57,7 +57,7 @@ const AccountPage = (): JSX.Element => {
   const { user } = useUserStore();
 
   return (
-    <div className="sm:p-2">
+    <div className="h-screen sm:p-2">
       <Title>Mon compte</Title>
       <p>Email : {user?.email}</p>
       <Form {...form}>
