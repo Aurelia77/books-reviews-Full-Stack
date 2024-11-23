@@ -17,7 +17,10 @@ const MyReadBooksPage = (): JSX.Element => {
       return getDocsByQueryFirebase<UserType>("users", "id", userId).then(
         (users) => {
           console.log("USERS", users);
-          return users[0].booksRead;
+
+          const booksReadIds = users[0].booksRead.map((book) => book.bookId);
+
+          return booksReadIds;
         }
         //setMyReadBooksIds(users[0].booksRead)
       );

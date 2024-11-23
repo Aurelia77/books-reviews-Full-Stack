@@ -12,13 +12,42 @@ export type BookType = {
   bookIsFromAPI: boolean;
 };
 
-// Mettre USER devant !
+export type MyInfoBookType = {
+  bookId: string;
+  bookYear: number | null;
+  bookNote: number | null;
+  bookDescription: string | null;
+};
+
+// Mettre USER devant ??? ou enlever Book devant les données de BookType ???
 export type UserType = {
   id: string;
   email: string;
   username: string;
   password: string;
-  booksRead: string[];
-  booksInProgress: string[];
-  booksToRead: string[];
+  booksRead: MyInfoBookType[];
+  booksInProgress: MyInfoBookType[];
+  booksToRead: MyInfoBookType[];
 };
+
+export type AccountFormType = {
+  displayName: string;
+  //imgURL: string;
+  //description: string;
+  //password: string;                                               // plus tard
+};
+
+export type SearchBooksFormType = {
+  bookStatus: BookStatusEnum;
+  year?: number;
+  note?: number;
+  description?: string;
+};
+
+//export type BookStatus = "read" | "toRead" | "inProgress";
+
+export enum BookStatusEnum {
+  read = "read",
+  inProgress = "inProgress",
+  toRead = "toRead",
+}

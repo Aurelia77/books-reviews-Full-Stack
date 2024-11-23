@@ -18,7 +18,13 @@ import {
 } from "firebase/firestore";
 import { firebaseConfig } from "./firebase/firebaseConfig";
 import useUserStore from "./hooks/useUserStore";
-import { BookType, UserType } from "./types";
+import {
+  AccountFormType,
+  BookType,
+  MyInfoBookType,
+  SearchBooksFormType,
+  UserType,
+} from "./types";
 //import useUserStore from "./hooks/useUserStore";
 
 const app = initializeApp(firebaseConfig);
@@ -71,18 +77,55 @@ export const signoutFirebase = () => {
   return auth.signOut();
 };
 
-export const addBookIdToMyReadBooksFirebase = (
+export const addBookInfoToMyBooksFirebase = (
   userId: string,
-  bookId: string
-) => {
+  bookId: string,
+  formData: SearchBooksFormType
+): Promise<void> => {
   return getDocsByQueryFirebase<UserType>("users", "id", userId)
     .then((users) => {
       const user = users[0];
-      if (user.booksRead.includes(bookId)) {
-        console.log("Book already added !!");
+
+      if (!user) {
+        console.error("User not found");
         return;
       }
-      user.booksRead.push(bookId);
+
+      const infoToAdd = {
+        bookId,
+        bookYear: formData.year ?? null,
+        bookNote: formData.note ?? 0,
+        bookDescription: formData.description ?? "",
+      };
+
+      switch (formData.bookStatus) {
+        case "read":
+          // if (user.booksRead.includes(bookId)) {
+          //   console.error("Book already added to read list!!");
+          //   return;
+          // }
+          //user.booksRead.push(bookId);
+          user.booksRead.push(infoToAdd);
+          break;
+        case "toRead":
+          // if (user.booksToRead.includes(bookId)) {
+          //   console.error("Book already added to to-read list!!");
+          //   return;
+          // }
+          user.booksToRead.push(infoToAdd);
+          break;
+        case "inProgress":
+          // if (user.booksInProgress.includes(bookId)) {
+          //   console.error("Book already added to in-progress list!!");
+          //   return;
+          // }
+          user.booksInProgress.push(infoToAdd);
+          break;
+        default:
+          console.error("Invalid type");
+          return;
+      }
+
       return addOrUpdateUserFirebase(userId, user);
     })
     .catch((error) => {
@@ -92,29 +135,30 @@ export const addBookIdToMyReadBooksFirebase = (
 };
 
 // Ajouter message : Book déjà ajouté !!
-export const addBookFirebase = (book: BookType) => {
+export const addBookFirebase = (
+  userId: string,
+  book: BookType,
+  formData: SearchBooksFormType
+) => {
   console.log("ADD BOOK : ", book);
 
   // On ajoute le livre à la collection books
   return setDoc(doc(db, "books", book.bookId), {
     bookId: book.bookId,
-    bookTitle: book.bookTitle,
-    bookAuthor: book.bookAuthor,
-    bookDescription: book.bookDescription,
-    bookCategories: book.bookCategories,
-    bookPageCount: book.bookPageCount,
-    bookPublishedDate: book.bookPublishedDate,
-    bookPublisher: book.bookPublisher,
-    bookImageLink: book.bookImageLink,
-    bookLanguage: book.bookLanguage,
-    bookIsFromAPI: book.bookIsFromAPI,
+    bookTitle: book.bookTitle ?? "",
+    bookAuthor: book.bookAuthor ?? "",
+    bookDescription: book.bookDescription ?? "",
+    bookCategories: book.bookCategories ?? [],
+    bookPageCount: book.bookPageCount ?? 0,
+    bookPublishedDate: book.bookPublishedDate ?? "",
+    bookPublisher: book.bookPublisher ?? "",
+    bookImageLink: book.bookImageLink ?? "",
+    bookLanguage: book.bookLanguage ?? "",
+    bookIsFromAPI: book.bookIsFromAPI ?? false,
   })
     .then(() =>
       // On ajoute l'id du livre à la liste des livres lus de l'utilisateur
-      addBookIdToMyReadBooksFirebase(
-        "YGZ3EAw9lFdGaCewuQhxyrqcFi42",
-        book.bookId
-      )
+      addBookInfoToMyBooksFirebase(userId, book.bookId, formData)
     )
     .catch((error) => {
       console.error("Error adding book to Firestore: ", error);
@@ -125,7 +169,10 @@ export const addBookFirebase = (book: BookType) => {
 // const cityRef = doc(db, 'cities', 'BJ');
 // setDoc(cityRef, { capital: true }, { merge: true });
 
-export const addOrUpdateUserFirebase = (userId: string, data: UserType) => {
+export const addOrUpdateUserFirebase = (
+  userId: string,
+  data: UserType | AccountFormType
+) => {
   console.log("data", data);
   return setDoc(doc(db, "users", userId), data).catch((error) => {
     console.error("Error adding user to Firestore: ", error);
@@ -158,28 +205,113 @@ export const getDocsByQueryFirebase = <T extends BookType | UserType>(
     });
 };
 
-export const getOtherUsersWhoReadBookFirebase = (
+export const getMyInfosBookFirebase = (
+  userId: string,
   bookId: string
-  //, userId
-): Promise<UserType[]> => {
-  const q = query(
-    collection(db, "users"),
-    where("booksRead", "array-contains", bookId)
-  );
+): Promise<MyInfoBookType | null> => {
+  return getDocsByQueryFirebase<UserType>("users", "id", userId)
+    .then((users) => {
+      const user = users[0];
+      const book = user.booksRead.find((book) => book.bookId === bookId);
+      return book ?? null;
+    })
+    .catch((error) => {
+      console.error("Error getting my infos book: ", error);
+      throw error;
+    });
+};
 
-  return (
-    getDocs(q)
-      .then((querySnapshot) => {
-        const users: UserType[] = [];
-        querySnapshot.forEach((doc) => {
-          users.push(doc.data() as UserType);
-        });
-        return users;
-      })
-      //.then((users) => { users.filter(user => user.id !== userId) })
-      .catch((error) => {
-        console.error("Error getting documents: ", error);
-        throw error;
-      })
-  );
+export const getOtherUsersWhoReadBookFirebase = (
+  bookId: string,
+  userId: string
+): Promise<UserType[]> => {
+  const q = query(collection(db, "users"), where("id", "!=", userId));
+
+  return getDocs(q)
+    .then((querySnapshot) => {
+      const otherUsers: UserType[] = [];
+      querySnapshot.forEach((doc) => {
+        console.log("DATA", doc.data());
+        otherUsers.push(doc.data() as UserType);
+      });
+      return otherUsers;
+    })
+    .then((otherUsers) => {
+      console.log("USERS", otherUsers);
+      return otherUsers.filter((user) =>
+        user.booksRead.find((book) => book.bookId === bookId)
+      );
+    })
+    .catch((error) => {
+      console.error("Error getting other users who read book: ", error);
+      throw error;
+    });
+};
+
+//   // On récupère tous les utilisateurs qui ont lu le livre
+//   return getDocsByQueryFirebase<UserType>("users", "id", userId)
+//     .then((users) => {
+//       console.log("USERS", users);
+//       return users.filter((user) => user.id !== userId);
+//     })
+//     .then((otherUsers) => {
+//       console.log("OTHER USERS", otherUsers);
+//       return otherUsers.map((user) => {
+//         return user.booksRead.find((book) => book.bookId === bookId);
+//       });
+//     })
+//     .then((books) => {
+//       console.log("BOOKS", books);
+//       return books;
+//     })
+
+//     .catch((error) => {
+//       console.error("Error getting other users who read book: ", error);
+//       throw error;
+//     });
+
+//   // const q = query(
+//   //   collection(db, "users"),
+//   //   where("booksRead", "array-contains", bookId)
+//   // );
+//   // return getDocs(q)
+//   //   .then((querySnapshot) => {
+//   //     const users: UserType[] = [];
+//   //     querySnapshot.forEach((doc) => {
+//   //       users.push(doc.data() as UserType);
+//   //     });
+//   //     return users;
+//   //   })
+//   //   .then((users) => {
+//   //     return users.filter((user) => user.id !== userId);
+//   //   })
+//   //   .catch((error) => {
+//   //     console.error("Error getting documents: ", error);
+//   //     throw error;
+//   //   });
+// };
+
+export const bookInMyBooksFirebase = (
+  bookId: string,
+  userId: string
+): Promise<string> => {
+  return getDocsByQueryFirebase<UserType>("users", "id", userId)
+    .then((users) => {
+      const user = users[0];
+
+      let result = "";
+
+      if (user.booksRead.some((book) => book.bookId === bookId))
+        result = "read";
+      if (user.booksToRead.some((book) => book.bookId === bookId))
+        result = "toRead";
+      if (user.booksInProgress.some((book) => book.bookId === bookId))
+        result = "inProgress";
+
+      return result;
+    })
+    .catch((error) => {
+      console.error("Error checking if book is in myBooks: ", error);
+      throw error;
+    });
 };
