@@ -9,52 +9,65 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { addOrUpdateUserFirebase, getDocsByQueryFirebase } from "@/firebase";
 import useUserStore from "@/hooks/useUserStore";
+import { AccountFormType, UserType } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-
-type AccountFormType = {
-  displayName: string;
-  email: string;
-  imgURL: string;
-  description: string;
-  //password: string;                                               // plus tard
-};
 
 const accountFormSchema = z.object({
   displayName: z.string().min(3, {
     message: "Entrez un nom d'au moins 3 caractères.",
   }),
-  email: z.string().email({
-    message: "Entrez une adresse email valide.", // mettre qu'on ne pt pas la changer !
-  }),
-  imgURL: z.string().url({
-    message: "Entrez une URL valide.",
-  }),
-  description: z.string().optional(),
+  // imgURL: z.string().url({
+  //   message: "Entrez une URL valide.",
+  // }),
+  // description: z.string().optional(),
   //   password: z.string().min(8, {
   //     message: "Entrez un mot de passe d'au moins 8 caractères.",
   //   }),
 });
 
 const AccountPage = (): JSX.Element => {
+  const [userInfo, setUserInfo] = useState<UserType | null>(null);
+  const { user } = useUserStore();
+
+  console.log("USER INFO", userInfo);
+
   const form = useForm<AccountFormType>({
     resolver: zodResolver(accountFormSchema),
     defaultValues: {
       displayName: "",
-      email: "",
-      imgURL: "",
-      description: "",
+      //imgURL: "",
+      //description: "",
       //password: "",
     },
   });
 
+  const { reset } = form;
+
+  useEffect(() => {
+    if (userInfo) {
+      reset({
+        displayName: userInfo.username,
+      });
+    }
+  }, [userInfo, reset]);
+
   const onSubmit: SubmitHandler<AccountFormType> = (data) => {
     console.log(data);
+    addOrUpdateUserFirebase(user?.uid ?? "", data);
   };
 
-  const { user } = useUserStore();
+  useEffect(() => {
+    getDocsByQueryFirebase<UserType>("users", "id", user?.uid ?? "").then(
+      (users) => {
+        setUserInfo(users[0]);
+      }
+    );
+  }, [user]);
 
   return (
     <div className="h-screen sm:p-2">
@@ -77,19 +90,7 @@ const AccountPage = (): JSX.Element => {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input placeholder="Email" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
+          {/* <FormField
             control={form.control}
             name="imgURL"
             render={({ field }) => (
@@ -112,7 +113,7 @@ const AccountPage = (): JSX.Element => {
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
           <Button
             type="submit"
             className="m-auto mt-7 w-4/5 text-lg font-semibold"

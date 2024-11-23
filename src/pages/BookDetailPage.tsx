@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -29,25 +30,15 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { defaultImage } from "@/constants";
-import { BookType } from "@/types";
+import { addBookFirebase, bookInMyBooksFirebase } from "@/firebase";
+import useUserStore from "@/hooks/useUserStore";
+import { BookStatusEnum, BookType, SearchBooksFormType } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Star } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation } from "react-router-dom";
 import { z } from "zod";
-
-type SearchBooksFormType = {
-  bookStatus: BookStatusEnum;
-  year?: number;
-  note?: number;
-  description?: string;
-};
-
-enum BookStatusEnum {
-  read = "read",
-  inProgress = "inProgress",
-  toRead = "toRead",
-}
 
 const currentYear = new Date().getFullYear();
 
@@ -75,6 +66,11 @@ const BookDetailPage = (): JSX.Element => {
   console.log("bookInfos", bookInfos);
   // const isBookFromApi: boolean = location.state || {};
   //console.log("isBookFromApi", isBookFromApi);
+
+  const { user } = useUserStore();
+
+  const [bookInMyBooks, setBookInMyBooks] = useState<string>("");
+  console.log("In my books ?", bookInMyBooks);
 
   // const { friendsWhoReadBook }: { friendsWhoReadBook: string[] } =
   //   location.state || {};
@@ -107,9 +103,11 @@ const BookDetailPage = (): JSX.Element => {
   const onSubmit: SubmitHandler<SearchBooksFormType> = (formData) => {
     console.log("SUBMIT !!! formData", formData);
 
-    // addBookFirebase(bookInfos).then(() => {
-    //   console.log("Livre ajouté ! ", bookInfos.bookTitle);
-    // });
+    addBookFirebase(user?.uid ?? "", bookInfos, formData).then(() => {
+      console.log("Livre ajouté ! ", bookInfos.bookTitle);
+    });
+
+    setBookInMyBooks(formData.bookStatus);
   };
 
   // const onSubmit: SubmitHandler<LoginFormType> = (data) => {
@@ -152,6 +150,12 @@ const BookDetailPage = (): JSX.Element => {
   //   }
   // }, [bookId]);
 
+  useEffect(() => {
+    bookInMyBooksFirebase(bookInfos?.bookId ?? "", user?.uid ?? "").then(
+      (res) => setBookInMyBooks(res)
+    );
+  }, [bookInfos, user]);
+
   return (
     <div className="min-h-screen pb-4">
       {bookInfos && (
@@ -182,13 +186,6 @@ const BookDetailPage = (): JSX.Element => {
               className="w-32 rounded-sm border border-border object-contain shadow-md shadow-foreground/70"
               alt={`Image de couverture du livre ${bookInfos?.bookTitle}`}
             />
-            {/* Sozialwissenschaftliche */}
-            {/* http://localhost:5173/books/FEKxFaJpFfwC   grand titre dc agrandit div img*/}
-            {/* Sobrino aumentado o nuevo diccionario de las lenguas española,
-          francesa y latina, compuesto de los mejores diccionarios, que hasta
-          ahora han salido a luz dividido en tres tomos: ... con un diccionario
-          abreviado de Geographia en donde se hallan los nombres de los reinos,
-          ... Por Francisco Cormon, ... Tomo primero (-tercero) */}
             <CardHeader className="items-start gap-3 overflow-hidden">
               <CardTitle>{bookInfos?.bookTitle}</CardTitle>
               <CardDescription className="text-muted">
@@ -209,11 +206,17 @@ const BookDetailPage = (): JSX.Element => {
               Ajouter à mes livres
             </Button> */}
             <Dialog>
-              <DialogTrigger asChild>
-                <Button className="absolute -top-6 left-1/4 h-12 w-1/2 border border-border bg-secondary/60 shadow-md shadow-foreground/70">
-                  Ajouter à mes livres
-                </Button>
-              </DialogTrigger>
+              {bookInMyBooks === "" ? (
+                <DialogTrigger asChild>
+                  <Button className="absolute -top-6 left-1/4 h-12 w-1/2 border border-border bg-secondary/60 shadow-md shadow-foreground/70">
+                    Ajouter à mes livres
+                  </Button>
+                </DialogTrigger>
+              ) : (
+                <p className="absolute -top-6 left-1/4 h-12 w-1/2 border border-border bg-secondary/60 pl-2 shadow-md shadow-foreground/70">
+                  Dans ma liste : {bookInMyBooks}
+                </p>
+              )}
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                   <DialogTitle>AJOUTER LIVRE</DialogTitle>
@@ -270,86 +273,96 @@ const BookDetailPage = (): JSX.Element => {
                             onValueChange={field.onChange}
                           >
                             <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="read" id="read" />
+                              <RadioGroupItem
+                                value={BookStatusEnum.read}
+                                id="read"
+                              />
                               <Label htmlFor="read">Lu</Label>
                             </div>
                             <div className="flex items-center space-x-2">
                               <RadioGroupItem
-                                value="inProgress"
+                                value={BookStatusEnum.inProgress}
                                 id="inProgress"
                               />
                               <Label htmlFor="inProgress">En cours</Label>
                             </div>
                             <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="toRead" id="toRead" />
+                              <RadioGroupItem
+                                value={BookStatusEnum.toRead}
+                                id="toRead"
+                              />
                               <Label htmlFor="toRead">À lire</Label>
                             </div>
                           </RadioGroup>
                         )}
                       />
-                      <FormField
-                        control={form.control}
-                        name="year"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input
-                                placeholder="Année"
-                                type="number"
-                                {...field}
-                                //On converti en number sinon : "Expected number, received string" (sinon on pt enlever le onChange)
-                                onChange={(e) =>
-                                  field.onChange(
-                                    e.target.value
-                                      ? parseFloat(e.target.value)
-                                      : null
-                                  )
-                                }
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="note"
-                        render={() => (
-                          <FormItem className="m-auto">
-                            <FormControl>
-                              <Controller
-                                name="note"
-                                control={form.control}
-                                render={({ field }) => (
-                                  <StarRating
-                                    value={field.value ?? 0}
-                                    //On converti en number sinon : "Expected number, received string"
-                                    onChange={(value: string) =>
-                                      field.onChange(parseInt(value))
+                      {form.watch().bookStatus === "read" && (
+                        <div className="flex flex-col gap-3">
+                          <FormField
+                            control={form.control}
+                            name="year"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormControl>
+                                  <Input
+                                    placeholder="Année"
+                                    type="number"
+                                    {...field}
+                                    //On converti en number sinon : "Expected number, received string" (sinon on pt enlever le onChange)
+                                    onChange={(e) =>
+                                      field.onChange(
+                                        e.target.value
+                                          ? parseFloat(e.target.value)
+                                          : null
+                                      )
                                     }
                                   />
-                                )}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="description"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Textarea
-                                placeholder="Mes commentaires"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="note"
+                            render={() => (
+                              <FormItem className="flex justify-center">
+                                <FormControl>
+                                  <Controller
+                                    name="note"
+                                    control={form.control}
+                                    render={({ field }) => (
+                                      <StarRating
+                                        value={field.value ?? 0}
+                                        //On converti en number sinon : "Expected number, received string"
+                                        onChange={(value: string) =>
+                                          field.onChange(parseInt(value))
+                                        }
+                                      />
+                                    )}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="description"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormControl>
+                                  <Textarea
+                                    placeholder="Mes commentaires"
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      )}
 
                       {/* <FormField
                         control={form.control}
@@ -365,7 +378,9 @@ const BookDetailPage = (): JSX.Element => {
                       /> */}
 
                       <DialogFooter>
-                        <Button type="submit">Ajouter</Button>
+                        <DialogClose asChild>
+                          <Button type="submit">Ajouter</Button>
+                        </DialogClose>
                       </DialogFooter>
                     </form>
                   </Form>

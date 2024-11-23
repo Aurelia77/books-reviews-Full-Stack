@@ -14,15 +14,18 @@ import {
 import { defaultImage } from "@/constants";
 import {
   getDocsByQueryFirebase,
+  getMyInfosBookFirebase,
   getOtherUsersWhoReadBookFirebase,
 } from "@/firebase";
-import { BookType } from "@/types";
+import useUserStore from "@/hooks/useUserStore";
+import { BookType, MyInfoBookType } from "@/types";
 import { Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useSWR from "swr";
 import BookSkeleton from "./BookSkeleton";
 import FeedbackMessage from "./FeedbackMessage";
+import StarRating from "./StarRating";
 import { Button } from "./ui/button";
 
 // Soit dans BooksSearchPage => on passe un objet book en props
@@ -37,8 +40,11 @@ const BookInfos = ({
 }: //friendsWhoReadBook,
 BookInfosProps): JSX.Element => {
   const [bookInfos, setBookInfos] = useState<BookType | null>(book || null);
+  const [myBookInfos, setMyBookInfos] = useState<MyInfoBookType | null>(null);
   const [friendsWhoReadBook, setFriendsWhoReadBook] = useState<string[]>([]);
-  // <console.log("friendsWhoReadBook", bookInfos?.bookTitle, friendsWhoReadBook);
+  console.log("friendsWhoReadBook", bookInfos?.bookTitle, friendsWhoReadBook);
+
+  const { user } = useUserStore();
 
   ///////////////////////
   ///////////////////////
@@ -86,16 +92,25 @@ BookInfosProps): JSX.Element => {
   useEffect(() => {
     if (bookFromId) {
       setBookInfos(bookFromId);
+
+      getMyInfosBookFirebase(user?.uid ?? "", bookFromId.bookId).then(
+        (myBook) => {
+          console.log("INFO LIVRE", myBook);
+          setMyBookInfos(myBook);
+        }
+      );
     }
   }, [bookFromId]);
 
   useEffect(() => {
     if (bookInfos)
-      getOtherUsersWhoReadBookFirebase(bookInfos.bookId).then((users) => {
-        //console.log("FRIENDS", users);
-        const friends = users.map((user) => user.username);
-        setFriendsWhoReadBook(friends);
-      });
+      getOtherUsersWhoReadBookFirebase(bookInfos.bookId, user?.uid ?? "").then(
+        (users) => {
+          console.log("FRIENDS", users);
+          const friends = users.map((user) => user.username);
+          setFriendsWhoReadBook(friends);
+        }
+      );
   }, [bookInfos]);
 
   // {
@@ -107,6 +122,7 @@ BookInfosProps): JSX.Element => {
   // }
 
   //return isLoading ? <p>coucou</p> : <p>aaa</p>;
+
   return (
     <div>
       {isLoading ? (
@@ -142,7 +158,10 @@ BookInfosProps): JSX.Element => {
                       </div>
                     </TooltipTrigger>
                     <TooltipContent className="bg-destructive-foreground">
-                      <p>Dans la liste d'un ou plusieurs de vos amis</p>
+                      <p>
+                        Livre lu par un ou plusieurs de vos amis (voir
+                        ci-dessous)
+                      </p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -173,15 +192,19 @@ BookInfosProps): JSX.Element => {
                   {bookId && (
                     <div>
                       <div className="flex items-center gap-4">
-                        <h2 className="font-semibold text-muted">Mes infos</h2>
+                        <h2 className="font-semibold text-muted">
+                          J'ai lu ce livre :
+                        </h2>
 
                         <Button className="border border-border bg-secondary/40 shadow-sm shadow-foreground/70">
                           Modifier
                         </Button>
                       </div>
-                      <p>année</p>
-                      <p>note</p>
-                      <p>commentaires</p>
+                      <p>{myBookInfos?.bookYear}</p>
+                      {myBookInfos?.bookNote && (
+                        <StarRating value={myBookInfos.bookNote} />
+                      )}
+                      <p>{myBookInfos?.bookDescription}</p>
                     </div>
                   )}
                 </CardHeader>
@@ -196,7 +219,7 @@ BookInfosProps): JSX.Element => {
                   className="bg-gray-500/40"
                 >
                   <div className="flex flex-row gap-2 ">
-                    <p className="font-semibold">Dans liste de :</p>
+                    <p className="font-semibold">Lu par :</p>
 
                     {friendsWhoReadBook.map((friend, index) => (
                       <p key={index} className="font-semibold text-muted">

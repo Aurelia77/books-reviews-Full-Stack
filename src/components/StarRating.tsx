@@ -2,13 +2,13 @@ import { Star } from "lucide-react";
 
 type StarRatingProps = {
   value: number;
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
 };
 
 const StarRating = ({ value, onChange }: StarRatingProps): JSX.Element => {
   //const StarRating: React.FC<StarRatingProps> = ({ value, onChange }) => {
   const handleClick = (index: number) => {
-    onChange((index + 1).toString());
+    if (onChange) onChange((index + 1).toString());
   };
 
   return (
