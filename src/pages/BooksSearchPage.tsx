@@ -3,14 +3,14 @@ import BookSkeleton from "@/components/BookSkeleton";
 import FeedbackMessage from "@/components/FeedbackMessage";
 import Title from "@/components/TitleH1";
 import { Input } from "@/components/ui/input";
-import { getDocsByQueryFirebase } from "@/firebase";
+import { getDocsByQueryFirebase } from "@/firebase/firestore";
 //import { books } from "@/data";
 import { BookType } from "@/types";
 import { X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import useSWR from "swr";
 
-const MAX_RESULTS = 4; // jusqu'à 40
+const MAX_RESULTS = 10; // jusqu'à 40
 const GOOGLE_BOOKS_API_BASE_URL = "https://www.googleapis.com/books/v1/volumes";
 
 type BookAPIType = {

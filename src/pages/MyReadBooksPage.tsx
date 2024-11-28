@@ -3,7 +3,7 @@ import BookSkeleton from "@/components/BookSkeleton";
 import CustomLinkButton from "@/components/CustomLinkButton";
 import FeedbackMessage from "@/components/FeedbackMessage";
 import Title from "@/components/TitleH1";
-import { getDocsByQueryFirebase } from "@/firebase";
+import { getDocsByQueryFirebase } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
 import { UserType } from "@/types";
 import useSWR from "swr";
@@ -11,7 +11,10 @@ import useSWR from "swr";
 const MyReadBooksPage = (): JSX.Element => {
   const { user } = useUserStore();
 
-  const fetcher = async (userId: string | null) => {
+  console.log("USER ID", user?.uid);
+
+  const fetcher = (userId: string | null) => {
+    console.log("");
     //throw new Error("Erreur simulée !");
     if (userId)
       return getDocsByQueryFirebase<UserType>("users", "id", userId).then(
@@ -35,13 +38,19 @@ const MyReadBooksPage = (): JSX.Element => {
     data: myReadBooksIds,
     error,
     isLoading,
-  } = useSWR<string[]>(user ? user.uid : null, fetcher);
+  } = useSWR<string[]>(user?.uid ?? null, fetcher);
+
+  // Pour debugger (LAISSER !!!)
+  if (error) {
+    console.error("Error fetching read books: ", error.message);
+  }
 
   console.log("isLoading", isLoading);
   console.log("myReadBooksIds", myReadBooksIds);
 
   // ici on utilise une constante et pas un state car les message ne change pas et s'affiche seulement si useSWR renvoie une erreur
-  const message = `Un problème est survenu dans la récupération de vos livres lus => ${error?.message}`;
+  const message =
+    "Un problème est survenu dans la récupération de vos livres lus.";
 
   return (
     <div className="h-full min-h-screen">

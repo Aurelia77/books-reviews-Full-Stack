@@ -5,7 +5,7 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { signoutFirebase } from "@/firebase";
+import { signoutFirebase } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
 import { cn } from "@/lib/utils";
 import {

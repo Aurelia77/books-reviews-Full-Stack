@@ -10,8 +10,9 @@ export const emptyUser: UserType = {
   id: "",
   email: "",
   username: "",
-  password: "",
+  imgURL: "",
   booksRead: [],
   booksInProgress: [],
   booksToRead: [],
+  friends: [],
 };

@@ -16,21 +16,23 @@ import {
   setDoc,
   where,
 } from "firebase/firestore";
-import { firebaseConfig } from "./firebase/firebaseConfig";
-import useUserStore from "./hooks/useUserStore";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import useUserStore from "../hooks/useUserStore";
 import {
   AccountFormType,
   BookType,
   MyInfoBookType,
   SearchBooksFormType,
   UserType,
-} from "./types";
+} from "../types";
+import { firebaseConfig } from "./firebaseConfig";
 //import useUserStore from "./hooks/useUserStore";
 
 const app = initializeApp(firebaseConfig);
 //const analytics = getAnalytics(app);
 const db = getFirestore(app);
 const auth = getAuth(app);
+const storage = getStorage(app);
 
 export const registerFirebase = (
   email: string,
@@ -165,19 +167,19 @@ export const addBookFirebase = (
       throw error;
     });
 };
-// pour fusionner plutôt que remplacer :
-// const cityRef = doc(db, 'cities', 'BJ');
-// setDoc(cityRef, { capital: true }, { merge: true });
 
 export const addOrUpdateUserFirebase = (
   userId: string,
   data: UserType | AccountFormType
 ) => {
   console.log("data", data);
-  return setDoc(doc(db, "users", userId), data).catch((error) => {
-    console.error("Error adding user to Firestore: ", error);
-    throw error;
-  });
+  // on ajoute "{ merge: true }"" pour ne pas remplacer les champs qui ne sont pas modifiés
+  return setDoc(doc(db, "users", userId), data, { merge: true }).catch(
+    (error) => {
+      console.error("Error adding user to Firestore: ", error);
+      throw error;
+    }
+  );
 };
 
 // Cette fction retourne des BookType[] ou des UserType[] (fonction générique)
@@ -314,4 +316,66 @@ export const bookInMyBooksFirebase = (
       console.error("Error checking if book is in myBooks: ", error);
       throw error;
     });
+};
+
+// export const uploadImageOnFirebase = (
+//   imageUpload: File | ""
+// ): Promise<string> => {
+//   return new Promise((resolve, reject) => {
+//     if (imageUpload) {
+//       const uniqueId = `${imageUpload.name}_${Date.now()}`;
+//       const imageRef = ref(storage, `usersImg/${uniqueId}`);
+
+//       uploadBytes(imageRef, imageUpload)
+//         .then(() => getDownloadURL(imageRef))
+//         .then((url) => {
+//           resolve(url);
+//         })
+//         .catch((error) => {
+//           console.error("Erreur lors du téléchargement de l'image => ", error);
+//           reject(error);
+//         });
+//     } else {
+//       resolve(""); // ou reject(new Error("No image provided")) selon votre logique
+//     }
+//   });
+// };
+
+// export const uploadImageOnFirebase = (imageUpload: File | null) => {
+//   console.log("!!IMAGE UPLOAD FIREBASE", imageUpload);
+
+//   if (imageUpload) {
+//     const uniqueId = `${imageUpload.name}_${Date.now()}`;
+//     const imageRef = ref(storage, `usersImg/${uniqueId}`);
+
+//     return uploadBytes(imageRef, imageUpload)
+//       .then(() => getDownloadURL(imageRef))
+//       .then((url) => url)
+//       .catch((error) => {
+//         console.error("Erreur lors du téléchargement de l'image => ", error);
+//         throw error;
+//       });
+//   }
+// };
+
+export const uploadImageOnFirebase = async (imageUpload: File | null) => {
+  if (imageUpload) {
+    // We create a random name for the image so that none of them have the same name
+    const imageRef = ref(
+      storage,
+      `userImages/${imageUpload.name + Date.now()}`
+    );
+    try {
+      await uploadBytes(imageRef, imageUpload);
+      // Getting the URL of the uploaded image
+      const url = await getDownloadURL(imageRef);
+
+      return url;
+    } catch (error) {
+      console.error("Erreur lors du téléchargement de l'image : ", error);
+    }
+  } else {
+    console.warn("Aucune image fournie pour le téléchargement.");
+    return;
+  }
 };

@@ -24,15 +24,16 @@ export type UserType = {
   id: string;
   email: string;
   username: string;
-  password: string;
+  imgURL: string;
   booksRead: MyInfoBookType[];
   booksInProgress: MyInfoBookType[];
   booksToRead: MyInfoBookType[];
+  friends: string[];
 };
 
 export type AccountFormType = {
-  displayName: string;
-  //imgURL: string;
+  username: string;
+  imgURL: string;
   //description: string;
   //password: string;                                               // plus tard
 };
