@@ -29,8 +29,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
-import { defaultImage } from "@/constants";
-import { addBookFirebase, bookInMyBooksFirebase } from "@/firebase";
+import { defaultBookImage } from "@/constants";
+import { addBookFirebase, bookInMyBooksFirebase } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
 import { BookStatusEnum, BookType, SearchBooksFormType } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -181,8 +181,8 @@ const BookDetailPage = (): JSX.Element => {
 
           <div className="flex items-start gap-5 p-5 py-12 shadow-xl shadow-primary/30">
             <img
-              src={bookInfos.bookImageLink || defaultImage}
-              onError={(e) => (e.currentTarget.src = defaultImage)}
+              src={bookInfos.bookImageLink || defaultBookImage}
+              onError={(e) => (e.currentTarget.src = defaultBookImage)}
               className="w-32 rounded-sm border border-border object-contain shadow-md shadow-foreground/70"
               alt={`Image de couverture du livre ${bookInfos?.bookTitle}`}
             />

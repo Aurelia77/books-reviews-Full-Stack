@@ -11,12 +11,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { defaultImage } from "@/constants";
+import { defaultBookImage } from "@/constants";
 import {
   getDocsByQueryFirebase,
   getMyInfosBookFirebase,
   getOtherUsersWhoReadBookFirebase,
-} from "@/firebase";
+} from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
 import { BookType, MyInfoBookType } from "@/types";
 import { Star } from "lucide-react";
@@ -171,8 +171,8 @@ BookInfosProps): JSX.Element => {
               </CardDescription>
               <div className="flex items-start gap-5 p-5 pt-10 shadow-md shadow-secondary/60">
                 <img
-                  src={bookInfos.bookImageLink || defaultImage}
-                  onError={(e) => (e.currentTarget.src = defaultImage)}
+                  src={bookInfos.bookImageLink || defaultBookImage}
+                  onError={(e) => (e.currentTarget.src = defaultBookImage)}
                   className="w-32 rounded-sm border border-border object-contain shadow-md shadow-foreground/70"
                   alt={`Image de couverture du livre ${bookInfos?.bookTitle}`}
                 />
