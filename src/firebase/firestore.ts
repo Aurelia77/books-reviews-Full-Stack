@@ -21,6 +21,7 @@ import useUserStore from "../hooks/useUserStore";
 import {
   AccountFormType,
   BookType,
+  FriendType,
   MyInfoBookType,
   SearchBooksFormType,
   UserType,
@@ -65,7 +66,7 @@ export const loginFirebase = (
 // ??????????? Comprendre !!!!!!!! (si j'enlève ça marche plus)
 //Avec useUserStore (Zustand), on met le user à jour à chaque changement d'état de l'utilisateur
 onAuthStateChanged(auth, (user) => {
-  const setUser = useUserStore.getState().setUser;
+  const setUser = useUserStore.getState().setCurrentUser;
   if (user) {
     // User is signed in
     setUser(user);
@@ -80,11 +81,11 @@ export const signoutFirebase = () => {
 };
 
 export const addBookInfoToMyBooksFirebase = (
-  userId: string,
+  currentUserId: string,
   bookId: string,
   formData: SearchBooksFormType
 ): Promise<void> => {
-  return getDocsByQueryFirebase<UserType>("users", "id", userId)
+  return getDocsByQueryFirebase<UserType>("users", "id", currentUserId)
     .then((users) => {
       const user = users[0];
 
@@ -128,7 +129,7 @@ export const addBookInfoToMyBooksFirebase = (
           return;
       }
 
-      return addOrUpdateUserFirebase(userId, user);
+      return addOrUpdateUserFirebase(currentUserId, user);
     })
     .catch((error) => {
       console.error("Error adding book to myReadBooks: ", error);
@@ -138,7 +139,7 @@ export const addBookInfoToMyBooksFirebase = (
 
 // Ajouter message : Book déjà ajouté !!
 export const addBookFirebase = (
-  userId: string,
+  currentUserId: string,
   book: BookType,
   formData: SearchBooksFormType
 ) => {
@@ -160,7 +161,7 @@ export const addBookFirebase = (
   })
     .then(() =>
       // On ajoute l'id du livre à la liste des livres lus de l'utilisateur
-      addBookInfoToMyBooksFirebase(userId, book.bookId, formData)
+      addBookInfoToMyBooksFirebase(currentUserId, book.bookId, formData)
     )
     .catch((error) => {
       console.error("Error adding book to Firestore: ", error);
@@ -169,12 +170,12 @@ export const addBookFirebase = (
 };
 
 export const addOrUpdateUserFirebase = (
-  userId: string,
+  currentUserId: string,
   data: UserType | AccountFormType
 ) => {
   console.log("data", data);
   // on ajoute "{ merge: true }"" pour ne pas remplacer les champs qui ne sont pas modifiés
-  return setDoc(doc(db, "users", userId), data, { merge: true }).catch(
+  return setDoc(doc(db, "users", currentUserId), data, { merge: true }).catch(
     (error) => {
       console.error("Error adding user to Firestore: ", error);
       throw error;
@@ -185,12 +186,12 @@ export const addOrUpdateUserFirebase = (
 // Cette fction retourne des BookType[] ou des UserType[] (fonction générique)
 export const getDocsByQueryFirebase = <T extends BookType | UserType>(
   collectionName: string,
-  fieldToQuery: string,
-  valueToQuery: string | boolean | number
+  fieldToQuery?: string,
+  valueToQuery?: string | boolean | number
 ): Promise<T[]> => {
   const q = query(
     collection(db, collectionName),
-    where(fieldToQuery, "==", valueToQuery)
+    ...(fieldToQuery ? [where(fieldToQuery, "==", valueToQuery)] : [])
   );
 
   return getDocs(q)
@@ -208,10 +209,10 @@ export const getDocsByQueryFirebase = <T extends BookType | UserType>(
 };
 
 export const getMyInfosBookFirebase = (
-  userId: string,
+  currentUserId: string,
   bookId: string
 ): Promise<MyInfoBookType | null> => {
-  return getDocsByQueryFirebase<UserType>("users", "id", userId)
+  return getDocsByQueryFirebase<UserType>("users", "id", currentUserId)
     .then((users) => {
       const user = users[0];
       const book = user.booksRead.find((book) => book.bookId === bookId);
@@ -223,31 +224,72 @@ export const getMyInfosBookFirebase = (
     });
 };
 
-export const getOtherUsersWhoReadBookFirebase = (
+export const getFriendsWhoReadBookFirebase = (
   bookId: string,
-  userId: string
+  currentUserId: string,
+  userIdNotToCount: string = ""
 ): Promise<UserType[]> => {
-  const q = query(collection(db, "users"), where("id", "!=", userId));
+  const q = query(collection(db, "users"), where("id", "==", currentUserId));
 
   return getDocs(q)
-    .then((querySnapshot) => {
-      const otherUsers: UserType[] = [];
-      querySnapshot.forEach((doc) => {
-        console.log("DATA", doc.data());
-        otherUsers.push(doc.data() as UserType);
-      });
-      return otherUsers;
-    })
-    .then((otherUsers) => {
-      console.log("USERS", otherUsers);
-      return otherUsers.filter((user) =>
-        user.booksRead.find((book) => book.bookId === bookId)
+    .then((querySnapshot) => querySnapshot.docs[0].data() as UserType)
+    .then((currentUser: UserType) => currentUser.friends)
+    .then((currentUserFriends: FriendType[]) =>
+      currentUserFriends.map((friend) => friend.id)
+    )
+    .then((currentUserFriendsIds: string[]) => {
+      console.log("***CURRENT USER FRIENDS", currentUserFriendsIds);
+
+      const q2 = query(
+        collection(db, "users"),
+
+        where("id", "!=", userIdNotToCount),
+        where("id", "in", currentUserFriendsIds)
       );
-    })
-    .catch((error) => {
-      console.error("Error getting other users who read book: ", error);
-      throw error;
+
+      return getDocs(q2)
+        .then((querySnapshot) => {
+          const friendsButUserIdNotToCount: UserType[] = [];
+          querySnapshot.forEach((doc) => {
+            console.log("***DOC", doc.data());
+            friendsButUserIdNotToCount.push(doc.data() as UserType);
+          });
+          console.log("***RESULT FRIENDS", friendsButUserIdNotToCount);
+          return friendsButUserIdNotToCount;
+        })
+        .then((friendsButUserIdNotToCount) => {
+          console.log("USERS", friendsButUserIdNotToCount);
+          return friendsButUserIdNotToCount.filter((friend) =>
+            friend.booksRead.find((book) => book.bookId === bookId)
+          );
+        })
+        .catch((error) => {
+          console.error("Error getting other users who read book: ", error);
+          throw error;
+        });
     });
+
+  //const q = query(collection(db, "users"), where("id", "!=", userIdNotToCount));
+
+  // return getDocs(q)
+  //   .then((querySnapshot) => {
+  //     const otherUsers: UserType[] = [];
+  //     querySnapshot.forEach((doc) => {
+  //       console.log("DATA", doc.data());
+  //       otherUsers.push(doc.data() as UserType);
+  //     });
+  //     return otherUsers;
+  //   })
+  //   .then((otherUsers) => {
+  //     console.log("USERS", otherUsers);
+  //     return otherUsers.filter((user) =>
+  //       user.booksRead.find((book) => book.bookId === bookId)
+  //     );
+  //   })
+  //   .catch((error) => {
+  //     console.error("Error getting other users who read book: ", error);
+  //     throw error;
+  //   });
 };
 
 //   // On récupère tous les utilisateurs qui ont lu le livre
@@ -295,9 +337,9 @@ export const getOtherUsersWhoReadBookFirebase = (
 
 export const bookInMyBooksFirebase = (
   bookId: string,
-  userId: string
+  currentUserId: string
 ): Promise<string> => {
-  return getDocsByQueryFirebase<UserType>("users", "id", userId)
+  return getDocsByQueryFirebase<UserType>("users", "id", currentUserId)
     .then((users) => {
       const user = users[0];
 
@@ -318,52 +360,29 @@ export const bookInMyBooksFirebase = (
     });
 };
 
-// export const uploadImageOnFirebase = (
-//   imageUpload: File | ""
-// ): Promise<string> => {
-//   return new Promise((resolve, reject) => {
-//     if (imageUpload) {
-//       const uniqueId = `${imageUpload.name}_${Date.now()}`;
-//       const imageRef = ref(storage, `usersImg/${uniqueId}`);
+export const isUserMyFriendFirebase = (
+  friendId: string,
+  currentUserId: string | undefined
+): Promise<boolean> => {
+  console.log("friendId", friendId, "currentUserId", currentUserId);
+  return getDocsByQueryFirebase<UserType>("users", "id", currentUserId)
+    .then((users) => {
+      const user = users[0];
 
-//       uploadBytes(imageRef, imageUpload)
-//         .then(() => getDownloadURL(imageRef))
-//         .then((url) => {
-//           resolve(url);
-//         })
-//         .catch((error) => {
-//           console.error("Erreur lors du téléchargement de l'image => ", error);
-//           reject(error);
-//         });
-//     } else {
-//       resolve(""); // ou reject(new Error("No image provided")) selon votre logique
-//     }
-//   });
-// };
-
-// export const uploadImageOnFirebase = (imageUpload: File | null) => {
-//   console.log("!!IMAGE UPLOAD FIREBASE", imageUpload);
-
-//   if (imageUpload) {
-//     const uniqueId = `${imageUpload.name}_${Date.now()}`;
-//     const imageRef = ref(storage, `usersImg/${uniqueId}`);
-
-//     return uploadBytes(imageRef, imageUpload)
-//       .then(() => getDownloadURL(imageRef))
-//       .then((url) => url)
-//       .catch((error) => {
-//         console.error("Erreur lors du téléchargement de l'image => ", error);
-//         throw error;
-//       });
-//   }
-// };
+      return user.friends.some((user) => user.id === friendId);
+    })
+    .catch((error) => {
+      console.error("Error checking if user is my friend ", error);
+      throw error;
+    });
+};
 
 export const uploadImageOnFirebase = async (imageUpload: File | null) => {
   if (imageUpload) {
     // We create a random name for the image so that none of them have the same name
     const imageRef = ref(
       storage,
-      `userImages/${imageUpload.name + Date.now()}`
+      `userProfileImages/${imageUpload.name + Date.now()}`
     );
     try {
       await uploadBytes(imageRef, imageUpload);
@@ -378,4 +397,18 @@ export const uploadImageOnFirebase = async (imageUpload: File | null) => {
     console.warn("Aucune image fournie pour le téléchargement.");
     return;
   }
+};
+
+export const addUserIdToMyFriendsFirebase = (
+  currentUserId: string,
+  friendId: string,
+  friendName: string
+) => {
+  getDocsByQueryFirebase<UserType>("users", "id", currentUserId).then(
+    (users) => {
+      const user = users[0];
+      user.friends.push({ id: friendId, userName: friendName });
+      return addOrUpdateUserFirebase(currentUserId, user);
+    }
+  );
 };

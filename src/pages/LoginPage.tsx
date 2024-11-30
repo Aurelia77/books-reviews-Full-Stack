@@ -1,6 +1,6 @@
 import CustomLinkButton from "@/components/CustomLinkButton";
 import FeedbackMessage from "@/components/FeedbackMessage";
-import Title from "@/components/TitleH1";
+import Title from "@/components/Title";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -56,7 +56,7 @@ const LoginPage = (): JSX.Element => {
   };
 
   return (
-    <div className="h-screen sm:p-2">
+    <div className="min-h-screen sm:p-2">
       <Title>Connexion</Title>
       {firebaseError && (
         <FeedbackMessage message={firebaseError} type="error" />

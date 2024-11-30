@@ -1,10 +1,10 @@
+import FriendsWhoReadBook from "@/components/FriendsWhoReadBook";
 import StarRating from "@/components/StarRating";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -61,13 +61,15 @@ const BookDetailPage = (): JSX.Element => {
   const {
     bookInfos,
     friendsWhoReadBook,
-  }: { bookInfos: BookType; friendsWhoReadBook: string[] } =
-    location.state || {};
+  }: {
+    bookInfos: BookType;
+    friendsWhoReadBook: { id: string; userName: string }[];
+  } = location.state || {};
   console.log("bookInfos", bookInfos);
   // const isBookFromApi: boolean = location.state || {};
   //console.log("isBookFromApi", isBookFromApi);
 
-  const { user } = useUserStore();
+  const { currentUser: user } = useUserStore();
 
   const [bookInMyBooks, setBookInMyBooks] = useState<string>("");
   console.log("In my books ?", bookInMyBooks);
@@ -393,14 +395,7 @@ const BookDetailPage = (): JSX.Element => {
             </p>
           </CardContent>
           {friendsWhoReadBook.length > 0 && (
-            <CardFooter className="bg-gray-500/40">
-              <div className="flex flex-row gap-5">
-                <p className="font-semibold">Dans liste :</p>
-                {friendsWhoReadBook.map((friend, index) => (
-                  <p key={index}>{friend}</p>
-                ))}
-              </div>
-            </CardFooter>
+            <FriendsWhoReadBook friendsWhoReadBook={friendsWhoReadBook} />
           )}
         </Card>
       )}

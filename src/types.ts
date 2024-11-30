@@ -19,23 +19,29 @@ export type MyInfoBookType = {
   bookDescription: string | null;
 };
 
+export type FriendType = {
+  id: string;
+  userName: string;
+  isMyFriend?: boolean;
+};
+
 // Mettre USER devant ??? ou enlever Book devant les données de BookType ???
 export type UserType = {
   id: string;
   email: string;
-  username: string;
+  userName: string;
   imgURL: string;
+  description: string;
   booksRead: MyInfoBookType[];
   booksInProgress: MyInfoBookType[];
   booksToRead: MyInfoBookType[];
-  friends: string[];
+  friends: FriendType[];
 };
 
 export type AccountFormType = {
-  username: string;
+  userName: string;
   imgURL: string;
-  //description: string;
-  //password: string;                                               // plus tard
+  description: string;
 };
 
 export type SearchBooksFormType = {

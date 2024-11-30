@@ -9,8 +9,9 @@ export function cn(...inputs: ClassValue[]) {
 export const emptyUser: UserType = {
   id: "",
   email: "",
-  username: "",
+  userName: "",
   imgURL: "",
+  description: "",
   booksRead: [],
   booksInProgress: [],
   booksToRead: [],

@@ -1,7 +1,6 @@
 import {
   Card,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -14,8 +13,8 @@ import {
 import { defaultBookImage } from "@/constants";
 import {
   getDocsByQueryFirebase,
+  getFriendsWhoReadBookFirebase,
   getMyInfosBookFirebase,
-  getOtherUsersWhoReadBookFirebase,
 } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
 import { BookType, MyInfoBookType } from "@/types";
@@ -25,26 +24,40 @@ import { Link } from "react-router-dom";
 import useSWR from "swr";
 import BookSkeleton from "./BookSkeleton";
 import FeedbackMessage from "./FeedbackMessage";
+import FriendsWhoReadBook from "./FriendsWhoReadBook";
 import StarRating from "./StarRating";
 import { Button } from "./ui/button";
 
 // Soit dans BooksSearchPage => on passe un objet book en props
-// Soit dans MyReadBooksPage => on passe un bookId
+// Soit dans MyReadBooksPage / UserAccountPage => on passe un bookId
+// viewUserId = id du user connecté sauf si on est sur UserAccountPage : l'id du user dont on veut voir les infos
 type BookInfosProps =
-  | { book: BookType; bookId?: never }
-  | { book?: never; bookId: string };
+  | { book: BookType; bookId?: never; userIdNotToCount?: string }
+  | { book?: never; bookId: string; userIdNotToCount?: string };
 
 const BookInfos = ({
   book,
   bookId,
+  userIdNotToCount,
 }: //friendsWhoReadBook,
 BookInfosProps): JSX.Element => {
+  console.log("!!!BOOK INFO");
+
+  console.log("xxxUserIdNotToCount", userIdNotToCount);
+
   const [bookInfos, setBookInfos] = useState<BookType | null>(book || null);
   const [myBookInfos, setMyBookInfos] = useState<MyInfoBookType | null>(null);
-  const [friendsWhoReadBook, setFriendsWhoReadBook] = useState<string[]>([]);
-  console.log("friendsWhoReadBook", bookInfos?.bookTitle, friendsWhoReadBook);
+  //const [friendsWhoReadBook, setFriendsWhoReadBook] = useState<string[]>([]);
+  const [friendsWhoReadBook, setFriendsWhoReadBook] = useState<
+    { id: string; userName: string }[]
+  >([]);
+  console.log(
+    "xxxfriendsWhoReadBook",
+    bookInfos?.bookTitle,
+    friendsWhoReadBook
+  );
 
-  const { user } = useUserStore();
+  const { currentUser: user } = useUserStore();
 
   ///////////////////////
   ///////////////////////
@@ -90,6 +103,7 @@ BookInfosProps): JSX.Element => {
   const message = `Un problème est survenu dans la récupération du livre => ${error?.message}`;
 
   useEffect(() => {
+    console.log("xxxUseEffect bookFromId");
     if (bookFromId) {
       setBookInfos(bookFromId);
 
@@ -104,14 +118,19 @@ BookInfosProps): JSX.Element => {
 
   useEffect(() => {
     if (bookInfos)
-      getOtherUsersWhoReadBookFirebase(bookInfos.bookId, user?.uid ?? "").then(
-        (users) => {
-          console.log("FRIENDS", users);
-          const friends = users.map((user) => user.username);
-          setFriendsWhoReadBook(friends);
-        }
-      );
-  }, [bookInfos]);
+      getFriendsWhoReadBookFirebase(
+        bookInfos.bookId,
+        user?.uid ?? "",
+        userIdNotToCount
+      ).then((users) => {
+        console.log("xxxFRIENDS", users);
+        const friends = users.map((user) => ({
+          id: user.id,
+          userName: user.userName,
+        }));
+        setFriendsWhoReadBook(friends);
+      });
+  }, [bookInfos?.bookId, userIdNotToCount]);
 
   // {
   //   error && (
@@ -131,12 +150,12 @@ BookInfosProps): JSX.Element => {
         <FeedbackMessage message={message} type="error" />
       ) : (
         bookInfos && (
-          <Link
-            to={`/books/${bookInfos.bookId}`}
-            state={{ bookInfos, friendsWhoReadBook }}
-          >
-            {/* <Link to={`/books/${bookInfos.bookId}`} state={bookInfos.bookIsFromAPI}> */}
-            <Card className="relative mb-4">
+          // {/* <Link to={`/books/${bookInfos.bookId}`} state={bookInfos.bookIsFromAPI}> */}
+          <Card className="relative mb-4">
+            <Link
+              to={`/books/${bookInfos.bookId}`}
+              state={{ bookInfos, friendsWhoReadBook }}
+            >
               {friendsWhoReadBook.length > 0 && (
                 <TooltipProvider>
                   <Tooltip>
@@ -193,7 +212,7 @@ BookInfosProps): JSX.Element => {
                     <div>
                       <div className="flex items-center gap-4">
                         <h2 className="font-semibold text-muted">
-                          J'ai lu ce livre :
+                          J'ai lu ce livre
                         </h2>
 
                         <Button className="border border-border bg-secondary/40 shadow-sm shadow-foreground/70">
@@ -209,28 +228,12 @@ BookInfosProps): JSX.Element => {
                   )}
                 </CardHeader>
               </div>
-              {friendsWhoReadBook.length > 0 && (
-                <CardFooter
-                  // className={
-                  //   friendsWhoReadBook.length > 0
-                  //     ? "border-4 border-secondary bg-secondary/50"
-                  //     : ""
-                  // }
-                  className="bg-gray-500/40"
-                >
-                  <div className="flex flex-row gap-2 ">
-                    <p className="font-semibold">Lu par :</p>
+            </Link>
 
-                    {friendsWhoReadBook.map((friend, index) => (
-                      <p key={index} className="font-semibold text-muted">
-                        {friend}
-                      </p>
-                    ))}
-                  </div>
-                </CardFooter>
-              )}
-            </Card>
-          </Link>
+            {friendsWhoReadBook.length > 0 && (
+              <FriendsWhoReadBook friendsWhoReadBook={friendsWhoReadBook} />
+            )}
+          </Card>
         )
       )}
     </div>
