@@ -1,6 +1,6 @@
 import CustomLinkButton from "@/components/CustomLinkButton";
 import FeedbackMessage from "@/components/FeedbackMessage";
-import Title from "@/components/TitleH1";
+import Title from "@/components/Title";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -21,8 +21,9 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
-type LoginFormType = {
+type RegisterFormType = {
   email: string;
+  userName: string;
   password: string;
   verifyPassword: string;
 };
@@ -31,6 +32,9 @@ const registerFormSchema = z
   .object({
     email: z.string().email({
       message: "Entrez une adresse email valide.",
+    }),
+    userName: z.string().min(2, {
+      message: "Entrez un pseudo d'au moins 2 caractères.",
     }),
     password: z.string().min(6, {
       message: "Entrez un mot de passe d'au moins 6 caractères.",
@@ -46,22 +50,24 @@ const RegisterPage = (): JSX.Element => {
   const navigate = useNavigate();
   const [firebaseError, setFirebaseError] = useState<string | null>(null);
 
-  const form = useForm<LoginFormType>({
+  const form = useForm<RegisterFormType>({
     resolver: zodResolver(registerFormSchema),
     defaultValues: {
       email: "",
+      userName: "",
       password: "",
       verifyPassword: "",
     },
   });
 
-  const onSubmit: SubmitHandler<LoginFormType> = (data) => {
+  const onSubmit: SubmitHandler<RegisterFormType> = (data) => {
     console.log("data", data);
     registerFirebase(data.email, data.password)
       .then((newUser) => {
         addOrUpdateUserFirebase(newUser.uid, {
           ...emptyUser,
           email: data.email,
+          userName: data.userName,
           id: newUser.uid,
         });
         navigate("/");
@@ -73,7 +79,7 @@ const RegisterPage = (): JSX.Element => {
   };
 
   return (
-    <div className="h-screen sm:p-2">
+    <div className="min-h-screen sm:p-2">
       <Title>Inscription</Title>
       {firebaseError && (
         <FeedbackMessage message={firebaseError} type="error" />
@@ -91,6 +97,18 @@ const RegisterPage = (): JSX.Element => {
               <FormItem>
                 <FormControl>
                   <Input placeholder="Email" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="userName"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input placeholder="Pseudo" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

@@ -2,14 +2,14 @@ import BookInfos from "@/components/BookInfos";
 import BookSkeleton from "@/components/BookSkeleton";
 import CustomLinkButton from "@/components/CustomLinkButton";
 import FeedbackMessage from "@/components/FeedbackMessage";
-import Title from "@/components/TitleH1";
+import Title from "@/components/Title";
 import { getDocsByQueryFirebase } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
 import { UserType } from "@/types";
 import useSWR from "swr";
 
 const MyReadBooksPage = (): JSX.Element => {
-  const { user } = useUserStore();
+  const { currentUser: user } = useUserStore();
 
   console.log("USER ID", user?.uid);
 
@@ -86,7 +86,7 @@ const MyReadBooksPage = (): JSX.Element => {
               <p className="ml-1">Essayez d'aller par là !</p>
               <CustomLinkButton
                 className="bg-accent/60"
-                linkTo="/mybooks/searchbook"
+                linkTo="/mybooks/searchbooks"
               >
                 Recherche de livre
               </CustomLinkButton>

@@ -1,10 +1,10 @@
 import CustomLinkButton from "@/components/CustomLinkButton";
-import Title from "@/components/TitleH1";
+import Title from "@/components/Title";
 import { BookOpen } from "lucide-react";
 
 const MyBooksPage = (): JSX.Element => {
   return (
-    <div className="h-screen">
+    <div className="min-h-screen">
       <div className="flex items-center gap-2">
         <Title>Mes livres</Title>
         <BookOpen size={30} className="text-primary" />

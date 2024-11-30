@@ -5,9 +5,10 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { signoutFirebase } from "@/firebase/firestore";
+import { getDocsByQueryFirebase, signoutFirebase } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
 import { cn } from "@/lib/utils";
+import { UserType } from "@/types";
 import {
   ArrowLeft,
   BookOpen,
@@ -17,6 +18,7 @@ import {
   Search,
   X,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { DarkModeToggle } from "./DarkModeToggle";
 
@@ -24,8 +26,22 @@ const NavBar = (): JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { user } = useUserStore();
+  const { currentUser: user } = useUserStore();
   console.log("USER", user?.email);
+
+  const [userImgURL, setUserImgURL] = useState<string>("");
+  console.log("ImgURL", userImgURL);
+
+  // ca change pas qd je change l'img !!!!!!!!!!!!!!!!!!!!!!!!
+  useEffect(() => {
+    getDocsByQueryFirebase<UserType>("users", "id", user?.uid ?? "").then(
+      (users) => {
+        //console.log("usersImgURL", users[0].userName);
+        //console.log("usersImgURL", users[0].imgURL);
+        setUserImgURL(users[0]?.imgURL);
+      }
+    );
+  }, [user]);
 
   return (
     <div className="sticky top-0 z-20 flex h-12 items-center bg-primary/70 p-1 text-muted shadow-md">
@@ -55,12 +71,12 @@ const NavBar = (): JSX.Element => {
           </NavigationMenuItem>
           {/* RECHERCHE DE LIVRES */}
           <NavigationMenuItem>
-            <Link to="/mybooks/searchbook">
+            <Link to="/mybooks/searchbooks">
               <NavigationMenuLink asChild>
                 <span
                   className={cn(
                     navigationMenuTriggerStyle(),
-                    location.pathname === "/mybooks/searchbook" &&
+                    location.pathname === "/mybooks/searchbooks" &&
                       "bg-primary/90 text-foreground"
                   )}
                 >
@@ -89,7 +105,7 @@ const NavBar = (): JSX.Element => {
               </NavigationMenuItem>
               {/* MON COMPTE */}
               <NavigationMenuItem>
-                <Link to="/account">
+                <Link to={`/account`}>
                   <NavigationMenuLink asChild>
                     <span
                       className={cn(
@@ -98,7 +114,17 @@ const NavBar = (): JSX.Element => {
                           "bg-primary/90 text-foreground"
                       )}
                     >
-                      <CircleUserRound />
+                      {userImgURL !== "" ? (
+                        <img
+                          src={userImgURL}
+                          alt="Image de profile"
+                          width="25"
+                          height="25"
+                          className="m-auto rounded-full border-4 border-pink-700"
+                        />
+                      ) : (
+                        <CircleUserRound />
+                      )}
                     </span>
                   </NavigationMenuLink>
                 </Link>

@@ -1,7 +1,7 @@
 import BookInfos from "@/components/BookInfos";
 import BookSkeleton from "@/components/BookSkeleton";
 import FeedbackMessage from "@/components/FeedbackMessage";
-import Title from "@/components/TitleH1";
+import Title from "@/components/Title";
 import { Input } from "@/components/ui/input";
 import { getDocsByQueryFirebase } from "@/firebase/firestore";
 //import { books } from "@/data";
