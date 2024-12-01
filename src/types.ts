@@ -54,7 +54,7 @@ export type SearchBooksFormType = {
 //export type BookStatus = "read" | "toRead" | "inProgress";
 
 export enum BookStatusEnum {
-  read = "read",
-  inProgress = "inProgress",
-  toRead = "toRead",
+  booksRead = "booksRead",
+  booksInProgress = "booksInProgress",
+  booksToRead = "booksToRead",
 }

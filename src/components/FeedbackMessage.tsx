@@ -10,7 +10,7 @@ const FeedbackMessage = ({
   className?: string;
 }): JSX.Element => {
   const messageClass = cn(
-    "mb-8 mx-[10%] p-4 rounded-md text-center",
+    "my-8 mx-[10%] p-4 rounded-md text-center",
     // type === "info" && "bg-blue-100 text-blue-700",
     // type === "error" && "text-destructive-foreground border border-red-700"
     {

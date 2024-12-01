@@ -87,6 +87,7 @@ const BooksSearchPage = (): JSX.Element => {
   );
   //console.log("titleInput", titleInput);
   const titleInputRef = useRef<HTMLInputElement>(null);
+  const authorInputRef = useRef<HTMLInputElement>(null);
   const [authorInput, setAuthorInput] = useState<string>("");
   // const [inFriendsLists, setInFriendsLists] = useState(true);
   // const [inApi, setInApi] = useState(true);
@@ -420,6 +421,11 @@ const BooksSearchPage = (): JSX.Element => {
   ) => {
     setState("");
     localStorage.removeItem(key);
+    if (key === "titleInput") {
+      titleInputRef.current?.focus();
+    } else if (key === "authorInput") {
+      authorInputRef.current?.focus();
+    }
   };
 
   return (
@@ -488,6 +494,7 @@ const BooksSearchPage = (): JSX.Element => {
           <div className="relative">
             <Input
               value={authorInput}
+              ref={authorInputRef}
               placeholder="Auteur(e)"
               onChange={(e) => handleChangeInput("authorInput", e)}
             />

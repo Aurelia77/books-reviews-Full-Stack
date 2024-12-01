@@ -1,4 +1,5 @@
 import CustomLinkButton from "@/components/CustomLinkButton";
+import FeedbackMessage from "@/components/FeedbackMessage";
 import Title from "@/components/Title";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,9 +41,9 @@ const accountFormSchema = z.object({
 
 const MyAccountPage = (): JSX.Element => {
   const [currentUserInfo, setCurrentUserInfo] = useState<UserType | null>(null);
-  const { currentUser: user } = useUserStore();
+  const { currentUser } = useUserStore();
 
-  console.log("USER INFO", currentUserInfo);
+  //console.log("USER INFO", currentUserInfo);
 
   const [imageUpload, setImageUpload] = useState<File | null>(null);
   const [isImageLoading, setIsImageLoading] = useState(false);
@@ -50,7 +51,6 @@ const MyAccountPage = (): JSX.Element => {
   const uploadImage = () => {
     setIsImageLoading(true);
     if (imageUpload) {
-      console.log("!!!");
       uploadImageOnFirebase(imageUpload)
         .then((url) => {
           setIsImageLoading(false);
@@ -84,22 +84,24 @@ const MyAccountPage = (): JSX.Element => {
   }, [currentUserInfo, reset]);
 
   const onSubmit: SubmitHandler<AccountFormType> = (data) => {
-    console.log("data", data);
-    addOrUpdateUserFirebase(user?.uid ?? "", data);
+    //console.log("data", data);
+    addOrUpdateUserFirebase(currentUser?.uid ?? "", data);
   };
 
   useEffect(() => {
-    getDocsByQueryFirebase<UserType>("users", "id", user?.uid ?? "").then(
-      (users) => {
-        setCurrentUserInfo(users[0]);
-      }
-    );
-  }, [user]);
+    getDocsByQueryFirebase<UserType>(
+      "users",
+      "id",
+      currentUser?.uid ?? ""
+    ).then((users) => {
+      setCurrentUserInfo(users[0]);
+    });
+  }, [currentUser]);
 
   return (
     <div className="min-h-screen sm:p-2">
       <Title>Mon compte</Title>
-      <Title level={2}>{`Identifiant : ${user?.email ?? ""}`}</Title>
+      <Title level={2}>{`Identifiant : ${currentUser?.email ?? ""}`}</Title>
       <Form {...form}>
         <form
           className="mb-12 flex flex-col gap-3"
@@ -183,17 +185,21 @@ const MyAccountPage = (): JSX.Element => {
         </form>
       </Form>
       <Title level={2}>Mes amis</Title>
-      {currentUserInfo?.friends.map((friend, index) => (
-        <Link
-          key={index}
-          to={`/account/${friend.id}`}
-          className="font-semibold text-muted"
-        >
-          {friend.userName}
-        </Link>
-      ))}
+      {currentUserInfo?.friends && currentUserInfo.friends.length > 0 ? (
+        currentUserInfo.friends.map((friend, index) => (
+          <Link
+            key={index}
+            to={`/account/${friend.id}`}
+            className="font-semibold text-muted"
+          >
+            {friend.userName}
+          </Link>
+        ))
+      ) : (
+        <FeedbackMessage message="Aucun ami pour l'instant" />
+      )}
 
-      <div className="flex flex-col gap-4">
+      <div className="my-12 flex flex-col gap-4">
         <CustomLinkButton className="bg-secondary/70" linkTo="/mybooks">
           Mes livres
         </CustomLinkButton>
