@@ -12,12 +12,12 @@ import {
 } from "@/components/ui/tooltip";
 import { defaultBookImage } from "@/constants";
 import {
+  findBookStatusInUserLibraryFirebase,
   getDocsByQueryFirebase,
   getFriendsWhoReadBookFirebase,
-  getMyInfosBookFirebase,
 } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
-import { BookType, MyInfoBookType } from "@/types";
+import { BookType } from "@/types";
 import { Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -25,11 +25,10 @@ import useSWR from "swr";
 import BookSkeleton from "./BookSkeleton";
 import FeedbackMessage from "./FeedbackMessage";
 import FriendsWhoReadBook from "./FriendsWhoReadBook";
-import StarRating from "./StarRating";
-import { Button } from "./ui/button";
+import Title from "./Title";
 
-// Soit dans BooksSearchPage => on passe un objet book en props
-// Soit dans MyReadBooksPage / UserAccountPage => on passe un bookId
+// Soit dans BooksSearchPage => on passe un objet book en props car on a les info nécessaires
+// Soit dans MyReadBooksPage / UserAccountPage => on passe un bookId (et ensuite on va chercher les infos nécessaires)
 // viewUserId = id du user connecté sauf si on est sur UserAccountPage : l'id du user dont on veut voir les infos
 type BookInfosProps =
   | { book: BookType; bookId?: never; userIdNotToCount?: string }
@@ -41,23 +40,22 @@ const BookInfos = ({
   userIdNotToCount,
 }: //friendsWhoReadBook,
 BookInfosProps): JSX.Element => {
-  console.log("!!!BOOK INFO");
+  //console.log("!!!BOOK INFO");
 
-  console.log("xxxUserIdNotToCount", userIdNotToCount);
+  //console.log("xxxUserIdNotToCount", userIdNotToCount);
 
   const [bookInfos, setBookInfos] = useState<BookType | null>(book || null);
-  const [myBookInfos, setMyBookInfos] = useState<MyInfoBookType | null>(null);
   //const [friendsWhoReadBook, setFriendsWhoReadBook] = useState<string[]>([]);
   const [friendsWhoReadBook, setFriendsWhoReadBook] = useState<
     { id: string; userName: string }[]
   >([]);
-  console.log(
-    "xxxfriendsWhoReadBook",
-    bookInfos?.bookTitle,
-    friendsWhoReadBook
-  );
+  // console.log(
+  //   "xxxfriendsWhoReadBook",
+  //   bookInfos?.bookTitle,
+  //   friendsWhoReadBook
+  // );
 
-  const { currentUser: user } = useUserStore();
+  const { currentUser } = useUserStore();
 
   ///////////////////////
   ///////////////////////
@@ -103,16 +101,16 @@ BookInfosProps): JSX.Element => {
   const message = `Un problème est survenu dans la récupération du livre => ${error?.message}`;
 
   useEffect(() => {
-    console.log("xxxUseEffect bookFromId");
+    //console.log("xxxUseEffect bookFromId");
     if (bookFromId) {
       setBookInfos(bookFromId);
 
-      getMyInfosBookFirebase(user?.uid ?? "", bookFromId.bookId).then(
-        (myBook) => {
-          console.log("INFO LIVRE", myBook);
-          setMyBookInfos(myBook);
-        }
-      );
+      // getMyInfosBookFirebase(user?.uid ?? "", bookFromId.bookId).then(
+      //   (myBook) => {
+      //     console.log("INFO LIVRE", myBook);
+      //     setMyBookInfos(myBook);
+      //   }
+      // );
     }
   }, [bookFromId]);
 
@@ -120,10 +118,10 @@ BookInfosProps): JSX.Element => {
     if (bookInfos)
       getFriendsWhoReadBookFirebase(
         bookInfos.bookId,
-        user?.uid ?? "",
+        currentUser?.uid ?? "", // mieux de gérer le undefined ds fonction Firebase je pense !!!???????????? (voir pour tous les user?.uid ?? "")
         userIdNotToCount
       ).then((users) => {
-        console.log("xxxFRIENDS", users);
+        //console.log("xxxFRIENDS", users);
         const friends = users.map((user) => ({
           id: user.id,
           userName: user.userName,
@@ -141,6 +139,18 @@ BookInfosProps): JSX.Element => {
   // }
 
   //return isLoading ? <p>coucou</p> : <p>aaa</p>;
+
+  const [bookInMyList, setBookInMyList] = useState<string>("");
+  //console.log(bookInfos?.bookTitle, "xxxbookInMyList", bookInMyList);
+
+  useEffect(() => {
+    if (currentUser)
+      // ou gérer le undefined dans fonction bookInMyBooksFirebase ??????????
+      findBookStatusInUserLibraryFirebase(
+        bookInfos?.bookId ?? "",
+        currentUser.uid
+      ).then((bookInMyList) => setBookInMyList(bookInMyList));
+  }, [bookInfos?.bookId, currentUser]);
 
   return (
     <div>
@@ -208,7 +218,8 @@ BookInfosProps): JSX.Element => {
                         <span key={index}>{index > 0 ? ` / ${cat}` : cat}</span>
                       ))}
                   </CardDescription>
-                  {bookId && (
+                  {bookInMyList && <Title>{bookInMyList}</Title>}
+                  {/* {bookId && (
                     <div>
                       <div className="flex items-center gap-4">
                         <h2 className="font-semibold text-muted">
@@ -225,7 +236,7 @@ BookInfosProps): JSX.Element => {
                       )}
                       <p>{myBookInfos?.bookDescription}</p>
                     </div>
-                  )}
+                  )} */}
                 </CardHeader>
               </div>
             </Link>

@@ -30,11 +30,22 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { defaultBookImage } from "@/constants";
-import { addBookFirebase, bookInMyBooksFirebase } from "@/firebase/firestore";
+import {
+  addBookFirebase,
+  deleteBookFromMyBooksFirebase,
+  findBookStatusInUserLibraryFirebase,
+  getMyInfosBookFirebase,
+} from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
-import { BookStatusEnum, BookType, SearchBooksFormType } from "@/types";
+import {
+  BookStatusEnum,
+  BookType,
+  MyInfoBookType,
+  SearchBooksFormType,
+  UserType,
+} from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Star } from "lucide-react";
+import { Star, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation } from "react-router-dom";
@@ -69,10 +80,9 @@ const BookDetailPage = (): JSX.Element => {
   // const isBookFromApi: boolean = location.state || {};
   //console.log("isBookFromApi", isBookFromApi);
 
-  const { currentUser: user } = useUserStore();
+  const { currentUser } = useUserStore();
 
-  const [bookInMyBooks, setBookInMyBooks] = useState<string>("");
-  console.log("In my books ?", bookInMyBooks);
+  const [bookInMyBooks, setBookInMyBooks] = useState<keyof UserType | "">("");
 
   // const { friendsWhoReadBook }: { friendsWhoReadBook: string[] } =
   //   location.state || {};
@@ -93,7 +103,7 @@ const BookDetailPage = (): JSX.Element => {
     resolver: zodResolver(bookFormSchema),
     // Tjs mettre des valeurs par défaut sinon ERREUR : Warning: A component is changing an uncontrolled input to be controlled
     defaultValues: {
-      bookStatus: BookStatusEnum.read,
+      bookStatus: BookStatusEnum.booksRead,
       year: currentYear,
       note: 0,
       description: "",
@@ -105,12 +115,19 @@ const BookDetailPage = (): JSX.Element => {
   const onSubmit: SubmitHandler<SearchBooksFormType> = (formData) => {
     console.log("SUBMIT !!! formData", formData);
 
-    addBookFirebase(user?.uid ?? "", bookInfos, formData).then(() => {
+    addBookFirebase(currentUser?.uid ?? "", bookInfos, formData).then(() => {
       console.log("Livre ajouté ! ", bookInfos.bookTitle);
     });
 
     setBookInMyBooks(formData.bookStatus);
   };
+
+  useEffect(() => {
+    findBookStatusInUserLibraryFirebase(
+      bookInfos?.bookId ?? "",
+      currentUser?.uid ?? ""
+    ).then((res) => setBookInMyBooks(res));
+  }, [bookInfos, currentUser]);
 
   // const onSubmit: SubmitHandler<LoginFormType> = (data) => {
   //   console.log("data", data);
@@ -152,11 +169,22 @@ const BookDetailPage = (): JSX.Element => {
   //   }
   // }, [bookId]);
 
+  const [myBookInfos, setMyBookInfos] = useState<MyInfoBookType | null>(null);
+
   useEffect(() => {
-    bookInMyBooksFirebase(bookInfos?.bookId ?? "", user?.uid ?? "").then(
-      (res) => setBookInMyBooks(res)
+    getMyInfosBookFirebase(currentUser?.uid ?? "", bookInfos.bookId).then(
+      (myBook) => {
+        //console.log("INFO LIVRE", myBook);
+        setMyBookInfos(myBook);
+      }
     );
-  }, [bookInfos, user]);
+  }, [bookInfos.bookId]);
+
+  const handleDeleteBook = (bookId: string) => {
+    deleteBookFromMyBooksFirebase(currentUser?.uid, bookId, bookInMyBooks).then(
+      () => setBookInMyBooks("")
+    );
+  };
 
   return (
     <div className="min-h-screen pb-4">
@@ -215,9 +243,31 @@ const BookDetailPage = (): JSX.Element => {
                   </Button>
                 </DialogTrigger>
               ) : (
-                <p className="absolute -top-6 left-1/4 h-12 w-1/2 border border-border bg-secondary/60 pl-2 shadow-md shadow-foreground/70">
-                  Dans ma liste : {bookInMyBooks}
-                </p>
+                <div className="relative">
+                  <p className="absolute -top-6 left-1/4 h-12 w-1/2 border border-border bg-secondary/60 pl-2 shadow-md shadow-foreground/70">
+                    Dans ma liste : {bookInMyBooks}
+                  </p>
+                  <X
+                    className="absolute bottom-8 right-0 text-destructive-foreground"
+                    onClick={() => handleDeleteBook(bookInfos.bookId)}
+                  />
+                  <div>
+                    <div className="flex items-center gap-4">
+                      <h2 className="font-semibold text-muted">
+                        J'ai lu ce livre
+                      </h2>
+
+                      <Button className="border border-border bg-secondary/40 shadow-sm shadow-foreground/70">
+                        Modifier
+                      </Button>
+                    </div>
+                    <p>{myBookInfos?.bookYear}</p>
+                    {myBookInfos?.bookNote && (
+                      <StarRating value={myBookInfos.bookNote} />
+                    )}
+                    <p>{myBookInfos?.bookDescription}</p>
+                  </div>
+                </div>
               )}
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
@@ -276,21 +326,21 @@ const BookDetailPage = (): JSX.Element => {
                           >
                             <div className="flex items-center space-x-2">
                               <RadioGroupItem
-                                value={BookStatusEnum.read}
-                                id="read"
+                                value={BookStatusEnum.booksRead}
+                                id="booksRead"
                               />
                               <Label htmlFor="read">Lu</Label>
                             </div>
                             <div className="flex items-center space-x-2">
                               <RadioGroupItem
-                                value={BookStatusEnum.inProgress}
-                                id="inProgress"
+                                value={BookStatusEnum.booksInProgress}
+                                id="booksInProgress"
                               />
-                              <Label htmlFor="inProgress">En cours</Label>
+                              <Label htmlFor="booksInProgress">En cours</Label>
                             </div>
                             <div className="flex items-center space-x-2">
                               <RadioGroupItem
-                                value={BookStatusEnum.toRead}
+                                value={BookStatusEnum.booksToRead}
                                 id="toRead"
                               />
                               <Label htmlFor="toRead">À lire</Label>
@@ -298,7 +348,7 @@ const BookDetailPage = (): JSX.Element => {
                           </RadioGroup>
                         )}
                       />
-                      {form.watch().bookStatus === "read" && (
+                      {form.watch().bookStatus === BookStatusEnum.booksRead && (
                         <div className="flex flex-col gap-3">
                           <FormField
                             control={form.control}

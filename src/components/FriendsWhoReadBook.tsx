@@ -7,26 +7,19 @@ const FriendsWhoReadBook = ({
 }: {
   friendsWhoReadBook: FriendType[];
 }) => {
-  console.log("!!!FRIENDS WHO READ BOOK");
-
   return (
     <CardFooter className="bg-gray-500/40">
       <div className="flex flex-row gap-2 ">
-        <p className="font-semibold">Lu par :</p>
-        {friendsWhoReadBook.map((friend, index) => {
-          console.log("**friend", friend);
-          return (
-            <>
-              <Link
-                key={index}
-                to={`/account/${friend.id}`}
-                className="font-semibold text-muted"
-              >
-                {friend.userName}
-              </Link>
-            </>
-          );
-        })}
+        <p className="font-semibold">Lu par mes amis :</p>
+        {friendsWhoReadBook.map((friend) => (
+          <Link
+            key={friend.id}
+            to={`/account/${friend.id}`}
+            className="font-semibold text-muted"
+          >
+            {friend.userName}
+          </Link>
+        ))}
       </div>
     </CardFooter>
   );

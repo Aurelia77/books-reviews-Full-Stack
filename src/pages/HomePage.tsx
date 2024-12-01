@@ -2,14 +2,14 @@ import CustomLinkButton from "@/components/CustomLinkButton";
 import useUserStore from "@/hooks/useUserStore";
 
 const HomePage = (): JSX.Element => {
-  const { currentUser: user } = useUserStore();
+  const { currentUser } = useUserStore();
 
   return (
     <div
       className="flex min-h-screen flex-col gap-4 py-12"
       // items-center
     >
-      {user ? (
+      {currentUser ? (
         <div className="flex flex-col gap-4">
           <CustomLinkButton className="bg-primary" linkTo="/mybooks">
             Mes livres

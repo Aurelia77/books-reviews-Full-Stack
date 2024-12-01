@@ -9,7 +9,6 @@ import {
   isUserMyFriendFirebase,
 } from "@/firebase/firestore";
 //import { books } from "@/data";
-import FriendsWhoReadBook from "@/components/FriendsWhoReadBook";
 import { X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
@@ -18,10 +17,10 @@ import { Link } from "react-router-dom";
 
 const UsersSearchPage = (): JSX.Element => {
   const { currentUser } = useUserStore();
-  console.log("currentUser", currentUser?.uid);
+  //console.log("currentUser", currentUser?.uid);
 
   const [otherUsers, setOtherUsers] = useState<FriendType[]>([]);
-  console.log("otherUsers", otherUsers);
+  //console.log("otherUsers", otherUsers);
 
   useEffect(() => {
     getDocsByQueryFirebase<UserType>("users")
@@ -40,7 +39,7 @@ const UsersSearchPage = (): JSX.Element => {
         );
 
         Promise.all(promises).then((otherUsersFriendType: FriendType[]) => {
-          console.log("Résultats des promesses", otherUsersFriendType);
+          //console.log("Résultats des promesses", otherUsersFriendType);
           const sortedUsers = otherUsersFriendType.sort(
             (a: FriendType, b: FriendType) => (a.userName > b.userName ? 1 : -1)
           );
@@ -58,8 +57,6 @@ const UsersSearchPage = (): JSX.Element => {
   // const [inFriendsLists, setInFriendsLists] = useState(true);
   // const [inApi, setInApi] = useState(true);
 
-  const formRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     const filteredUsers = otherUsers.filter((user) =>
       user.userName.includes(userNameInput)
@@ -70,16 +67,13 @@ const UsersSearchPage = (): JSX.Element => {
   return (
     <div className="h-full min-h-screen sm:p-2">
       <div className="flex h-full flex-col gap-6">
-        <div
-          ref={formRef}
-          className="sticky top-10 z-10 flex flex-col gap-3 bg-background/70 duration-500"
-        >
+        <div className="sticky top-10 z-10 flex flex-col gap-3 bg-background/70 duration-500">
           <Title>Recherche de membres</Title>
           <div className="relative">
             <Input
               value={userNameInput}
               ref={titleInputRef}
-              placeholder="Titre"
+              placeholder="Nom"
               onChange={(e) => setUserNameInput(e.target.value)}
             />
             <X
@@ -88,8 +82,6 @@ const UsersSearchPage = (): JSX.Element => {
             />
           </div>
         </div>
-
-        <FriendsWhoReadBook friendsWhoReadBook={otherUsers} />
 
         {otherUsers?.length > 0 ? (
           <ul className="pb-40">

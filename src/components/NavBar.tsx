@@ -26,26 +26,27 @@ const NavBar = (): JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { currentUser: user } = useUserStore();
-  console.log("USER", user?.email);
+  const { currentUser } = useUserStore();
+  //console.log("USER", currentUser?.email);
 
   const [userImgURL, setUserImgURL] = useState<string>("");
-  console.log("ImgURL", userImgURL);
+  //console.log("ImgURL", userImgURL);
 
   // ca change pas qd je change l'img !!!!!!!!!!!!!!!!!!!!!!!!
   useEffect(() => {
-    getDocsByQueryFirebase<UserType>("users", "id", user?.uid ?? "").then(
-      (users) => {
-        //console.log("usersImgURL", users[0].userName);
-        //console.log("usersImgURL", users[0].imgURL);
-        setUserImgURL(users[0]?.imgURL);
-      }
-    );
-  }, [user]);
+    if (currentUser?.uid)
+      getDocsByQueryFirebase<UserType>("users", "id", currentUser?.uid).then(
+        (users) => {
+          //console.log("usersImgURL", users[0].userName);
+          //console.log("usersImgURL", users[0].imgURL);
+          setUserImgURL(users[0]?.imgURL);
+        }
+      );
+  }, [currentUser]);
 
   return (
     <div className="sticky top-0 z-20 flex h-12 items-center bg-primary/70 p-1 text-muted shadow-md">
-      <p>USER : {user?.email}</p>
+      <p>USER : {currentUser?.email}</p>
       <ArrowLeft
         className="absolute left-1 top-1 z-20 cursor-pointer text-muted/60"
         size={36}
@@ -85,7 +86,7 @@ const NavBar = (): JSX.Element => {
               </NavigationMenuLink>
             </Link>
           </NavigationMenuItem>
-          {user ? (
+          {currentUser ? (
             <div className="flex gap-1">
               {/* MES LIVRES */}
               <NavigationMenuItem>
