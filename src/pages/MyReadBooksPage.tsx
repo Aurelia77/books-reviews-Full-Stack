@@ -14,14 +14,14 @@ const MyReadBooksPage = (): JSX.Element => {
   console.log("USER ID", currentUser?.uid);
 
   const fetcher = (userId: string | null) => {
-    console.log("");
+    console.log("FETCHING MyReadBooksPage");
     //throw new Error("Erreur simulée !");
     if (userId)
       return getDocsByQueryFirebase<UserType>("users", "id", userId).then(
         (users) => {
           console.log("USERS", users);
 
-          const booksReadIds = users[0].booksRead.map((book) => book.bookId);
+          const booksReadIds = users[0].booksRead.map((book) => book.id);
 
           return booksReadIds;
         }
@@ -29,7 +29,7 @@ const MyReadBooksPage = (): JSX.Element => {
       );
     //si userId est null, on retourne une promesse vide
     return Promise.resolve([]);
-    //   getDocsByQueryFirebase("books", "bookId", bookId).then((books) => {
+    //   getDocsByQueryFirebase("books", "id", bookId).then((books) => {
     //   setMyReadBooks((prevBooks) => [...prevBooks, ...books]);
     // });
   };

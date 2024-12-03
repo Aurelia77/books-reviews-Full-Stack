@@ -3,33 +3,14 @@ import BookSkeleton from "@/components/BookSkeleton";
 import FeedbackMessage from "@/components/FeedbackMessage";
 import Title from "@/components/Title";
 import { Input } from "@/components/ui/input";
+import { GOOGLE_BOOKS_API_URL } from "@/constants";
 import { getDocsByQueryFirebase } from "@/firebase/firestore";
-//import { books } from "@/data";
-import { BookType } from "@/types";
+import { BookAPIType, BookType } from "@/types";
 import { X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import useSWR from "swr";
 
 const MAX_RESULTS = 10; // jusqu'à 40
-const GOOGLE_BOOKS_API_BASE_URL = "https://www.googleapis.com/books/v1/volumes";
-
-type BookAPIType = {
-  id: string;
-  volumeInfo: {
-    title: string;
-    authors: string[];
-    imageLinks: {
-      thumbnail: string;
-      smallThumbnail: string;
-    };
-    language: string;
-    description: string;
-    categories: string[];
-    pageCount: number;
-    publishedDate: string;
-    publisher: string;
-  };
-};
 
 // const useDebounce = <T extends string[]>(
 //   callback: (...args: T) => void,
@@ -76,8 +57,9 @@ const useDebounceEffect = (
 const BooksSearchPage = (): JSX.Element => {
   const [dbBooks, setDbBooks] = useState<BookType[]>([]);
   //console.log("**1-books from BDD", dbBooks.length);
+
   const [booksApiUrl, setBooksApiUrl] = useState(
-    `https://www.googleapis.com/books/v1/volumes?q=subject:general&maxResults=${MAX_RESULTS}`
+    `${GOOGLE_BOOKS_API_URL}?q=subject:general&maxResults=${MAX_RESULTS}`
   );
   const [bdAndApiBooks, setDbAndApiBooks] = useState<BookType[]>([]);
   console.log("ALL-books from BDD and API", bdAndApiBooks.length);
@@ -92,7 +74,7 @@ const BooksSearchPage = (): JSX.Element => {
   // const [inFriendsLists, setInFriendsLists] = useState(true);
   // const [inApi, setInApi] = useState(true);
 
-  // APPEL API (hook perso ?)
+  // 2-DEBUT============================FAIRE HOOK PERSO !!!
   const fetchAPIBooks = (booksApiUrl: string): Promise<BookType[]> => {
     // throw new Error(
     //   "Erreur simulée !"
@@ -114,17 +96,17 @@ const BooksSearchPage = (): JSX.Element => {
         .then((items) => {
           const booksFromAPI: BookType[] = items.map((book: BookAPIType) => {
             return {
-              bookId: book.id,
-              bookTitle: book.volumeInfo.title,
-              bookAuthor: book.volumeInfo?.authors?.[0] ?? "Auteur inconnu",
-              bookDescription: book.volumeInfo.description,
-              bookCategories: book.volumeInfo.categories,
-              bookPageCount: book.volumeInfo.pageCount,
-              bookPublishedDate: book.volumeInfo.publishedDate,
-              bookPublisher: book.volumeInfo.publisher,
-              bookImageLink: book.volumeInfo.imageLinks?.thumbnail,
-              bookLanguage: book.volumeInfo.language,
-              bookIsFromAPI: true,
+              id: book.id,
+              title: book.volumeInfo.title,
+              author: book.volumeInfo?.authors?.[0] ?? "Auteur inconnu",
+              description: book.volumeInfo.description,
+              categories: book.volumeInfo.categories,
+              pageCount: book.volumeInfo.pageCount,
+              publishedDate: book.volumeInfo.publishedDate,
+              publisher: book.volumeInfo.publisher,
+              imageLink: book.volumeInfo.imageLinks?.thumbnail,
+              language: book.volumeInfo.language,
+              isFromAPI: true,
             };
           });
           return booksFromAPI;
@@ -135,6 +117,13 @@ const BooksSearchPage = (): JSX.Element => {
         })
     );
   };
+
+  const {
+    data: apiBooks,
+    error,
+    isLoading,
+  } = useSWR<BookType[]>(booksApiUrl, fetchAPIBooks);
+  // 2-FIN============================FAIRE HOOK PERSO !!!
 
   // // Utiliser useDebounce pour retarder la mise à jour de l'URL de l'API
   // const debounceUpdateUrl = useDebounce((title: string, author: string) => {
@@ -156,13 +145,6 @@ const BooksSearchPage = (): JSX.Element => {
   // useEffect(() => {
   //   debounceUpdateUrl(titleInput, authorInput);
   // }, [titleInput, authorInput, debounceUpdateUrl]);
-
-  const {
-    data: apiBooks,
-    error,
-    isLoading,
-  } = useSWR<BookType[]>(booksApiUrl, fetchAPIBooks);
-  //console.log("2-booksFromAPI", apiBooks?.length);
 
   // ici on utilise une constante et pas un state car les message ne change pas et s'affiche seulement si useSWR renvoie une erreur
   const message = `Un problème est survenu dans la récupération de livres de Google Books => ${error?.message}`;
@@ -302,13 +284,13 @@ const BooksSearchPage = (): JSX.Element => {
         if (titleInput) {
           queryApi += `+intitle:${encodeURIComponent(titleInput)}`;
           dbSearchBooks = dbBooks.filter((book: BookType) =>
-            book.bookTitle.toLowerCase().includes(titleInput.toLowerCase())
+            book.title.toLowerCase().includes(titleInput.toLowerCase())
           );
         }
         if (authorInput) {
           queryApi += `+inauthor:${encodeURIComponent(authorInput)}`;
           dbSearchBooks = dbBooks.filter((book: BookType) =>
-            book.bookAuthor.toLowerCase().includes(authorInput.toLowerCase())
+            book.author.toLowerCase().includes(authorInput.toLowerCase())
           );
         }
         // if (titleInput && authorInput) {
@@ -330,7 +312,7 @@ const BooksSearchPage = (): JSX.Element => {
       // console.log("**2/dbSearchBooks", dbSearchBooks);
 
       setBooksApiUrl(
-        `${GOOGLE_BOOKS_API_BASE_URL}?q=${queryApi}&maxResults=${MAX_RESULTS}`
+        `${GOOGLE_BOOKS_API_URL}?q=${queryApi}&maxResults=${MAX_RESULTS}`
       );
 
       // Pk opérateur ternaire ne marche pas !!!!???
@@ -523,7 +505,7 @@ const BooksSearchPage = (): JSX.Element => {
         ) : bdAndApiBooks?.length > 0 ? (
           <ul className="pb-40">
             {bdAndApiBooks.map((book: BookType) => (
-              <li key={book.bookId}>
+              <li key={book.id}>
                 {/* Ici on passe le book en props (et pas le bookId comme dans MyReadBooksPage) */}
                 <BookInfos
                   book={book}

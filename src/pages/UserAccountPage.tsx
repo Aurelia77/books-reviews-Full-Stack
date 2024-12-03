@@ -2,7 +2,7 @@ import BookInfos from "@/components/BookInfos";
 import FeedbackMessage from "@/components/FeedbackMessage";
 import Title from "@/components/Title";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { Card, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   addUserIdToMyFriendsFirebase,
@@ -38,11 +38,9 @@ const UserAccountPage = (): JSX.Element => {
   }, [userInUrl]);
 
   const addFriendHandler = () => {
-    addUserIdToMyFriendsFirebase(
-      currentUser?.uid,
-      userInUrl.userId,
-      userInfo?.userName
-    ).then(() => setIsFriend(true));
+    addUserIdToMyFriendsFirebase(currentUser?.uid, userInUrl.userId).then(() =>
+      setIsFriend(true)
+    );
   };
 
   const deleteFriendHandler = () => {
@@ -53,29 +51,32 @@ const UserAccountPage = (): JSX.Element => {
 
   return (
     <div className="min-h-screen sm:p-2" key={userInUrl.userId}>
-      <Title>{userInfo?.userName ?? ""}</Title>
-      <p>{isFriend ? "Ami" : "Non ami"}</p>
-      {isFriend ? (
-        <Button onClick={deleteFriendHandler}>Supprimer de mes amis</Button>
-      ) : (
-        <Button onClick={addFriendHandler}>Ajouter à mes amis</Button>
-      )}
-      {userInfo?.imgURL && (
-        <img
-          src={userInfo?.imgURL}
-          alt="Image sélectionnée"
-          width="150"
-          height="150"
-          className="m-auto mb-4"
-        />
-      )}
-      <div className="m-2">
-        <Label>{userInfo?.description}</Label>
-      </div>
+      <Card>
+        <div className="mr-2 flex items-center justify-between">
+          <Title>{userInfo?.userName ?? ""}</Title>
+          <CardDescription>{isFriend ? "Ami" : "Non ami"}</CardDescription>
+          {isFriend ? (
+            <Button onClick={deleteFriendHandler}>Supprimer de mes amis</Button>
+          ) : (
+            <Button onClick={addFriendHandler}>Ajouter à mes amis</Button>
+          )}
+        </div>
+        <div className="m-4 flex gap-4">
+          {userInfo?.imgURL && (
+            <img
+              src={userInfo?.imgURL}
+              alt="Image sélectionnée"
+              width="150"
+              height="150"
+            />
+          )}
+          <CardDescription className="m-2 whitespace-pre-wrap">
+            {userInfo?.description}
+          </CardDescription>
+        </div>
+      </Card>
 
-      <hr className="my-4 border-t border-primary" />
-
-      <Title level={2}>Livres</Title>
+      <Title level={2}>Listes de livres</Title>
       <Tabs defaultValue="booksRead" className="mt-4">
         <TabsList>
           <TabsTrigger value="booksRead">Lus</TabsTrigger>
@@ -85,11 +86,11 @@ const UserAccountPage = (): JSX.Element => {
         <TabsContent value="booksRead">
           {userInfo?.booksRead && userInfo?.booksRead?.length > 0 ? (
             userInfo?.booksRead
-              .sort((a, b) => (a.bookYear ?? 0) - (b.bookYear ?? 0))
+              .sort((a, b) => (a.year ?? 0) - (b.year ?? 0))
               .map((book: MyInfoBookType) => (
                 <BookInfos
-                  key={book.bookId}
-                  bookId={book.bookId}
+                  key={book.id}
+                  bookId={book.id}
                   userIdNotToCount={userInfo.id}
                 />
               ))
@@ -105,8 +106,8 @@ const UserAccountPage = (): JSX.Element => {
           userInfo?.booksInProgress?.length > 0 ? (
             userInfo?.booksInProgress.map((book: MyInfoBookType) => (
               <BookInfos
-                key={book.bookId}
-                bookId={book.bookId}
+                key={book.id}
+                bookId={book.id}
                 userIdNotToCount={userInfo.id}
               />
             ))
@@ -121,8 +122,8 @@ const UserAccountPage = (): JSX.Element => {
           {userInfo?.booksToRead && userInfo?.booksToRead?.length > 0 ? (
             userInfo?.booksToRead.map((book: MyInfoBookType) => (
               <BookInfos
-                key={book.bookId}
-                bookId={book.bookId}
+                key={book.id}
+                bookId={book.id}
                 userIdNotToCount={userInUrl.userId}
               />
             ))

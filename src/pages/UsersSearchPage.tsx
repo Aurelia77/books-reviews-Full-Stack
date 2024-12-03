@@ -1,5 +1,5 @@
 import useUserStore from "@/hooks/useUserStore";
-import { FriendType, UserType } from "@/types";
+import { UserType } from "@/types";
 
 import FeedbackMessage from "@/components/FeedbackMessage";
 import Title from "@/components/Title";
@@ -9,9 +9,9 @@ import {
   isUserMyFriendFirebase,
 } from "@/firebase/firestore";
 //import { books } from "@/data";
+import UsersListView from "@/components/UsersListView";
 import { X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
 
 // const MAX_RESULTS = 10; // jusqu'à 40
 
@@ -19,7 +19,7 @@ const UsersSearchPage = (): JSX.Element => {
   const { currentUser } = useUserStore();
   //console.log("currentUser", currentUser?.uid);
 
-  const [otherUsers, setOtherUsers] = useState<FriendType[]>([]);
+  const [otherUsers, setOtherUsers] = useState<UserType[]>([]);
   //console.log("otherUsers", otherUsers);
 
   useEffect(() => {
@@ -31,19 +31,16 @@ const UsersSearchPage = (): JSX.Element => {
         const promises = otherUsers.map((user: UserType) =>
           isUserMyFriendFirebase(user.id, currentUser?.uid).then(
             (isFriend: boolean) => ({
-              id: user.id,
-              userName: user.userName,
+              ...user,
               isMyFriend: isFriend,
             })
           )
         );
 
-        Promise.all(promises).then((otherUsersFriendType: FriendType[]) => {
-          //console.log("Résultats des promesses", otherUsersFriendType);
+        Promise.all(promises).then((otherUsersFriendType: UserType[]) => {
           const sortedUsers = otherUsersFriendType.sort(
-            (a: FriendType, b: FriendType) => (a.userName > b.userName ? 1 : -1)
+            (a: UserType, b: UserType) => (a.userName > b.userName ? 1 : -1)
           );
-
           setOtherUsers(sortedUsers);
         });
       });
@@ -83,20 +80,9 @@ const UsersSearchPage = (): JSX.Element => {
           </div>
         </div>
 
+        {/* Mettre un Spinner pour pas voir rapidement le message Aucun membre */}
         {otherUsers?.length > 0 ? (
-          <ul className="pb-40">
-            {otherUsers.map((friend) => (
-              <li key={friend.id}>
-                <Link
-                  to={`/account/${friend.id}`}
-                  className="font-semibold text-muted"
-                >
-                  {friend.userName}
-                </Link>
-                <p>{friend.isMyFriend ? "Ami" : "Non ami"}</p>
-              </li>
-            ))}
-          </ul>
+          <UsersListView userInfoList={otherUsers} />
         ) : (
           <FeedbackMessage message="Aucun membre trouvé" type="info" />
         )}
