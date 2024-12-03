@@ -21,6 +21,7 @@ import {
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { DarkModeToggle } from "./DarkModeToggle";
+import { Avatar, AvatarImage } from "./ui/avatar";
 
 const NavBar = (): JSX.Element => {
   const navigate = useNavigate();
@@ -87,7 +88,7 @@ const NavBar = (): JSX.Element => {
             </Link>
           </NavigationMenuItem>
           {currentUser ? (
-            <div className="flex gap-1">
+            <div className="flex items-center gap-1">
               {/* MES LIVRES */}
               <NavigationMenuItem>
                 <Link to="/mybooks">
@@ -105,7 +106,7 @@ const NavBar = (): JSX.Element => {
                 </Link>
               </NavigationMenuItem>
               {/* MON COMPTE */}
-              <NavigationMenuItem>
+              <NavigationMenuItem className="mt-1">
                 <Link to={`/account`}>
                   <NavigationMenuLink asChild>
                     <span
@@ -116,13 +117,9 @@ const NavBar = (): JSX.Element => {
                       )}
                     >
                       {userImgURL !== "" ? (
-                        <img
-                          src={userImgURL}
-                          alt="Image de profile"
-                          width="25"
-                          height="25"
-                          className="m-auto rounded-full border-4 border-pink-700"
-                        />
+                        <Avatar className="border border-foreground">
+                          <AvatarImage src={userImgURL} />
+                        </Avatar>
                       ) : (
                         <CircleUserRound />
                       )}

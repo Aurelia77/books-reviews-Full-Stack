@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import UsersListView from "@/components/UsersListView";
 import {
   addOrUpdateUserFirebase,
   getDocsByQueryFirebase,
@@ -21,7 +22,6 @@ import { AccountFormType, UserType } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
 import { z } from "zod";
 
 const accountFormSchema = z.object({
@@ -41,6 +41,7 @@ const accountFormSchema = z.object({
 
 const MyAccountPage = (): JSX.Element => {
   const [currentUserInfo, setCurrentUserInfo] = useState<UserType | null>(null);
+  const [friendsInfo, setFriendsInfo] = useState<UserType[]>([]);
   const { currentUser } = useUserStore();
 
   //console.log("USER INFO", currentUserInfo);
@@ -85,18 +86,29 @@ const MyAccountPage = (): JSX.Element => {
 
   const onSubmit: SubmitHandler<AccountFormType> = (data) => {
     //console.log("data", data);
-    addOrUpdateUserFirebase(currentUser?.uid ?? "", data);
+    addOrUpdateUserFirebase(currentUser?.uid, data);
   };
 
   useEffect(() => {
-    getDocsByQueryFirebase<UserType>(
-      "users",
-      "id",
-      currentUser?.uid ?? ""
-    ).then((users) => {
-      setCurrentUserInfo(users[0]);
-    });
-  }, [currentUser]);
+    if (currentUser)
+      // otherwise error if page reload
+      getDocsByQueryFirebase<UserType>("users", "id", currentUser?.uid).then(
+        (users) => {
+          const userInfo = users[0];
+          setCurrentUserInfo(userInfo);
+
+          if (userInfo?.friends) {
+            Promise.all(
+              userInfo.friends.map((friendId) =>
+                getDocsByQueryFirebase<UserType>("users", "id", friendId)
+              )
+            ).then((friends) => {
+              setFriendsInfo(friends.map((friend) => friend[0]));
+            });
+          }
+        }
+      );
+  }, [currentUser?.uid]);
 
   return (
     <div className="min-h-screen sm:p-2">
@@ -185,17 +197,24 @@ const MyAccountPage = (): JSX.Element => {
         </form>
       </Form>
       <Title level={2}>Mes amis</Title>
-      {currentUserInfo?.friends && currentUserInfo.friends.length > 0 ? (
-        currentUserInfo.friends.map((friend, index) => (
-          <Link
-            key={index}
-            to={`/account/${friend.id}`}
-            className="font-semibold text-muted"
-          >
-            {friend.userName}
-          </Link>
-        ))
+      {friendsInfo.length > 0 ? (
+        <UsersListView userInfoList={friendsInfo} />
       ) : (
+        // friendsInfo.map((friendInfo, index) => (
+
+        // <Link
+        //   key={index}
+        //   to={`/account/${friendInfo.id}`}
+        //   className="font-semibold text-muted"
+        // >
+        //   <div className="flex items-center gap-2">
+        //     <Avatar>
+        //       <AvatarImage src={friendInfo.imgURL} />
+        //     </Avatar>
+        //     <p>{friendInfo.userName}</p>
+        //   </div>
+        // </Link>
+        // ))
         <FeedbackMessage message="Aucun ami pour l'instant" />
       )}
 

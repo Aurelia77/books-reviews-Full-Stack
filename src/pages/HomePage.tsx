@@ -20,6 +20,9 @@ const HomePage = (): JSX.Element => {
           <CustomLinkButton className="bg-secondary/80">
             Mes amis
           </CustomLinkButton>
+          <CustomLinkButton className="bg-accent/60" linkTo="/searchusers">
+            Recherche de Membres
+          </CustomLinkButton>
         </div>
       ) : (
         <div className="flex flex-col gap-4">
@@ -31,12 +34,8 @@ const HomePage = (): JSX.Element => {
           </CustomLinkButton>
         </div>
       )}
-      <CustomLinkButton className="bg-primary/50">Suggestions</CustomLinkButton>
       <CustomLinkButton className="bg-accent/60" linkTo="/mybooks/searchbooks">
         Recherche de livre
-      </CustomLinkButton>
-      <CustomLinkButton className="bg-accent/60" linkTo="/searchusers">
-        Recherche de Membres
       </CustomLinkButton>
     </div>
   );

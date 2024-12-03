@@ -14,7 +14,7 @@ import {
   addOrUpdateUserFirebase,
   registerFirebase,
 } from "@/firebase/firestore";
-import { emptyUser } from "@/lib/utils";
+import { UserType } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -45,6 +45,18 @@ const registerFormSchema = z
     message: "Les mots de passe ne correspondent pas.",
     path: ["verifyPassword"],
   });
+
+const emptyUser: UserType = {
+  id: "",
+  email: "",
+  userName: "",
+  imgURL: "",
+  description: "",
+  booksRead: [],
+  booksInProgress: [],
+  booksToRead: [],
+  friends: [],
+};
 
 const RegisterPage = (): JSX.Element => {
   const navigate = useNavigate();
