@@ -5,10 +5,9 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { getDocsByQueryFirebase, signoutFirebase } from "@/firebase/firestore";
+import { signoutFirebase } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
 import { cn } from "@/lib/utils";
-import { UserType } from "@/types";
 import {
   ArrowLeft,
   BookOpen,
@@ -18,7 +17,6 @@ import {
   Search,
   X,
 } from "lucide-react";
-import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { DarkModeToggle } from "./DarkModeToggle";
 import { Avatar, AvatarImage } from "./ui/avatar";
@@ -27,23 +25,7 @@ const NavBar = (): JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { currentUser } = useUserStore();
-  //console.log("USER", currentUser?.email);
-
-  const [userImgURL, setUserImgURL] = useState<string>("");
-  //console.log("ImgURL", userImgURL);
-
-  // ca change pas qd je change l'img !!!!!!!!!!!!!!!!!!!!!!!!
-  useEffect(() => {
-    if (currentUser?.uid)
-      getDocsByQueryFirebase<UserType>("users", "id", currentUser?.uid).then(
-        (users) => {
-          //console.log("usersImgURL", users[0].userName);
-          //console.log("usersImgURL", users[0].imgURL);
-          setUserImgURL(users[0]?.imgURL);
-        }
-      );
-  }, [currentUser]);
+  const { currentUser, profileImage } = useUserStore();
 
   return (
     <div className="sticky top-0 z-20 flex h-12 items-center bg-primary/70 p-1 text-muted shadow-md">
@@ -116,11 +98,16 @@ const NavBar = (): JSX.Element => {
                           "bg-primary/90 text-foreground"
                       )}
                     >
-                      {userImgURL !== "" ? (
+                      {profileImage ? (
                         <Avatar className="border border-foreground">
-                          <AvatarImage src={userImgURL} />
+                          <AvatarImage src={profileImage} />
                         </Avatar>
                       ) : (
+                        // {userImgURL !== "" ? (
+                        //   <Avatar className="border border-foreground">
+                        //     <AvatarImage src={userImgURL} />
+                        //   </Avatar>
+                        // ) : (
                         <CircleUserRound />
                       )}
                     </span>

@@ -16,7 +16,13 @@ import {
   setDoc,
   where,
 } from "firebase/firestore";
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import {
+  FirebaseStorage,
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+} from "firebase/storage";
 import useUserStore from "../hooks/useUserStore";
 import {
   AccountFormType,
@@ -32,7 +38,7 @@ const app = initializeApp(firebaseConfig);
 //const analytics = getAnalytics(app);
 const db = getFirestore(app);
 const auth = getAuth(app);
-const storage = getStorage(app);
+export const storage = getStorage(app);
 
 export const registerFirebase = (
   email: string,
@@ -62,16 +68,23 @@ export const loginFirebase = (
     });
 };
 
-// ??????????? Comprendre !!!!!!!! (si j'enlève ça marche plus)
-//Avec useUserStore (Zustand), on met le user à jour à chaque changement d'état de l'utilisateur
 onAuthStateChanged(auth, (user) => {
   const setUser = useUserStore.getState().setCurrentUser;
+  const setProfileImage = useUserStore.getState().setProfileImage;
+
+  // update context
   if (user) {
     // User is signed in
     setUser(user);
+
+    // To update the profile image in the navbar
+    getDocsByQueryFirebase<UserType>("users", "id", user.uid).then((users) => {
+      setProfileImage(users[0].imgURL);
+    });
   } else {
     // User is signed out
     setUser(null);
+    setProfileImage("");
   }
 });
 
@@ -132,7 +145,7 @@ export const addBookFirebase = (
   book: BookType,
   formData: SearchBooksFormType
 ): Promise<void> => {
-  console.log("ADD BOOK : ", book);
+  //console.log("ADD BOOK : ", book);
 
   if (currentUserId) {
     const bookInfoToAddToDB: BookType = {
@@ -165,7 +178,7 @@ export const addOrUpdateUserFirebase = (
   currentUserId: string | undefined,
   data: UserType | AccountFormType
 ): Promise<void> => {
-  console.log("data", data);
+  //console.log("data", data);
   // on ajoute "{ merge: true }" pour ne pas remplacer les champs qui ne sont pas modifiés
   //////// A VOIR CAR DE TOUTE Facon on est obligé de passer tous les champs !!!???
 
@@ -192,10 +205,10 @@ export const getDocsByQueryFirebase = <T extends BookType | UserType>(
     ...(fieldToQuery ? [where(fieldToQuery, "==", valueToQuery)] : [])
   );
 
-  console.log("FIREBASE collectionName", collectionName);
-  console.log("FIREBASE fieldToQuery", fieldToQuery);
-  console.log("FIREBASE valueToQuery", valueToQuery);
-  console.log("FIREBASE q", q);
+  // console.log("FIREBASE collectionName", collectionName);
+  // console.log("FIREBASE fieldToQuery", fieldToQuery);
+  // console.log("FIREBASE valueToQuery", valueToQuery);
+  // console.log("FIREBASE q", q);
 
   return getDocs(q)
     .then((querySnapshot) => {
@@ -203,7 +216,7 @@ export const getDocsByQueryFirebase = <T extends BookType | UserType>(
       querySnapshot.forEach((doc) => {
         docs.push(doc.data() as T);
       });
-      console.log("DOCS", docs);
+      //console.log("DOCS", docs);
       return docs;
     })
     .catch((error) => {
@@ -237,7 +250,9 @@ export const getFriendsWhoReadBookFirebase = (
   currentUserId: string | undefined,
   userIdNotToCount: string = ""
 ): Promise<UserType[]> => {
-  //console.log("currentUserId", currentUserId);
+  // console.log("currentUserId", currentUserId);
+  // console.log("bookId", bookId);
+  // console.log("userIdNotToCount", userIdNotToCount);
 
   if (currentUserId && bookId) {
     const q = query(collection(db, "users"), where("id", "==", currentUserId));
@@ -264,6 +279,10 @@ export const getFriendsWhoReadBookFirebase = (
               return friendsButUserIdNotToCount;
             })
             .then((friendsButUserIdNotToCount) => {
+              // console.log(
+              //   "***FRIENDS BUT USER ID NOT TO COUNT",
+              //   friendsButUserIdNotToCount
+              // );
               return friendsButUserIdNotToCount.filter((friend) =>
                 friend.booksRead.find((book) => book.id === bookId)
               );
@@ -353,6 +372,31 @@ export const findBookStatusInUserLibraryFirebase = (
   }
 };
 
+// A VOIR !!!!!!!!!!!!!!!!!!
+// export const findBookStatusInUserLibraryFirebase = (
+//   bookId: string | undefined,
+//   currentUserId: string | undefined
+// ): Promise<BookStatusEnum | ""> => {
+//   if (bookId && currentUserId) {
+//     return getDocsByQueryFirebase<UserType>("users", "id", currentUserId).then(
+//       (users) => {
+//         const user = users[0];
+//         let result = "";
+
+//         if (user.booksRead.some((book) => book.id === bookId))
+//           result = BookStatusEnum.booksRead;
+//         if (user.booksToRead.some((book) => book.id === bookId))
+//           result = BookStatusEnum.booksToRead;
+//         if (user.booksInProgress.some((book) => book.id === bookId))
+//           result = BookStatusEnum.booksInProgress;
+
+//         return result;
+//       }
+//     );
+//   }
+//   return Promise.resolve("");
+// };
+
 export const isUserMyFriendFirebase = (
   friendId: string,
   currentUserId: string | undefined
@@ -362,13 +406,13 @@ export const isUserMyFriendFirebase = (
       .then((users) => {
         const user = users[0];
 
-        console.log(
-          "friendId",
-          friendId,
-          "currentUserId",
-          currentUserId,
-          user.friends.some((myfriendId) => myfriendId === friendId)
-        );
+        // console.log(
+        //   "friendId",
+        //   friendId,
+        //   "currentUserId",
+        //   currentUserId,
+        //   user.friends.some((myfriendId) => myfriendId === friendId)
+        // );
         return user.friends.some((myfriendId) => myfriendId === friendId);
       })
       .catch((error) => {
@@ -380,26 +424,55 @@ export const isUserMyFriendFirebase = (
   }
 };
 
-export const uploadImageOnFirebase = async (imageUpload: File | null) => {
-  if (imageUpload) {
-    // We create a random name for the image so that none of them have the same name
-    const imageRef = ref(
-      storage,
-      `userProfileImages/${imageUpload.name + Date.now()}`
-    );
-    try {
-      await uploadBytes(imageRef, imageUpload);
-      // Getting the URL of the uploaded image
-      const url = await getDownloadURL(imageRef);
+// export const uploadImageOnFirebase = async (imageUpload: File | null) => {
+//   if (imageUpload) {
+//     // We create a random name for the image so that none of them have the same name
+//     const imageRef = ref(
+//       storage,
+//       `userProfileImages/${imageUpload.name + Date.now()}`
+//     );
+//     try {
+//       await uploadBytes(imageRef, imageUpload);
+//       // Getting the URL of the uploaded image
+//       const url = await getDownloadURL(imageRef);
 
-      return url;
-    } catch (error) {
-      console.error("Error uploading image on Firebase: ", error);
-    }
-  } else {
-    console.warn("No image provided for upload.");
-    return;
-  }
+//       return url;
+//     } catch (error) {
+//       console.error("Error uploading image on Firebase: ", error);
+//     }
+//   } else {
+//     console.warn("No image provided for upload.");
+//     return;
+//   }
+// };
+export const uploadImageOnFirebase = (
+  image: File,
+  storage: FirebaseStorage,
+  onProgress: (progress: number) => void
+): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const storageRef = ref(storage, `userProfileImages/${image.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, image);
+
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress = Math.round(
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        );
+        onProgress(progress); // Appel de la fonction de rappel pour mettre à jour la progression
+      },
+      (error) => {
+        console.error("Erreur lors du téléchargement de l'image => ", error);
+        reject(error);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+          resolve(url);
+        });
+      }
+    );
+  });
 };
 
 export const addUserIdToMyFriendsFirebase = (
@@ -481,13 +554,13 @@ export const deleteBookFromMyBooksFirebase = (
   bookId: string,
   bookStatus: keyof UserType | ""
 ): Promise<void> => {
-  console.log("bookStatus", bookStatus);
+  //console.log("bookStatus", bookStatus);
 
   if (currentUserId && bookStatus !== "") {
     return getDocsByQueryFirebase<UserType>("users", "id", currentUserId)
       .then((users: UserType[]) => users[0])
       .then((user: UserType) => {
-        console.log("xxx", user);
+        //("xxx", user);
         return user;
       })
       .then((user: UserType) => {
@@ -501,8 +574,8 @@ export const deleteBookFromMyBooksFirebase = (
         const booksAccordingToStatusTyped =
           booksAccordingToStatus as MyInfoBookType[];
 
-        console.log("rest", rest);
-        console.log("booksRead", booksAccordingToStatus);
+        // console.log("rest", rest);
+        // console.log("booksRead", booksAccordingToStatus);
         const booksReadFiltered = booksAccordingToStatusTyped.filter(
           (book: MyInfoBookType) => book.id !== bookId
         );

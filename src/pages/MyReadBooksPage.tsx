@@ -1,7 +1,7 @@
 import BookInfos from "@/components/BookInfos";
-import BookSkeleton from "@/components/BookSkeleton";
 import CustomLinkButton from "@/components/CustomLinkButton";
 import FeedbackMessage from "@/components/FeedbackMessage";
+import BookSkeleton from "@/components/skeletons/BookSkeleton";
 import Title from "@/components/Title";
 import { getDocsByQueryFirebase } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
@@ -11,18 +11,15 @@ import useSWR from "swr";
 const MyReadBooksPage = (): JSX.Element => {
   const { currentUser } = useUserStore();
 
-  console.log("USER ID", currentUser?.uid);
+  // console.log("USER ID", currentUser?.uid);
 
-  const fetcher = (userId: string | null) => {
+  const myBooksIdsFetcher = (userId: string | null): Promise<string[]> => {
     console.log("FETCHING MyReadBooksPage");
     //throw new Error("Erreur simulée !");
     if (userId)
       return getDocsByQueryFirebase<UserType>("users", "id", userId).then(
         (users) => {
-          console.log("USERS", users);
-
           const booksReadIds = users[0].booksRead.map((book) => book.id);
-
           return booksReadIds;
         }
         //setMyReadBooksIds(users[0].booksRead)
@@ -38,15 +35,16 @@ const MyReadBooksPage = (): JSX.Element => {
     data: myReadBooksIds,
     error,
     isLoading,
-  } = useSWR<string[]>(currentUser?.uid ?? null, fetcher);
+  } = useSWR<string[]>(currentUser?.uid ?? null, myBooksIdsFetcher);
+  //console.log("myReadBooksIds", myReadBooksIds);
 
   // Pour debugger (LAISSER !!!)
   if (error) {
     console.error("Error fetching read books: ", error.message);
   }
 
-  console.log("isLoading", isLoading);
-  console.log("myReadBooksIds", myReadBooksIds);
+  //console.log("isLoading", isLoading);
+  //console.log("myReadBooksIds", myReadBooksIds);
 
   // ici on utilise une constante et pas un state car les message ne change pas et s'affiche seulement si useSWR renvoie une erreur
   const message =

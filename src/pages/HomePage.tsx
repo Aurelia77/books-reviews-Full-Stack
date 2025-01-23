@@ -2,14 +2,14 @@ import CustomLinkButton from "@/components/CustomLinkButton";
 import useUserStore from "@/hooks/useUserStore";
 
 const HomePage = (): JSX.Element => {
-  const { currentUser } = useUserStore();
+  const { currentUser: user } = useUserStore();
 
   return (
     <div
       className="flex min-h-screen flex-col gap-4 py-12"
       // items-center
     >
-      {currentUser ? (
+      {user ? (
         <div className="flex flex-col gap-4">
           <CustomLinkButton className="bg-primary" linkTo="/mybooks">
             Mes livres
@@ -19,9 +19,6 @@ const HomePage = (): JSX.Element => {
           </CustomLinkButton>
           <CustomLinkButton className="bg-secondary/80">
             Mes amis
-          </CustomLinkButton>
-          <CustomLinkButton className="bg-accent/60" linkTo="/searchusers">
-            Recherche de Membres
           </CustomLinkButton>
         </div>
       ) : (
@@ -34,8 +31,12 @@ const HomePage = (): JSX.Element => {
           </CustomLinkButton>
         </div>
       )}
+      <CustomLinkButton className="bg-primary/50">Suggestions</CustomLinkButton>
       <CustomLinkButton className="bg-accent/60" linkTo="/mybooks/searchbooks">
         Recherche de livre
+      </CustomLinkButton>
+      <CustomLinkButton className="bg-accent/60" linkTo="/searchusers">
+        Recherche de Membres
       </CustomLinkButton>
     </div>
   );

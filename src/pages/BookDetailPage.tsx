@@ -1,8 +1,8 @@
-import BookSkeleton from "@/components/BookSkeleton";
 import CustomLinkButton from "@/components/CustomLinkButton";
 import FeedbackMessage from "@/components/FeedbackMessage";
 import FriendsWhoReadBook from "@/components/FriendsWhoReadBook";
 import MyInfoBook from "@/components/MyInfoBook";
+import BookSkeleton from "@/components/skeletons/BookSkeleton";
 import StarRating from "@/components/StarRating";
 import { Button } from "@/components/ui/button";
 import {
@@ -79,12 +79,63 @@ const BookDetailPage = (): JSX.Element => {
   const { currentUser } = useUserStore();
 
   const [bookInfos, setBookInfos] = useState<BookType>();
-  console.log("bookInfos", bookInfos);
+  console.log("333 bookInfos", bookInfos?.title);
 
-  const [bookInMyBooks, setBookInMyBooks] = useState<keyof UserType | "">("");
+  const [bookInMyBooks, setBookInMyBooks] = useState<keyof UserType | "">(""); //////////////////////////////////////////////////
+  //  const [bookInMyBooks, setBookInMyBooks] = useState<BookStatusEnum>();
   const [refreshKey, setRefreshKey] = useState(0); // to force MyInfosBook re-render
-  const [isBookInDB, setIsBookInDB] = useState<boolean>();
+  const [isBookInDB, setIsBookInDB] = useState<boolean>(true);
   console.log("isBookInDB", isBookInDB);
+
+  // 1-DEBUT==================================FAIRE HOOK PERSO !!!
+  // 1 - Fonction appelée en 1er : va chercher les info du livre en fonction de son id (si dans notre BDD)
+  const fetchBookInfoDB = async (bookId: string): Promise<BookType | null> => {
+    // throw new Error(
+    //   "Erreur simulée !"
+    // );
+
+    console.log("FETCHING BookInfos", bookId);
+
+    return getDocsByQueryFirebase<BookType>("books", "id", bookId)
+      .then((books: BookType[]) => {
+        console.log("FETCHING books", books);
+        if (books.length > 0) {
+          return books[0];
+        } else {
+          return null;
+        }
+      })
+      .catch((error) => {
+        console.error(`Error fetching book with bookId: ${bookId}`, error);
+        return null;
+      });
+  };
+
+  const {
+    data: bookFromId,
+    error,
+    isLoading,
+  } = useSWR<BookType | null>(
+    bookId,
+    currentUser?.uid ? fetchBookInfoDB : null //////////////// A VOIR si besoin d'être connecté et sinon, erreur ???
+  );
+
+  console.log("after FETCHING bookFromId", bookFromId?.title);
+
+  // ici on utilise une constante et pas un state car les message ne change pas et s'affiche seulement si useSWR renvoie une erreur
+  const message = `Un problème est survenu dans la récupération du livre => ${error?.message}`; // VOIR !!!!
+
+  useEffect(() => {
+    console.log("bookFromId after FETCHING useEffect", bookFromId?.title);
+
+    if (bookFromId) {
+      console.log("22 bookFromId after FETCHING useEffect", bookFromId);
+      setBookInfos(bookFromId);
+    } else {
+      setIsBookInDB(false);
+    }
+  }, [bookFromId]);
+  // 1-FIN============================FAIRE HOOK PERSO !!!
 
   // 3-DEBUT============================FAIRE HOOK PERSO !!!
   const fetchAPIBooks = (booksApiUrl: string): Promise<BookType> => {
@@ -111,7 +162,7 @@ const BookDetailPage = (): JSX.Element => {
             language: data.volumeInfo.language,
             isFromAPI: true,
           };
-          console.log("bookFromAPI", bookFromAPI);
+          console.log("bookFromAPI", bookFromAPI.title);
           return bookFromAPI;
         })
         .catch((error) => {
@@ -125,16 +176,23 @@ const BookDetailPage = (): JSX.Element => {
   //`${GOOGLE_BOOKS_API_URL}?q=${queryApi}&maxResults=${MAX_RESULTS}`;
 
   const {
-    data: apiBooks,
+    data: bookFromApi,
     error: apiBooksError,
     isLoading: apiBooksIsLoading,
   } = useSWR<BookType>(
-    isBookInDB ? null : `${GOOGLE_BOOKS_API_URL}/${bookId}`,
+    isBookInDB === false ? `${GOOGLE_BOOKS_API_URL}/${bookId}` : null,
     fetchAPIBooks
   );
   // 3-FIN============================FAIRE HOOK PERSO !!!
 
-  console.log("data", apiBooks);
+  useEffect(() => {
+    if (bookFromApi) {
+      console.log("333 USEEFFECT apiBooks", bookFromApi?.title);
+      setBookInfos(bookFromApi);
+    }
+  }, [bookFromApi]);
+
+  console.log("333 data bookFromApi", bookFromApi?.title);
 
   const form = useForm<SearchBooksFormType>({
     resolver: zodResolver(bookFormSchema),
@@ -174,54 +232,6 @@ const BookDetailPage = (): JSX.Element => {
       () => setBookInMyBooks("")
     );
   };
-
-  // 1-DEBUT==================================FAIRE HOOK PERSO !!!
-  const fetchBookInfoDB = async (bookId: string): Promise<BookType | null> => {
-    // throw new Error(
-    //   "Erreur simulée !"
-    // );
-
-    return getDocsByQueryFirebase<BookType>("books", "id", bookId)
-      .then((books: BookType[]) => {
-        console.log("books", books);
-        if (books.length > 0) {
-          return books[0];
-        } else {
-          return null;
-        }
-      })
-      .catch((error) => {
-        console.error(`Error fetching book with bookId: ${bookId}`, error);
-        return null;
-      });
-  };
-
-  const {
-    data: bookFromId,
-    error,
-    isLoading,
-  } = useSWR<BookType | null>(
-    bookId,
-    currentUser?.uid ? fetchBookInfoDB : null
-  );
-
-  // ici on utilise une constante et pas un state car les message ne change pas et s'affiche seulement si useSWR renvoie une erreur
-  const message = `Un problème est survenu dans la récupération du livre => ${error?.message}`;
-
-  useEffect(() => {
-    if (bookFromId) {
-      setBookInfos(bookFromId);
-      setIsBookInDB(true); // pt être pas besoin car si ça vient là isBookInDB reste undefined
-    } else {
-      setIsBookInDB(false);
-    }
-  }, [bookFromId]);
-  // 1-FIN============================FAIRE HOOK PERSO !!!
-
-  useEffect(() => {
-    console.log("apiBooks", apiBooks);
-    setBookInfos(apiBooks);
-  }, [apiBooks]);
 
   return (
     <div className="relative min-h-screen pb-4">

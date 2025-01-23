@@ -1,5 +1,6 @@
 import { DEFAULT_USER_IMAGE } from "@/constants";
 import { UserType } from "@/types";
+import { Sparkle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Avatar, AvatarImage } from "./ui/avatar";
 
@@ -9,12 +10,14 @@ const UsersListView = ({
   userInfoList: UserType[];
 }): JSX.Element => {
   return (
+    // <ul className="flex items-center gap-4 p-5">
+
     <ul className="pb-40">
-      {userInfoList.map((friend) => (
+      {userInfoList.map((friend: UserType) => (
         <li key={friend.id}>
           <Link
             to={`/account/${friend.id}`}
-            className="flex items-center gap-2"
+            className="relative flex items-center gap-4 p-3"
           >
             <Avatar>
               <AvatarImage
@@ -23,7 +26,16 @@ const UsersListView = ({
             </Avatar>
             <p className="font-semibold text-muted">{friend.userName}</p>
             {friend.isMyFriend && (
-              <p>{friend.isMyFriend ? "Ami" : "Non ami"}</p>
+              <p>
+                {friend.isMyFriend ? (
+                  <div>
+                    <p>Ami</p>
+                    <Sparkle />
+                  </div>
+                ) : (
+                  <p>NON Ami</p>
+                )}
+              </p>
             )}
           </Link>
         </li>

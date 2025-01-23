@@ -1,6 +1,3 @@
-import useUserStore from "@/hooks/useUserStore";
-import { UserType } from "@/types";
-
 import FeedbackMessage from "@/components/FeedbackMessage";
 import Title from "@/components/Title";
 import { Input } from "@/components/ui/input";
@@ -8,10 +5,14 @@ import {
   getDocsByQueryFirebase,
   isUserMyFriendFirebase,
 } from "@/firebase/firestore";
+import useUserStore from "@/hooks/useUserStore";
+import { UserType } from "@/types";
 //import { books } from "@/data";
 import UsersListView from "@/components/UsersListView";
+import UserViewSkeleton from "@/components/skeletons/UserViewSkeleton";
 import { X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
+import useSWR from "swr";
 
 // const MAX_RESULTS = 10; // jusqu'à 40
 
@@ -19,32 +20,8 @@ const UsersSearchPage = (): JSX.Element => {
   const { currentUser } = useUserStore();
   //console.log("currentUser", currentUser?.uid);
 
-  const [otherUsers, setOtherUsers] = useState<UserType[]>([]);
+  //const [otherUsers, setOtherUsers] = useState<UserType[]>([]);
   //console.log("otherUsers", otherUsers);
-
-  useEffect(() => {
-    getDocsByQueryFirebase<UserType>("users")
-      .then((allUsers) =>
-        allUsers.filter((user: UserType) => user.id !== currentUser?.uid)
-      )
-      .then((otherUsers: UserType[]) => {
-        const promises = otherUsers.map((user: UserType) =>
-          isUserMyFriendFirebase(user.id, currentUser?.uid).then(
-            (isFriend: boolean) => ({
-              ...user,
-              isMyFriend: isFriend,
-            })
-          )
-        );
-
-        Promise.all(promises).then((otherUsersFriendType: UserType[]) => {
-          const sortedUsers = otherUsersFriendType.sort(
-            (a: UserType, b: UserType) => (a.userName > b.userName ? 1 : -1)
-          );
-          setOtherUsers(sortedUsers);
-        });
-      });
-  }, []);
 
   const [userNameInput, setUserNameInput] = useState<string>("");
   //console.log("titleInput", titleInput);
@@ -54,12 +31,87 @@ const UsersSearchPage = (): JSX.Element => {
   // const [inFriendsLists, setInFriendsLists] = useState(true);
   // const [inApi, setInApi] = useState(true);
 
-  useEffect(() => {
-    const filteredUsers = otherUsers.filter((user) =>
-      user.userName.includes(userNameInput)
-    );
-    setOtherUsers(filteredUsers);
-  }, [userNameInput]);
+  const otherUsersFetcher = ([userNameInput, currentUserId]: string[]): Promise<
+    UserType[]
+  > => {
+    console.log("otherUsersFetcher", [userNameInput, currentUserId]);
+
+    return getDocsByQueryFirebase<UserType>("users")
+      .then((allUsers) => {
+        console.log("otherUsersFetcher allUsers", allUsers);
+        return allUsers.filter((user: UserType) => user.id !== currentUserId);
+      })
+      .then((otherUsers: UserType[]) => {
+        console.log("otherUsersFetcher otherUsers", otherUsers);
+        return otherUsers.filter((user) =>
+          user.userName.toLowerCase().includes(userNameInput.toLowerCase())
+        );
+      })
+      .then((filteredUsers: UserType[]) => {
+        console.log("otherUsersFetcher filteredUsers", filteredUsers);
+        const promises = filteredUsers.map((user: UserType) =>
+          isUserMyFriendFirebase(user.id, currentUserId).then(
+            (isFriend: boolean) => ({
+              ...user,
+              isMyFriend: isFriend,
+            })
+          )
+        );
+
+        return Promise.all(promises).then(
+          (otherUsersFriendType: UserType[]) => {
+            const sortedUsers = otherUsersFriendType.sort(
+              (a: UserType, b: UserType) => (a.userName > b.userName ? 1 : -1)
+            );
+            return sortedUsers;
+            //setOtherUsers(sortedUsers);
+          }
+        );
+      });
+  };
+
+  // useEffect(() => {
+  //   const filteredUsers = otherUsers.filter((user) =>
+  //     user.userName.includes(userNameInput)
+  //   );
+  //   setOtherUsers(filteredUsers);
+  // }, [userNameInput]);
+
+  const {
+    data: otherUsers = [],
+    error,
+    isLoading,
+  } = useSWR<UserType[]>(
+    [userNameInput, currentUser?.uid ?? ""],
+    ([searchUserName, currentUserId]) =>
+      otherUsersFetcher([searchUserName, currentUserId])
+  ); // impossible to add only userNameInput as param because if it's null or "", otherUsersFetcher will not work
+
+  console.log("otherUsers", otherUsers);
+
+  // useEffect(() => {
+  //   getDocsByQueryFirebase<UserType>("users")
+  //     .then((allUsers) =>
+  //       allUsers.filter((user: UserType) => user.id !== currentUser?.uid)
+  //     )
+  //     .then((otherUsers: UserType[]) => {
+  //       const promises = otherUsers.map((user: UserType) =>
+  //         isUserMyFriendFirebase(user.id, currentUser?.uid).then(
+  //           (isFriend: boolean) => ({
+  //             ...user,
+  //             isMyFriend: isFriend,
+  //           })
+  //         )
+  //       );
+
+  //       Promise.all(promises).then((otherUsersFriendType: UserType[]) => {
+  //         const sortedUsers = otherUsersFriendType.sort(
+  //           (a: UserType, b: UserType) => (a.userName > b.userName ? 1 : -1)
+  //         );
+  //         setOtherUsers(sortedUsers);
+  //       });
+  //     });
+  // }, []);
 
   return (
     <div className="h-full min-h-screen sm:p-2">
@@ -80,11 +132,19 @@ const UsersSearchPage = (): JSX.Element => {
           </div>
         </div>
 
-        {/* Mettre un Spinner pour pas voir rapidement le message Aucun membre */}
-        {otherUsers?.length > 0 ? (
-          <UsersListView userInfoList={otherUsers} />
-        ) : (
+        {isLoading ? (
+          // {/* Mettre un Spinner pour pas voir rapidement le message Aucun membre */}
+          <div>
+            <UserViewSkeleton />
+            <UserViewSkeleton />
+            <UserViewSkeleton />
+            <UserViewSkeleton />
+            <UserViewSkeleton />
+          </div>
+        ) : error ? (
           <FeedbackMessage message="Aucun membre trouvé" type="info" />
+        ) : (
+          <UsersListView userInfoList={otherUsers} />
         )}
       </div>
     </div>

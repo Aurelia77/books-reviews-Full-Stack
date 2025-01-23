@@ -68,3 +68,9 @@ export enum BookStatusEnum {
   booksInProgress = "booksInProgress",
   booksToRead = "booksToRead",
 }
+
+// export enum BookStatusEnum {
+//   booksRead = "lu",
+//   booksInProgress = "en cours",
+//   booksToRead = "à lire",
+// }
