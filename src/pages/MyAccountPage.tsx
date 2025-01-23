@@ -10,11 +10,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import UsersListView from "@/components/UsersListView";
 import {
   addOrUpdateUserFirebase,
   getDocsByQueryFirebase,
+  storage,
   uploadImageOnFirebase,
 } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
@@ -43,22 +45,21 @@ const MyAccountPage = (): JSX.Element => {
   const [currentUserInfo, setCurrentUserInfo] = useState<UserType | null>(null);
   const [friendsInfo, setFriendsInfo] = useState<UserType[]>([]);
   const { currentUser } = useUserStore();
-
-  //console.log("USER INFO", currentUserInfo);
-
   const [imageUpload, setImageUpload] = useState<File | null>(null);
   const [isImageLoading, setIsImageLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const uploadImage = () => {
     setIsImageLoading(true);
     if (imageUpload) {
-      uploadImageOnFirebase(imageUpload)
+      uploadImageOnFirebase(imageUpload, storage, setProgress)
         .then((url) => {
           setIsImageLoading(false);
           if (url) form.setValue("imgURL", url);
         })
         .catch((error) => {
           console.error("Erreur lors du téléchargement de l'image => ", error);
+          setIsImageLoading(false);
         });
     }
   };
@@ -87,6 +88,7 @@ const MyAccountPage = (): JSX.Element => {
   const onSubmit: SubmitHandler<AccountFormType> = (data) => {
     //console.log("data", data);
     addOrUpdateUserFirebase(currentUser?.uid, data);
+    useUserStore.getState().setProfileImage(data.imgURL);
   };
 
   useEffect(() => {
@@ -160,8 +162,7 @@ const MyAccountPage = (): JSX.Element => {
                         className="cursor-pointer text-muted"
                       />
                       {isImageLoading ? (
-                        // <Spinner />
-                        <p>Chargement...</p>
+                        <Progress value={progress} />
                       ) : (
                         imageUpload && (
                           <Button type="button" onClick={uploadImage}>
@@ -176,6 +177,7 @@ const MyAccountPage = (): JSX.Element => {
               )}
             />
           </div>
+
           <FormField
             control={form.control}
             name="description"

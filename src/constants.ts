@@ -6,3 +6,9 @@ export const DEFAULT_USER_IMAGE =
 
 export const GOOGLE_BOOKS_API_URL =
   "https://www.googleapis.com/books/v1/volumes"; // use for search
+
+// export const BOOK_STATUS_TRANSLATIONS = {
+//   booksRead: "lu",
+//   booksInProgress: "en cours",
+//   booksToRead: "à lire",
+// };

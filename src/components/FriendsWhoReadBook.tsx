@@ -1,14 +1,8 @@
 import { getFriendsWhoReadBookFirebase } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@radix-ui/react-tooltip";
-import { Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import Stars from "./Stars";
 import { CardFooter } from "./ui/card";
 
 const FriendsWhoReadBook = ({
@@ -24,6 +18,7 @@ const FriendsWhoReadBook = ({
       userName: string;
     }[]
   >([]);
+  //console.log("***friendsWhoReadBook", friendsWhoReadBook);
 
   const { currentUser } = useUserStore();
 
@@ -33,55 +28,35 @@ const FriendsWhoReadBook = ({
       currentUser?.uid,
       userIdNotToCount
     ).then((users) => {
-      //console.log("xxxFRIENDS", users);
+      //console.log("xxx***USERS", users);
       const friends = users.map((user) => ({
         id: user.id,
         userName: user.userName,
       }));
+      //console.log("xxx***FRIENDS", friends);
       setFriendsWhoReadBook(friends);
     });
   }, [bookId, userIdNotToCount]);
 
   return (
     friendsWhoReadBook.length > 0 && (
-      <CardFooter className="bg-gray-500/40">
-        <TooltipProvider>
+      <CardFooter className="flex gap-2 bg-gray-500/40">
+        {/* <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger asChild>
-              <div
-              //className="relative"
-              >
-                <Star
-                  size={48}
-                  strokeWidth={3}
-                  className="absolute left-[3.8rem] top-3 drop-shadow-sm text-stroke-lg"
-                  color="white"
-                />
-                <Star
-                  className="absolute left-16 top-[0.95rem] drop-shadow-sm text-stroke-lg"
-                  size={42}
-                  color="gray"
-                />
-              </div>
-            </TooltipTrigger>
+            <TooltipTrigger asChild> */}
+        <Stars />
+        {/* </TooltipTrigger>
             <TooltipContent className="-mt-12 ml-8 rounded-md bg-foreground/50 px-2 py-1 text-secondary">
-              <p>Livre lu par un ou plusieurs de vos amis</p>
+              <p>Livre lu par un ou plusieurs de mes amis</p>
             </TooltipContent>
           </Tooltip>
-        </TooltipProvider>
-        {/* <Star
-        size={65}
-        strokeWidth={2}
-        className="absolute left-[3.25rem] top-[0.54rem] drop-shadow-sm text-stroke-lg"
-        color="white"
-      />
-      <Star
-        className="absolute left-[3.56rem] top-[0.9rem] drop-shadow-sm text-stroke-lg"
-        size={55}
-        color="gray"
-      /> */}
+        </TooltipProvider> */}
         <div className="flex flex-row gap-2 ">
-          <p className="font-semibold">Lu par mes amis :</p>
+          {friendsWhoReadBook.length > 1 ? (
+            <p className="font-semibold">Amis qui ont lu ce livre :</p>
+          ) : (
+            <p className="font-semibold">Ami qui a lu ce livre :</p>
+          )}
           {friendsWhoReadBook.map((friend) => (
             <Link
               key={friend.id}

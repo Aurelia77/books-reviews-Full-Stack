@@ -1,6 +1,6 @@
 import BookInfos from "@/components/BookInfos";
-import BookSkeleton from "@/components/BookSkeleton";
 import FeedbackMessage from "@/components/FeedbackMessage";
+import BookSkeleton from "@/components/skeletons/BookSkeleton";
 import Title from "@/components/Title";
 import { Input } from "@/components/ui/input";
 import { GOOGLE_BOOKS_API_URL } from "@/constants";
@@ -10,7 +10,7 @@ import { X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import useSWR from "swr";
 
-const MAX_RESULTS = 10; // jusqu'à 40
+const MAX_RESULTS = 4; // jusqu'à 40
 
 // const useDebounce = <T extends string[]>(
 //   callback: (...args: T) => void,
@@ -56,13 +56,13 @@ const useDebounceEffect = (
 
 const BooksSearchPage = (): JSX.Element => {
   const [dbBooks, setDbBooks] = useState<BookType[]>([]);
-  //console.log("**1-books from BDD", dbBooks.length);
+  console.log("**1-books from BDD", dbBooks);
 
   const [booksApiUrl, setBooksApiUrl] = useState(
     `${GOOGLE_BOOKS_API_URL}?q=subject:general&maxResults=${MAX_RESULTS}`
   );
   const [bdAndApiBooks, setDbAndApiBooks] = useState<BookType[]>([]);
-  console.log("ALL-books from BDD and API", bdAndApiBooks.length);
+  console.log("**3-ALL-books from BDD and API", bdAndApiBooks.length);
 
   const [titleInput, setTitleInput] = useState<string>(
     localStorage.getItem("titleInput") || ""
@@ -94,21 +94,43 @@ const BooksSearchPage = (): JSX.Element => {
           return data.items;
         })
         .then((items) => {
-          const booksFromAPI: BookType[] = items.map((book: BookAPIType) => {
-            return {
-              id: book.id,
-              title: book.volumeInfo.title,
-              author: book.volumeInfo?.authors?.[0] ?? "Auteur inconnu",
-              description: book.volumeInfo.description,
-              categories: book.volumeInfo.categories,
-              pageCount: book.volumeInfo.pageCount,
-              publishedDate: book.volumeInfo.publishedDate,
-              publisher: book.volumeInfo.publisher,
-              imageLink: book.volumeInfo.imageLinks?.thumbnail,
-              language: book.volumeInfo.language,
-              isFromAPI: true,
-            };
-          });
+          const dbBooksIds = dbBooks.map((book) => book.id);
+          ////////////////////////////////////////////
+          ////////////////////////////////////////////
+          /////////////// A VOIR PK VIDE ????????????????????????
+          /////////////////////////////
+          ////////////////////////////////////////////
+          ////////////////////////////////////////////
+          ////////////////////////////////////////////
+          ////////////////////////////////////////////
+          console.log("**31-dbBooksIds", dbBooksIds);
+          console.log("**32-items", items);
+
+          const booksFromAPI: BookType[] = items
+            .filter((book: BookAPIType) => {
+              console.log("**33-book.id", book.id);
+              console.log(
+                "**34-!dbBooksIds.includes(book.id)",
+                !dbBooksIds.includes(book.id)
+              );
+              return !dbBooksIds.includes(book.id);
+            })
+            .map((book: BookAPIType) => {
+              return {
+                id: book.id,
+                title: book.volumeInfo.title,
+                author: book.volumeInfo?.authors?.[0] ?? "Auteur inconnu",
+                description: book.volumeInfo.description,
+                categories: book.volumeInfo.categories,
+                pageCount: book.volumeInfo.pageCount,
+                publishedDate: book.volumeInfo.publishedDate,
+                publisher: book.volumeInfo.publisher,
+                imageLink: book.volumeInfo.imageLinks?.thumbnail,
+                language: book.volumeInfo.language,
+                isFromAPI: true,
+              };
+            });
+          console.log("**35-booksFromAPI", booksFromAPI);
           return booksFromAPI;
         })
         .catch((error) => {
@@ -124,6 +146,8 @@ const BooksSearchPage = (): JSX.Element => {
     isLoading,
   } = useSWR<BookType[]>(booksApiUrl, fetchAPIBooks);
   // 2-FIN============================FAIRE HOOK PERSO !!!
+
+  console.log("**2-books from API", apiBooks);
 
   // // Utiliser useDebounce pour retarder la mise à jour de l'URL de l'API
   // const debounceUpdateUrl = useDebounce((title: string, author: string) => {
@@ -194,8 +218,9 @@ const BooksSearchPage = (): JSX.Element => {
       titleInputRef.current.focus();
     }
 
-    getDocsByQueryFirebase<BookType>("books", "bookIsFromAPI", true)
+    getDocsByQueryFirebase<BookType>("books", "isFromAPI", true)
       .then((books) => {
+        console.log("**11-books from BDD", books);
         setDbBooks(books);
       })
       .catch((error: Error) => {

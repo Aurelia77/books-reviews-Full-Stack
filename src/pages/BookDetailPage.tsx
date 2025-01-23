@@ -1,8 +1,8 @@
-import BookSkeleton from "@/components/BookSkeleton";
 import CustomLinkButton from "@/components/CustomLinkButton";
 import FeedbackMessage from "@/components/FeedbackMessage";
 import FriendsWhoReadBook from "@/components/FriendsWhoReadBook";
 import MyInfoBook from "@/components/MyInfoBook";
+import BookSkeleton from "@/components/skeletons/BookSkeleton";
 import StarRating from "@/components/StarRating";
 import { Button } from "@/components/ui/button";
 import {
@@ -79,9 +79,9 @@ const BookDetailPage = (): JSX.Element => {
   const { currentUser } = useUserStore();
 
   const [bookInfos, setBookInfos] = useState<BookType>();
-  console.log("bookInfos", bookInfos);
+  console.log("22bookInfos", bookInfos);
 
-  const [bookInMyBooks, setBookInMyBooks] = useState<keyof UserType | "">("");
+  const [bookInMyBooks, setBookInMyBooks] = useState<BookStatusEnum>();
   const [refreshKey, setRefreshKey] = useState(0); // to force MyInfosBook re-render
   const [isBookInDB, setIsBookInDB] = useState<boolean>();
   console.log("isBookInDB", isBookInDB);
@@ -181,9 +181,11 @@ const BookDetailPage = (): JSX.Element => {
     //   "Erreur simulée !"
     // );
 
+    console.log("FETCHING BookInfos", bookId);
+
     return getDocsByQueryFirebase<BookType>("books", "id", bookId)
       .then((books: BookType[]) => {
-        console.log("books", books);
+        console.log("FETCHING books", books);
         if (books.length > 0) {
           return books[0];
         } else {
@@ -205,11 +207,16 @@ const BookDetailPage = (): JSX.Element => {
     currentUser?.uid ? fetchBookInfoDB : null
   );
 
+  console.log("after FETCHING bookFromId", bookFromId);
+
   // ici on utilise une constante et pas un state car les message ne change pas et s'affiche seulement si useSWR renvoie une erreur
   const message = `Un problème est survenu dans la récupération du livre => ${error?.message}`;
 
   useEffect(() => {
+    console.log("after FETCHING useEffect", bookFromId);
+
     if (bookFromId) {
+      console.log("22after FETCHING useEffect", bookFromId);
       setBookInfos(bookFromId);
       setIsBookInDB(true); // pt être pas besoin car si ça vient là isBookInDB reste undefined
     } else {

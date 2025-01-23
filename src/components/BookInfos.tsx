@@ -14,10 +14,10 @@ import { BookType } from "@/types";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useSWR from "swr";
-import BookSkeleton from "./BookSkeleton";
 import FeedbackMessage from "./FeedbackMessage";
 import FriendsWhoReadBook from "./FriendsWhoReadBook";
 import MyInfoBook from "./MyInfoBook";
+import BookSkeleton from "./skeletons/BookSkeleton";
 import Title from "./Title";
 
 // Soit à partir de BooksSearchPage => on passe un objet "book" en props car on a les info nécessaires
@@ -33,11 +33,16 @@ const BookInfos = ({
   bookId,
   userIdNotToCount,
 }: BookInfosProps): JSX.Element => {
-  console.log("bookId", bookId);
+  //console.log("bookId", bookId);
 
   const [bookInfos, setBookInfos] = useState<BookType | null>(book || null);
   console.log("bookInfos", bookInfos);
   const [bookInMyList, setBookInMyList] = useState<string>("");
+
+  //   const [bookInMyList, setBookInMyList] = useState<BookStatusEnum>();
+
+  //   (bookInMyList) => setBookInMyList(BOOK_STATUS_TRANSLATIONS[bookInMyList])
+  // );
 
   const { currentUser } = useUserStore();
   // VOIR !!!!!!!!!! avec hook Perso !!!!!!
@@ -49,12 +54,12 @@ const BookInfos = ({
     //   "Erreur simulée !"
     // );
 
-    console.log("FETCHING BookInfos", bookId);
+    //console.log("FETCHING BookInfos", bookId);
 
     return getDocsByQueryFirebase<BookType>("books", "id", bookId)
       .then((books) => {
         if (books.length > 0) {
-          console.log("BOOKS", books);
+          //console.log("BOOKS", books);
           return books[0];
         } else {
           return null;
@@ -130,7 +135,6 @@ const BookInfos = ({
                 </CardHeader>
               </div>
             </Link>
-
             <FriendsWhoReadBook
               bookId={bookInfos.id}
               userIdNotToCount={userIdNotToCount}
