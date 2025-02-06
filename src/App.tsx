@@ -8,7 +8,6 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import MyAccountPage from "./pages/MyAccountPage";
 import MyBooksPage from "./pages/MyBooksPage";
-import MyReadBooksPage from "./pages/MyReadBooksPage";
 import RegisterPage from "./pages/RegisterPage";
 import UserAccountPage from "./pages/UserAccountPage";
 import UsersSearchPage from "./pages/UsersSearchPage";
@@ -22,7 +21,6 @@ const App = (): JSX.Element => {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/mybooks" element={<MyBooksPage />} />
-            <Route path="/mybooks/myreadbooks" element={<MyReadBooksPage />} />
             <Route path="/mybooks/searchbooks" element={<BooksSearchPage />} />
             <Route path="/books/:bookId" element={<BookDetailPage />} />
             <Route path="/account" element={<MyAccountPage />} />

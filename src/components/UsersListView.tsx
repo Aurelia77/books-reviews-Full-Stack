@@ -1,6 +1,6 @@
 import { DEFAULT_USER_IMAGE } from "@/constants";
 import { UserType } from "@/types";
-import { Sparkle } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Avatar, AvatarImage } from "./ui/avatar";
 
@@ -26,16 +26,16 @@ const UsersListView = ({
             </Avatar>
             <p className="font-semibold text-muted">{friend.userName}</p>
             {friend.isMyFriend && (
-              <p>
+              <div>
                 {friend.isMyFriend ? (
-                  <div>
+                  <div className="flex gap-2">
+                    <Sparkles />
                     <p>Ami</p>
-                    <Sparkle />
                   </div>
                 ) : (
                   <p>NON Ami</p>
                 )}
-              </p>
+              </div>
             )}
           </Link>
         </li>

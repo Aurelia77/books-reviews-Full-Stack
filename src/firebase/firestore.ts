@@ -28,8 +28,8 @@ import {
   AccountFormType,
   BookStatusEnum,
   BookType,
+  MyInfoBookFormType,
   MyInfoBookType,
-  SearchBooksFormType,
   UserType,
 } from "../types";
 import { firebaseConfig } from "./firebaseConfig";
@@ -92,14 +92,16 @@ export const signoutFirebase = (): Promise<void> => {
   return auth.signOut();
 };
 
-export const addBookInfoToMyBooksFirebase = (
-  currentUserId: string,
+export const addOrUpdateBookInfoToMyBooksFirebase = (
+  currentUserId: string | undefined,
   bookId: string,
-  formData: SearchBooksFormType
+  formData: MyInfoBookFormType
 ): Promise<void> => {
   return getDocsByQueryFirebase<UserType>("users", "id", currentUserId)
     .then((users) => {
       const user = users[0];
+
+      console.log("999formdata", formData);
 
       if (!user) {
         console.error("User not found");
@@ -107,30 +109,62 @@ export const addBookInfoToMyBooksFirebase = (
       }
 
       switch (formData.bookStatus) {
-        case BookStatusEnum.booksRead:
-          user.booksRead.push({
-            id: bookId,
-            year: formData.year ?? null,
-            note: formData.note ?? 0,
-            description: formData.description ?? "",
-          });
+        case BookStatusEnum.booksReadList:
+          {
+            const bookIndex = user.booksRead.findIndex(
+              (book) => book.id === bookId
+            );
+
+            if (bookIndex !== -1) {
+              user.booksRead[bookIndex] = { id: bookId, ...formData };
+            } else {
+              user.booksRead.push({
+                id: bookId,
+                year: formData.year ?? null,
+                note: formData.note ?? 0,
+                commentaires: formData.commentaires,
+              });
+            }
+          }
           break;
-        case BookStatusEnum.booksToRead:
-          user.booksToRead.push({
-            id: bookId,
-            description: formData.description ?? "",
-          });
+        case BookStatusEnum.booksInProgressList:
+          {
+            const bookIndex = user.booksInProgress.findIndex(
+              (book) => book.id === bookId
+            );
+
+            if (bookIndex !== -1) {
+              user.booksInProgress[bookIndex] = { id: bookId, ...formData };
+            } else {
+              user.booksInProgress.push({
+                id: bookId,
+                commentaires: formData.commentaires,
+              });
+            }
+          }
           break;
-        case BookStatusEnum.booksInProgress:
-          user.booksInProgress.push({
-            id: bookId,
-            description: formData.description ?? "",
-          });
+        case BookStatusEnum.booksToReadList:
+          {
+            const bookIndex = user.booksToRead.findIndex(
+              (book) => book.id === bookId
+            );
+
+            if (bookIndex !== -1) {
+              user.booksToRead[bookIndex] = { id: bookId, ...formData };
+            } else {
+              user.booksToRead.push({
+                id: bookId,
+                commentaires: formData.commentaires,
+              });
+            }
+          }
           break;
         default:
           console.error("Invalid type");
           return;
       }
+
+      console.log("99user", user);
 
       return addOrUpdateUserFirebase(currentUserId, user);
     })
@@ -143,7 +177,7 @@ export const addBookInfoToMyBooksFirebase = (
 export const addBookFirebase = (
   currentUserId: string | undefined,
   book: BookType,
-  formData: SearchBooksFormType
+  formData: MyInfoBookFormType
 ): Promise<void> => {
   //console.log("ADD BOOK : ", book);
 
@@ -163,7 +197,7 @@ export const addBookFirebase = (
     };
     return setDoc(doc(db, "books", book.id), bookInfoToAddToDB)
       .then(() =>
-        addBookInfoToMyBooksFirebase(currentUserId, book.id, formData)
+        addOrUpdateBookInfoToMyBooksFirebase(currentUserId, book.id, formData)
       )
       .catch((error) => {
         console.error("Error adding book to Firestore: ", error);
@@ -179,8 +213,17 @@ export const addOrUpdateUserFirebase = (
   data: UserType | AccountFormType
 ): Promise<void> => {
   //console.log("data", data);
-  // on ajoute "{ merge: true }" pour ne pas remplacer les champs qui ne sont pas modifiés
-  //////// A VOIR CAR DE TOUTE Facon on est obligé de passer tous les champs !!!???
+  // on ajoute "{ merge: true }" pour ne pas remplacer les champs qui ne sont pas modifiés (par ex l'id)
+
+  // function isUserType(data): data is UserType {
+  //   return (data as UserType).booksRead !== undefined;
+  // }
+
+  // if (isUserType(data)) {
+  //   console.log("9999userBOOKSREAD", data.booksRead);
+  // }
+
+  // console.log("9999user", data);
 
   if (currentUserId) {
     return setDoc(doc(db, "users", currentUserId), data, { merge: true }).catch(
@@ -200,6 +243,14 @@ export const getDocsByQueryFirebase = <T extends BookType | UserType>(
   fieldToQuery?: string,
   valueToQuery?: string | boolean | number
 ): Promise<T[]> => {
+  console.log("999", collectionName, fieldToQuery, valueToQuery);
+  // const q = query(
+  //   collection(db, collectionName),
+  //   ...(fieldToQuery && valueToQuery
+  //     ? [where(fieldToQuery, "==", valueToQuery)]
+  //     : [])
+  // );
+
   const q = query(
     collection(db, collectionName),
     ...(fieldToQuery ? [where(fieldToQuery, "==", valueToQuery)] : [])
@@ -225,15 +276,18 @@ export const getDocsByQueryFirebase = <T extends BookType | UserType>(
     });
 };
 
-export const getMyInfosBookFirebase = (
-  currentUserId: string | undefined,
-  bookId: string
+export const getUserInfosBookFirebase = (
+  userId: string | undefined,
+  bookId: string,
+  bookStatus: BookStatusEnum
 ): Promise<MyInfoBookType | null> => {
-  if (currentUserId) {
-    return getDocsByQueryFirebase<UserType>("users", "id", currentUserId)
+  console.log("777 ", userId, bookId, bookStatus);
+
+  if (userId) {
+    return getDocsByQueryFirebase<UserType>("users", "id", userId)
       .then((users) => {
         const user = users[0];
-        const book = user.booksRead.find((book) => book.id === bookId);
+        const book = user[bookStatus].find((book) => book.id === bookId);
         return book ?? null;
       })
       .catch((error) => {
@@ -248,11 +302,11 @@ export const getMyInfosBookFirebase = (
 export const getFriendsWhoReadBookFirebase = (
   bookId: string,
   currentUserId: string | undefined,
-  userIdNotToCount: string = ""
+  userViewId: string = ""
 ): Promise<UserType[]> => {
   // console.log("currentUserId", currentUserId);
   // console.log("bookId", bookId);
-  // console.log("userIdNotToCount", userIdNotToCount);
+  // console.log("userViewId", userViewId);
 
   if (currentUserId && bookId) {
     const q = query(collection(db, "users"), where("id", "==", currentUserId));
@@ -266,24 +320,24 @@ export const getFriendsWhoReadBookFirebase = (
         if (currentUserFriendsIds.length > 0) {
           const q2 = query(
             collection(db, "users"),
-            where("id", "!=", userIdNotToCount),
+            where("id", "!=", userViewId),
             where("id", "in", currentUserFriendsIds) // error if currentUserFriendsIds empty
           );
 
           return getDocs(q2)
             .then((querySnapshot) => {
-              const friendsButUserIdNotToCount: UserType[] = [];
+              const friendsButuserViewId: UserType[] = [];
               querySnapshot.forEach((doc) => {
-                friendsButUserIdNotToCount.push(doc.data() as UserType);
+                friendsButuserViewId.push(doc.data() as UserType);
               });
-              return friendsButUserIdNotToCount;
+              return friendsButuserViewId;
             })
-            .then((friendsButUserIdNotToCount) => {
+            .then((friendsButuserViewId) => {
               // console.log(
               //   "***FRIENDS BUT USER ID NOT TO COUNT",
-              //   friendsButUserIdNotToCount
+              //   friendsButuserViewId
               // );
-              return friendsButUserIdNotToCount.filter((friend) =>
+              return friendsButuserViewId.filter((friend) =>
                 friend.booksRead.find((book) => book.id === bookId)
               );
             })
@@ -344,22 +398,29 @@ export const getFriendsWhoReadBookFirebase = (
 //   //   });
 // };
 
-export const findBookStatusInUserLibraryFirebase = (
+export const findBookCatInUserLibraryFirebase = (
   bookId: string | undefined,
   currentUserId: string | undefined
-): Promise<keyof UserType | ""> => {
+): Promise<BookStatusEnum | ""> => {
   if (bookId && currentUserId) {
     return getDocsByQueryFirebase<UserType>("users", "id", currentUserId)
       .then((users) => {
         const user = users[0];
-        let result: keyof UserType | "" = "";
+        let result: BookStatusEnum | "" = "";
 
         if (user.booksRead.some((book) => book.id === bookId))
-          result = "booksRead";
+          result = BookStatusEnum.booksReadList;
         if (user.booksToRead.some((book) => book.id === bookId))
-          result = "booksToRead";
+          result = BookStatusEnum.booksToReadList;
         if (user.booksInProgress.some((book) => book.id === bookId))
-          result = "booksInProgress";
+          result = BookStatusEnum.booksInProgressList;
+
+        // if (user.booksRead.some((book) => book.id === bookId))
+        //   result = BOOK_STATUS.READ;
+        // if (user.booksInProgress.some((book) => book.id === bookId))
+        //   result = BOOK_STATUS.IN_PROGRESS;
+        // if (user.booksToRead.some((book) => book.id === bookId))
+        //   result = BOOK_STATUS.TO_READ;
 
         return result;
       })

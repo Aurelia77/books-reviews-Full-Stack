@@ -7,10 +7,10 @@ import { CardFooter } from "./ui/card";
 
 const FriendsWhoReadBook = ({
   bookId,
-  userIdNotToCount,
+  userViewId,
 }: {
   bookId: string;
-  userIdNotToCount?: string;
+  userViewId?: string;
 }) => {
   const [friendsWhoReadBook, setFriendsWhoReadBook] = useState<
     {
@@ -23,20 +23,18 @@ const FriendsWhoReadBook = ({
   const { currentUser } = useUserStore();
 
   useEffect(() => {
-    getFriendsWhoReadBookFirebase(
-      bookId,
-      currentUser?.uid,
-      userIdNotToCount
-    ).then((users) => {
-      //console.log("xxx***USERS", users);
-      const friends = users.map((user) => ({
-        id: user.id,
-        userName: user.userName,
-      }));
-      //console.log("xxx***FRIENDS", friends);
-      setFriendsWhoReadBook(friends);
-    });
-  }, [bookId, userIdNotToCount]);
+    getFriendsWhoReadBookFirebase(bookId, currentUser?.uid, userViewId).then(
+      (users) => {
+        //console.log("xxx***USERS", users);
+        const friends = users.map((user) => ({
+          id: user.id,
+          userName: user.userName,
+        }));
+        //console.log("xxx***FRIENDS", friends);
+        setFriendsWhoReadBook(friends);
+      }
+    );
+  }, [bookId, userViewId, currentUser?.uid]);
 
   return (
     friendsWhoReadBook.length > 0 && (

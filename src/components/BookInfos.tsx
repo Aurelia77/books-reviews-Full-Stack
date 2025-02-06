@@ -6,38 +6,41 @@ import {
 } from "@/components/ui/card";
 import { DEFAULT_BOOK_IMAGE } from "@/constants";
 import {
-  findBookStatusInUserLibraryFirebase,
+  findBookCatInUserLibraryFirebase,
   getDocsByQueryFirebase,
 } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
-import { BookType } from "@/types";
+import { BookStatusEnum, BookType } from "@/types";
+import { Check, Ellipsis, Smile } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useSWR from "swr";
+import BookUserInfo from "./BookUserInfo";
 import FeedbackMessage from "./FeedbackMessage";
 import FriendsWhoReadBook from "./FriendsWhoReadBook";
-import MyInfoBook from "./MyInfoBook";
 import BookSkeleton from "./skeletons/BookSkeleton";
-import Title from "./Title";
 
 // Soit à partir de BooksSearchPage => on passe un objet "book" en props car on a les info nécessaires
-// Soit à partir de MyReadBooksPage / UserAccountPage => on passe un bookId (et ensuite on va chercher les infos nécessaires dans la BDD avec useSWR)
+// Soit à partir de MyBooksPage / UserAccountPage => on passe un bookId (et ensuite on va chercher les infos nécessaires dans la BDD avec useSWR)
 //// ou mettre avec hook perso.............
-// userIdNotToCount = id du user à ne pas compter dans les amis qui ont lu le livre (si on est sur UserAccountPage)
+// userViewId = id du user à ne pas compter dans les amis qui ont lu le livre (si on est sur UserAccountPage)
 type BookInfosProps =
-  | { book: BookType; bookId?: never; userIdNotToCount?: string }
-  | { book?: never; bookId: string; userIdNotToCount?: string };
+  | { book: BookType; bookId?: never; userViewId?: string }
+  | { book?: never; bookId: string; userViewId?: string };
 
 const BookInfos = ({
   book,
   bookId,
-  userIdNotToCount,
+  userViewId,
 }: BookInfosProps): JSX.Element => {
   //console.log("bookId", bookId);
 
   const [bookInfos, setBookInfos] = useState<BookType | null>(book || null);
   console.log("bookInfos", bookInfos);
-  const [bookInMyList, setBookInMyList] = useState<string>("");
+  const [bookInMyList, setBookInMyList] = useState<BookStatusEnum | "">("");
+  const [bookInFriendList, setBookInFriendList] = useState<BookStatusEnum | "">(
+    ""
+  );
 
   //   const [bookInMyList, setBookInMyList] = useState<BookStatusEnum>();
 
@@ -45,6 +48,11 @@ const BookInfos = ({
   // );
 
   const { currentUser } = useUserStore();
+
+  console.log("5555 userViewId", userViewId);
+  console.log("5555 currentUser", currentUser?.uid);
+  console.log("55555 bookInMyList", bookInMyList);
+  console.log("55555 bookInFriendList", bookInFriendList);
   // VOIR !!!!!!!!!! avec hook Perso !!!!!!
   //const { data: bookFromId, error, isLoading } = useBookId(bookId);
 
@@ -85,14 +93,38 @@ const BookInfos = ({
       setBookInfos(bookFromId);
     }
   }, [bookFromId]);
-  // 1-FIN============================FAIRE HOOK PERSO !!!
+  // 1-FIN==============
+  // ==============FAIRE HOOK PERSO !!!
 
   useEffect(() => {
     // ou gérer le undefined dans fonction bookInMyBooksFirebase ??????????
-    findBookStatusInUserLibraryFirebase(bookInfos?.id, currentUser?.uid).then(
+    findBookCatInUserLibraryFirebase(bookInfos?.id, currentUser?.uid).then(
       (bookInMyList) => setBookInMyList(bookInMyList)
     );
-  }, [bookInfos?.id, currentUser]);
+
+    if (userViewId !== currentUser?.uid)
+      findBookCatInUserLibraryFirebase(bookInfos?.id, userViewId).then(
+        (bookInFriendList) => setBookInFriendList(bookInFriendList)
+      );
+  }, [bookInfos?.id, currentUser, userViewId]);
+
+  // useEffect(() => {
+  //   // ou gérer le undefined dans fonction bookInMyBooksFirebase ??????????
+  //   findBookCatInUserLibraryFirebase(bookInfos?.id, currentUser?.uid).then(
+  //     (bookInMyList) => {
+  //       console.log("5552 bookInMyList", bookInMyList);
+  //       setBookInMyList(bookInMyList);
+  //     }
+  //   );
+
+  //   if (userViewId !== currentUser?.uid)
+  //     findBookCatInUserLibraryFirebase(bookInfos?.id, userViewId).then(
+  //       (bookInFriendList) => {
+  //         console.log("5552 bookInFriendList", bookInFriendList);
+  //         setBookInFriendList(bookInFriendList);
+  //       }
+  //     );
+  // }, [bookInfos?.id, currentUser]);
 
   return (
     <div>
@@ -103,7 +135,7 @@ const BookInfos = ({
       ) : (
         bookInfos && (
           <Card className="relative mb-4">
-            <Link to={`/books/${bookInfos.id}`}>
+            <Link to={`/books/${bookInfos.id}`} className="relative">
               <CardDescription className="absolute right-2 top-2 rounded-full bg-secondary/60 px-3 py-1 text-secondary-foreground shadow-sm shadow-foreground">
                 {bookInfos.language}
               </CardDescription>
@@ -114,6 +146,18 @@ const BookInfos = ({
                   className="w-32 rounded-sm border border-border object-contain shadow-md shadow-foreground/70"
                   alt={`Image de couverture du livre ${bookInfos?.title}`}
                 />
+                {/* {bookInfos.imageLink ? (
+                  <img
+                    src={bookInfos.imageLink}
+                    onError={(e) => (e.currentTarget.style.display = "none")}
+                    className="w-32 rounded-sm border border-border object-contain shadow-md shadow-foreground/70"
+                    alt={`Image de couverture du livre ${bookInfos?.title}`}
+                  />
+                ) : (
+                  <div className="flex h-48 w-32 items-center justify-center rounded-sm border border-border bg-gray-200 shadow-md shadow-foreground/70">
+                    <span className="text-gray-500">Image non disponible</span>
+                  </div>
+                )} */}
                 <CardHeader className="gap-3 overflow-hidden">
                   <CardTitle className="line-clamp-4">
                     {bookInfos.title}
@@ -127,18 +171,33 @@ const BookInfos = ({
                         <span key={index}>{index > 0 ? ` / ${cat}` : cat}</span>
                       ))}
                   </CardDescription>
-                  {bookInMyList && <Title>{bookInMyList}</Title>}
-                  <MyInfoBook
-                    currentUserId={currentUser?.uid}
-                    bookInfos={bookInfos}
-                  />
+
+                  {(bookInMyList !== "" || bookInFriendList !== "") && (
+                    <BookUserInfo
+                      userId={userViewId || currentUser?.uid}
+                      bookInfos={bookInfos}
+                      bookStatus={bookInMyList}
+                      friendBookStatus={bookInFriendList}
+                    />
+                  )}
                 </CardHeader>
+                {bookInMyList && (
+                  <div
+                    className="absolute bottom-10 right-2 rounded-full bg-primary/50 p-1  shadow-sm shadow-foreground"
+                    // className="absolute bottom-2 right-2 rounded-full bg-secondary/60 px-3 py-1 text-secondary-foreground shadow-sm shadow-foreground"
+                  >
+                    {bookInMyList === BookStatusEnum.booksReadList && <Check />}
+                    {bookInMyList === BookStatusEnum.booksInProgressList && (
+                      <Ellipsis />
+                    )}
+                    {bookInMyList === BookStatusEnum.booksToReadList && (
+                      <Smile />
+                    )}
+                  </div>
+                )}
               </div>
             </Link>
-            <FriendsWhoReadBook
-              bookId={bookInfos.id}
-              userIdNotToCount={userIdNotToCount}
-            />
+            <FriendsWhoReadBook bookId={bookInfos.id} userViewId={userViewId} />
           </Card>
         )
       )}

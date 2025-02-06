@@ -3,7 +3,6 @@ import { Sparkles } from "lucide-react";
 const Stars = (): JSX.Element => {
   return (
     <div className="flex items-center gap-2">
-      <Sparkles />
       <Sparkles
         size={48}
         strokeWidth={3}
@@ -15,6 +14,7 @@ const Stars = (): JSX.Element => {
         size={42}
         color="gray"
       />
+      <Sparkles />
     </div>
   );
 };

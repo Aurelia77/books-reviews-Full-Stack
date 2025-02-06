@@ -29,7 +29,7 @@ const NavBar = (): JSX.Element => {
 
   return (
     <div className="sticky top-0 z-20 flex h-12 items-center bg-primary/70 p-1 text-muted shadow-md">
-      <p>USER : {currentUser?.email}</p>
+      <p className="absolute left-1 top-1 text-xs">{currentUser?.email}</p>
       <ArrowLeft
         className="absolute left-1 top-1 z-20 cursor-pointer text-muted/60"
         size={36}

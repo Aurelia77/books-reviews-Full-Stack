@@ -16,7 +16,14 @@ export type MyInfoBookType = {
   id: string;
   year?: number | null;
   note?: number | null;
-  description: string | null;
+  commentaires: string;
+};
+
+export type MyInfoBookFormType = {
+  bookStatus: BookStatusEnum;
+  year?: number;
+  note?: number;
+  commentaires: string;
 };
 
 export type UserType = {
@@ -38,13 +45,6 @@ export type AccountFormType = {
   description: string;
 };
 
-export type SearchBooksFormType = {
-  bookStatus: BookStatusEnum;
-  year?: number;
-  note?: number;
-  description?: string;
-};
-
 export type BookAPIType = {
   id: string;
   volumeInfo: {
@@ -63,14 +63,13 @@ export type BookAPIType = {
   };
 };
 
-export enum BookStatusEnum {
-  booksRead = "booksRead",
-  booksInProgress = "booksInProgress",
-  booksToRead = "booksToRead",
-}
-
 // export enum BookStatusEnum {
-//   booksRead = "lu",
-//   booksInProgress = "en cours",
-//   booksToRead = "à lire",
+//   bookRead = "lu",
+//   bookInProgress = "en cours",
+//   bookToRead = "à lire",
 // }
+export enum BookStatusEnum {
+  booksReadList = "booksRead",
+  booksInProgressList = "booksInProgress",
+  booksToReadList = "booksToRead",
+}

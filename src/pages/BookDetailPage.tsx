@@ -1,7 +1,7 @@
+import BookUserInfo from "@/components/BookUserInfo";
 import CustomLinkButton from "@/components/CustomLinkButton";
 import FeedbackMessage from "@/components/FeedbackMessage";
 import FriendsWhoReadBook from "@/components/FriendsWhoReadBook";
-import MyInfoBook from "@/components/MyInfoBook";
 import BookSkeleton from "@/components/skeletons/BookSkeleton";
 import StarRating from "@/components/StarRating";
 import { Button } from "@/components/ui/button";
@@ -33,11 +33,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
-import { DEFAULT_BOOK_IMAGE, GOOGLE_BOOKS_API_URL } from "@/constants";
+import { GOOGLE_BOOKS_API_URL } from "@/constants";
 import {
   addBookFirebase,
+  addOrUpdateBookInfoToMyBooksFirebase,
   deleteBookFromMyBooksFirebase,
-  findBookStatusInUserLibraryFirebase,
+  findBookCatInUserLibraryFirebase,
   getDocsByQueryFirebase,
 } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
@@ -45,11 +46,10 @@ import {
   BookAPIType,
   BookStatusEnum,
   BookType,
-  SearchBooksFormType,
-  UserType,
+  MyInfoBookFormType,
 } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { X } from "lucide-react";
+import { Check, Ellipsis, Smile, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
@@ -69,7 +69,7 @@ const bookFormSchema = z.object({
     })
     .optional(),
   note: z.number().int().min(0).max(5).optional(),
-  description: z.string().optional(),
+  commentaires: z.string(),
 });
 
 const BookDetailPage = (): JSX.Element => {
@@ -81,7 +81,7 @@ const BookDetailPage = (): JSX.Element => {
   const [bookInfos, setBookInfos] = useState<BookType>();
   console.log("333 bookInfos", bookInfos?.title);
 
-  const [bookInMyBooks, setBookInMyBooks] = useState<keyof UserType | "">(""); //////////////////////////////////////////////////
+  const [bookInMyBooks, setBookInMyBooks] = useState<BookStatusEnum | "">(""); //////////////////////////////////////////////////
   //  const [bookInMyBooks, setBookInMyBooks] = useState<BookStatusEnum>();
   const [refreshKey, setRefreshKey] = useState(0); // to force MyInfosBook re-render
   const [isBookInDB, setIsBookInDB] = useState<boolean>(true);
@@ -194,37 +194,60 @@ const BookDetailPage = (): JSX.Element => {
 
   console.log("333 data bookFromApi", bookFromApi?.title);
 
-  const form = useForm<SearchBooksFormType>({
+  const form = useForm<MyInfoBookFormType>({
     resolver: zodResolver(bookFormSchema),
     // Tjs mettre des valeurs par défaut sinon ERREUR : Warning: A component is changing an uncontrolled input to be controlled
     defaultValues: {
-      bookStatus: BookStatusEnum.booksRead,
+      bookStatus: BookStatusEnum.booksReadList,
       year: currentYear,
       note: 0,
-      description: "",
+      commentaires: "",
     },
   });
 
-  const onSubmit: SubmitHandler<SearchBooksFormType> = (formData) => {
-    if (bookInfos)
-      addBookFirebase(currentUser?.uid, bookInfos, formData).then(() => {
-        console.log("Livre ajouté ! ", bookInfos.title);
-        // mettre un popup !
-        setRefreshKey((prevKey) => prevKey + 1); // Increment refreshKey to trigger re-render
-      });
-
+  const onSubmit: SubmitHandler<MyInfoBookFormType> = (formData) => {
+    if (bookInfos) {
+      {
+        if (bookInMyBooks === "") {
+          addBookFirebase(currentUser?.uid, bookInfos, formData).then(() => {
+            console.log(
+              "Livre ajouté ! ",
+              bookInfos.title,
+              formData.bookStatus
+            );
+            // mettre un popup !
+            setRefreshKey((prevKey) => prevKey + 1); // Increment refreshKey to trigger re-render
+          });
+        } else
+          addOrUpdateBookInfoToMyBooksFirebase(
+            currentUser?.uid,
+            bookInfos.id,
+            formData
+          ).then(() => {
+            console.log(
+              "Livre ajouté ! ",
+              bookInfos.title,
+              formData.bookStatus
+            );
+            // mettre un popup !
+            setRefreshKey((prevKey) => prevKey + 1); // Increment refreshKey to trigger re-render
+          });
+      }
+    }
     setBookInMyBooks(formData.bookStatus);
   };
 
   useEffect(() => {
-    findBookStatusInUserLibraryFirebase(bookInfos?.id, currentUser?.uid).then(
+    findBookCatInUserLibraryFirebase(bookInfos?.id, currentUser?.uid).then(
       (res) => setBookInMyBooks(res)
     );
   }, [bookInfos, currentUser]);
 
   // On revient à la ligne à chaque fin de phrase, sinon trop compacte
   const formatDescription = (description: string) => {
-    return description?.replace(/([.!?])\s*(?=[A-Z])/g, "$1\n");
+    return description
+      ?.replace(/([.!?])\s*(?=[A-Z])/g, "$1\n")
+      .replace(/<br\s*\/?>\s*<br\s*\/?>/g, "\n");
   };
 
   const handleDeleteBook = (bookId: string) => {
@@ -247,12 +270,24 @@ const BookDetailPage = (): JSX.Element => {
             </CardDescription>
 
             <div className="flex items-start gap-5 p-5 py-10 shadow-xl shadow-primary/30">
-              <img
+              {/* <img
                 src={bookInfos.imageLink || DEFAULT_BOOK_IMAGE}
                 onError={(e) => (e.currentTarget.src = DEFAULT_BOOK_IMAGE)}
                 className="w-32 rounded-sm border border-border object-contain shadow-md shadow-foreground/70"
                 alt={`Image de couverture du livre ${bookInfos?.title}`}
-              />
+              /> */}
+              {bookInfos.imageLink ? (
+                <img
+                  src={bookInfos.imageLink}
+                  onError={(e) => (e.currentTarget.style.display = "none")}
+                  className="w-32 rounded-sm border border-border object-contain shadow-md shadow-foreground/70"
+                  alt={`Image de couverture du livre ${bookInfos?.title}`}
+                />
+              ) : (
+                <div className="flex h-48 w-32 items-center justify-center rounded-sm border border-border bg-gray-200 shadow-md shadow-foreground/70">
+                  <span className="text-gray-500">Image non disponible</span>
+                </div>
+              )}
               <CardHeader className="items-start gap-3 overflow-hidden">
                 <CardTitle>{bookInfos?.title}</CardTitle>
                 <CardDescription className="text-muted">
@@ -267,38 +302,67 @@ const BookDetailPage = (): JSX.Element => {
             </div>
             <FriendsWhoReadBook bookId={bookInfos.id} />
 
-            <CardContent className="relative bg-secondary/30 pb-6 pt-12 shadow-md shadow-primary/30">
+            <CardContent className="relative bg-secondary/30 p-6 shadow-md shadow-primary/30">
               <Dialog>
                 {bookInMyBooks === "" ? (
-                  <DialogTrigger asChild>
-                    <Button className="absolute -top-6 left-1/4 h-12 w-1/2 border border-border bg-secondary/60 shadow-md shadow-foreground/70">
+                  <DialogTrigger asChild className="flex justify-center">
+                    {/* absolute -top-1 left-1/4  */}
+                    <Button className="m-auto mb-6 h-12 w-1/2 border border-border bg-secondary/60 shadow-md shadow-foreground/70">
                       Ajouter à mes livres
                     </Button>
                   </DialogTrigger>
                 ) : (
-                  <div className="relative">
-                    <p className="absolute -top-6 left-1/4 h-12 w-1/2 border border-border bg-secondary/60 pl-2 shadow-md shadow-foreground/70">
-                      Dans ma liste : {bookInMyBooks}
-                    </p>
-                    <X
-                      className="absolute bottom-8 right-0 text-destructive-foreground"
-                      onClick={() => handleDeleteBook(bookInfos.id)}
-                    />
-                    <MyInfoBook
-                      key={refreshKey} // Use refreshKey as a key to force re-render
-                      currentUserId={currentUser?.uid}
+                  <div className="relative flex flex-col gap-2">
+                    <div className="flex items-center justify-around">
+                      <div className="mb-2 border border-border bg-secondary/60 p-2 shadow-md shadow-foreground/70">
+                        {bookInMyBooks === BookStatusEnum.booksReadList && (
+                          <div className="flex justify-center gap-2">
+                            <p>J'ai lu ce livre</p>
+                            <Check />
+                          </div>
+                        )}
+                        {bookInMyBooks ===
+                          BookStatusEnum.booksInProgressList && (
+                          <div className="flex justify-center gap-2">
+                            <p>Je suis en train de lire ce livre</p>
+                            <Ellipsis />
+                          </div>
+                        )}
+                        {bookInMyBooks === BookStatusEnum.booksToReadList && (
+                          <div className="flex justify-center gap-2">
+                            <p>J'aimerais lire ce livre</p>
+                            <Smile />
+                          </div>
+                        )}
+                      </div>
+                      <X
+                        className="bottom-8 mr-0 text-destructive-foreground"
+                        onClick={() => handleDeleteBook(bookInfos.id)}
+                      />
+                    </div>
+                    <BookUserInfo
+                      key={refreshKey} // refreshKey = key to force re-render when bookInfos changes
+                      userId={currentUser?.uid}
                       bookInfos={bookInfos}
+                      bookStatus={bookInMyBooks}
                     />
-                    <Button className="border border-border bg-secondary/40 shadow-sm shadow-foreground/70">
-                      Modifier
-                    </Button>
+                    <DialogTrigger asChild className="flex justify-center">
+                      {/* absolute -top-1 left-1/4  */}
+                      <Button className="m-auto mb-6 h-12 w-1/2 border border-border bg-secondary/60 shadow-md shadow-foreground/70">
+                        Voir/Modifier mes infos
+                      </Button>
+                    </DialogTrigger>
                   </div>
                 )}
                 <DialogContent className="sm:max-w-[425px]">
                   {currentUser?.uid ? (
                     <>
                       <DialogHeader>
-                        <DialogTitle>AJOUTER LIVRE</DialogTitle>
+                        {bookInMyBooks === "" ? (
+                          <DialogTitle>AJOUTER LIVRE</DialogTitle>
+                        ) : (
+                          <DialogTitle>MODIFIER MES INFOS</DialogTitle>
+                        )}
                         <DialogDescription>
                           {bookInfos?.title}
                         </DialogDescription>
@@ -355,14 +419,14 @@ const BookDetailPage = (): JSX.Element => {
                                 >
                                   <div className="flex items-center space-x-2">
                                     <RadioGroupItem
-                                      value={BookStatusEnum.booksRead}
+                                      value={BookStatusEnum.booksReadList}
                                       id="booksRead"
                                     />
                                     <Label htmlFor="read">Lu</Label>
                                   </div>
                                   <div className="flex items-center space-x-2">
                                     <RadioGroupItem
-                                      value={BookStatusEnum.booksInProgress}
+                                      value={BookStatusEnum.booksInProgressList}
                                       id="booksInProgress"
                                     />
                                     <Label htmlFor="booksInProgress">
@@ -371,7 +435,7 @@ const BookDetailPage = (): JSX.Element => {
                                   </div>
                                   <div className="flex items-center space-x-2">
                                     <RadioGroupItem
-                                      value={BookStatusEnum.booksToRead}
+                                      value={BookStatusEnum.booksToReadList}
                                       id="toRead"
                                     />
                                     <Label htmlFor="toRead">À lire</Label>
@@ -379,9 +443,24 @@ const BookDetailPage = (): JSX.Element => {
                                 </RadioGroup>
                               )}
                             />
+                            <FormField
+                              control={form.control}
+                              name="commentaires"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormControl>
+                                    <Textarea
+                                      placeholder="Mes commentaires"
+                                      {...field}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
                             {form.watch().bookStatus ===
-                              BookStatusEnum.booksRead && (
-                              <div className="flex flex-col gap-3">
+                              BookStatusEnum.booksReadList && (
+                              <div className="flex items-center justify-around">
                                 <FormField
                                   control={form.control}
                                   name="year"
@@ -430,21 +509,6 @@ const BookDetailPage = (): JSX.Element => {
                                     </FormItem>
                                   )}
                                 />
-                                <FormField
-                                  control={form.control}
-                                  name="description"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormControl>
-                                        <Textarea
-                                          placeholder="Mes commentaires"
-                                          {...field}
-                                        />
-                                      </FormControl>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
                               </div>
                             )}
 
@@ -463,7 +527,7 @@ const BookDetailPage = (): JSX.Element => {
 
                             <DialogFooter>
                               <DialogClose asChild>
-                                <Button type="submit">Ajouter</Button>
+                                <Button type="submit">OK</Button>
                               </DialogClose>
                             </DialogFooter>
                           </form>

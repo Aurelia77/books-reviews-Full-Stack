@@ -1,9 +1,7 @@
-import BookInfos from "@/components/BookInfos";
-import FeedbackMessage from "@/components/FeedbackMessage";
+import AllBooksLists from "@/components/AllBooksLists";
 import Title from "@/components/Title";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   addUserIdToMyFriendsFirebase,
   deleteUserIdToMyFriendsFirebase,
@@ -11,7 +9,8 @@ import {
   isUserMyFriendFirebase,
 } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
-import { MyInfoBookType, UserType } from "@/types";
+import { UserType } from "@/types";
+import { Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -54,7 +53,16 @@ const UserAccountPage = (): JSX.Element => {
       <Card>
         <div className="mr-2 flex items-center justify-between">
           <Title>{userInfo?.userName ?? ""}</Title>
-          <CardDescription>{isFriend ? "Ami" : "Non ami"}</CardDescription>
+          <CardDescription>
+            {isFriend ? (
+              <div className="flex gap-2">
+                <Sparkles />
+                <p>Ami</p>
+              </div>
+            ) : (
+              "Non ami"
+            )}
+          </CardDescription>
           {isFriend ? (
             <Button onClick={deleteFriendHandler}>Supprimer de mes amis</Button>
           ) : (
@@ -76,65 +84,10 @@ const UserAccountPage = (): JSX.Element => {
         </div>
       </Card>
 
-      <Title level={2}>Listes de livres</Title>
-      <Tabs defaultValue="booksRead" className="mt-4">
-        <TabsList>
-          <TabsTrigger value="booksRead">Lus</TabsTrigger>
-          <TabsTrigger value="booksInProgress">En cours</TabsTrigger>
-          <TabsTrigger value="booksToRead">À lire</TabsTrigger>
-        </TabsList>
-        <TabsContent value="booksRead">
-          {userInfo?.booksRead && userInfo?.booksRead?.length > 0 ? (
-            userInfo?.booksRead
-              .sort((a, b) => (a.year ?? 0) - (b.year ?? 0))
-              .map((book: MyInfoBookType) => (
-                <BookInfos
-                  key={book.id}
-                  bookId={book.id}
-                  userIdNotToCount={userInfo.id}
-                />
-              ))
-          ) : (
-            <FeedbackMessage
-              message="Aucun livre pour l'instant"
-              className="mt-8"
-            />
-          )}
-        </TabsContent>
-        <TabsContent value="booksInProgress">
-          {userInfo?.booksInProgress &&
-          userInfo?.booksInProgress?.length > 0 ? (
-            userInfo?.booksInProgress.map((book: MyInfoBookType) => (
-              <BookInfos
-                key={book.id}
-                bookId={book.id}
-                userIdNotToCount={userInfo.id}
-              />
-            ))
-          ) : (
-            <FeedbackMessage
-              message="Aucun livre pour l'instant"
-              className="mt-8"
-            />
-          )}
-        </TabsContent>
-        <TabsContent value="booksToRead">
-          {userInfo?.booksToRead && userInfo?.booksToRead?.length > 0 ? (
-            userInfo?.booksToRead.map((book: MyInfoBookType) => (
-              <BookInfos
-                key={book.id}
-                bookId={book.id}
-                userIdNotToCount={userInUrl.userId}
-              />
-            ))
-          ) : (
-            <FeedbackMessage
-              message="Aucun livre pour l'instant"
-              className="mt-8"
-            />
-          )}
-        </TabsContent>
-      </Tabs>
+      <Title level={2}>Livres du membre</Title>
+      {userInfo && userInUrl.userId && (
+        <AllBooksLists userInfo={userInfo} userIdInUrl={userInUrl.userId} />
+      )}
     </div>
   );
 };

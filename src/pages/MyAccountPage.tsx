@@ -22,6 +22,7 @@ import {
 import useUserStore from "@/hooks/useUserStore";
 import { AccountFormType, UserType } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -45,6 +46,9 @@ const MyAccountPage = (): JSX.Element => {
   const [currentUserInfo, setCurrentUserInfo] = useState<UserType | null>(null);
   const [friendsInfo, setFriendsInfo] = useState<UserType[]>([]);
   const { currentUser } = useUserStore();
+
+  console.log("999 userId", currentUser?.uid);
+
   const [imageUpload, setImageUpload] = useState<File | null>(null);
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -198,7 +202,10 @@ const MyAccountPage = (): JSX.Element => {
           </Button>
         </form>
       </Form>
-      <Title level={2}>Mes amis</Title>
+      <div className="flex items-center gap-2">
+        <Title level={2}>Mes amis</Title>
+        <Sparkles />
+      </div>
       {friendsInfo.length > 0 ? (
         <UsersListView userInfoList={friendsInfo} />
       ) : (
