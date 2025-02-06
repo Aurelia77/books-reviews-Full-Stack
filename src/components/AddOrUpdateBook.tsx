@@ -1,0 +1,465 @@
+import BookUserInfo from "@/components/BookUserInfo";
+import CustomLinkButton from "@/components/CustomLinkButton";
+import FeedbackMessage from "@/components/FeedbackMessage";
+import StarRating from "@/components/StarRating";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  addBookFirebase,
+  addOrUpdateBookInfoToMyBooksFirebase,
+  deleteBookFromMyBooksFirebase,
+  findBookCatInUserLibraryFirebase,
+  getUserInfosBookFirebase,
+} from "@/firebase/firestore";
+import {
+  BookStatusEnum,
+  BookType,
+  MyInfoBookFormType,
+  MyInfoBookType,
+} from "@/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Check, Ellipsis, Smile, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { z } from "zod";
+
+const currentYear = new Date().getFullYear();
+
+const bookFormSchema = z.object({
+  bookStatus: z.nativeEnum(BookStatusEnum),
+  year: z
+    .number()
+    .int()
+    .min(1900, { message: "L'année doit être suppérieur à 1900" })
+    .max(currentYear, {
+      message: "Impossible d'ajouter une année dans le future !",
+    })
+    .optional(),
+  note: z.number().int().min(0).max(5).optional(),
+  commentaires: z.string(),
+});
+
+type AddOrUpdateBookProps = {
+  userId: string;
+  bookInfos: BookType;
+};
+
+const AddOrUpdateBook = ({
+  userId,
+  bookInfos,
+}: AddOrUpdateBookProps): JSX.Element => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [bookInMyBooks, setBookInMyBooks] = useState<BookStatusEnum | "">("");
+  const [userBookInfos, setUserBookInfos] = useState<MyInfoBookType>();
+
+  console.log("789!!!!!!!!! userBookInfos", userBookInfos?.note);
+  console.log("789 bookInMyBooks", bookInMyBooks);
+
+  const [refreshKey, setRefreshKey] = useState(0); // to force MyInfosBook re-render
+
+  // const form = useForm<MyInfoBookFormType>({
+  //   resolver: zodResolver(bookFormSchema),
+  //   // Tjs mettre des valeurs par défaut sinon ERREUR : Warning: A component is changing an uncontrolled input to be controlled
+  //   defaultValues: {
+  //     bookStatus: bookInMyBooks || BookStatusEnum.booksReadList,
+  //     year: userBookInfos?.year || currentYear,
+  //     note: userBookInfos?.note || 0,
+  //     commentaires: userBookInfos?.commentaires || "",
+  //   },
+  // });
+
+  const defaultValues = {
+    bookStatus: bookInMyBooks || BookStatusEnum.booksReadList,
+    year: userBookInfos?.year || currentYear,
+    note: userBookInfos?.note || 0,
+    commentaires: userBookInfos?.commentaires || "",
+  };
+
+  console.log("!!!!! defaultValues NOTE", defaultValues.note);
+
+  const form = useForm<MyInfoBookFormType>({
+    resolver: zodResolver(bookFormSchema),
+    defaultValues: defaultValues,
+  });
+
+  const updateUserInfoBook = () => {
+    if (bookInMyBooks && bookInfos) {
+      getUserInfosBookFirebase(userId, bookInfos.id, bookInMyBooks).then(
+        (myBook) => {
+          console.log("!!!!!!!!!!! myBook", myBook);
+          if (myBook) setUserBookInfos(myBook);
+        }
+      );
+    }
+  };
+
+  useEffect(() => {
+    if (bookInMyBooks && bookInfos) {
+      getUserInfosBookFirebase(userId, bookInfos.id, bookInMyBooks).then(
+        (myBook) => {
+          if (myBook) setUserBookInfos(myBook);
+        }
+      );
+    }
+  }, [bookInfos?.id, bookInMyBooks, userId]);
+
+  useEffect(() => {
+    form.reset(defaultValues);
+  }, [userBookInfos]);
+
+  const handleDeleteBook = (bookId: string) => {
+    deleteBookFromMyBooksFirebase(userId, bookId, bookInMyBooks).then(() =>
+      setBookInMyBooks("")
+    );
+  };
+
+  const onSubmit: SubmitHandler<MyInfoBookFormType> = (formData) => {
+    if (bookInfos) {
+      {
+        if (bookInMyBooks === "") {
+          addBookFirebase(userId, bookInfos, formData).then(() => {
+            console.log(
+              "Livre ajouté ! ",
+              bookInfos.title,
+              formData.bookStatus
+            );
+            // mettre un popup !
+            setRefreshKey((prevKey) => prevKey + 1); // Increment refreshKey to trigger re-render
+          });
+        } else
+          addOrUpdateBookInfoToMyBooksFirebase(
+            userId,
+            bookInfos.id,
+            formData
+          ).then(() => {
+            updateUserInfoBook();
+            console.log(
+              "Livre ajouté ! ",
+              bookInfos.title,
+              formData.bookStatus
+            );
+            // mettre un popup !
+            setRefreshKey((prevKey) => prevKey + 1); // Increment refreshKey to trigger re-render
+          });
+      }
+    }
+    setBookInMyBooks(formData.bookStatus);
+    setIsDialogOpen(false);
+  };
+
+  useEffect(() => {
+    findBookCatInUserLibraryFirebase(bookInfos?.id, userId).then((res) =>
+      setBookInMyBooks(res)
+    );
+  }, [bookInfos, userId]);
+
+  return (
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      {/* <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}> */}
+      {bookInMyBooks === "" ? (
+        <DialogTrigger asChild className="flex justify-center">
+          {/* absolute -top-1 left-1/4  */}
+          <Button
+            onClick={() =>
+              form.reset({
+                bookStatus: BookStatusEnum.booksReadList,
+                year: currentYear,
+                note: 0,
+                commentaires: "",
+              })
+            }
+            className="m-auto mb-6 h-12 w-1/2 border border-border bg-secondary/60 shadow-md shadow-foreground/70"
+          >
+            Ajouter à mes livres
+          </Button>
+        </DialogTrigger>
+      ) : (
+        <div className="relative flex flex-col gap-2">
+          <div className="flex items-center justify-around">
+            <div className="mb-2 border border-border bg-secondary/60 p-2 shadow-md shadow-foreground/70">
+              {bookInMyBooks === BookStatusEnum.booksReadList && (
+                <div className="flex justify-center gap-2">
+                  <p>J'ai lu ce livre</p>
+                  <Check />
+                </div>
+              )}
+              {bookInMyBooks === BookStatusEnum.booksInProgressList && (
+                <div className="flex justify-center gap-2">
+                  <p>Je suis en train de lire ce livre</p>
+                  <Ellipsis />
+                </div>
+              )}
+              {bookInMyBooks === BookStatusEnum.booksToReadList && (
+                <div className="flex justify-center gap-2">
+                  <p>J'aimerais lire ce livre</p>
+                  <Smile />
+                </div>
+              )}
+            </div>
+            <AlertDialog>
+              <AlertDialogTrigger>
+                <X className="bottom-8 mr-0 text-destructive-foreground" />
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="text-foreground">
+                    Etes-vous sûr de vouloir supprimer le livre de votre liste ?
+                  </AlertDialogTitle>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel className="bg-primary border-none">
+                    Annuler
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => handleDeleteBook(bookInfos.id)}
+                    className="bg-destructive-foreground text-card"
+                  >
+                    Oui !
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+          <BookUserInfo
+            key={refreshKey} // refreshKey = key to force re-render when bookInfos changed
+            userId={userId}
+            bookInfos={bookInfos}
+            bookStatus={bookInMyBooks}
+          />
+          <DialogTrigger asChild className="flex justify-center">
+            {/* absolute -top-1 left-1/4  */}
+            <Button
+              className="m-auto mb-6 h-12 w-1/2 border border-border bg-secondary/60 shadow-md shadow-foreground/70"
+              onClick={() => form.reset(defaultValues)}
+            >
+              Modifier mes infos
+            </Button>
+          </DialogTrigger>
+        </div>
+      )}
+      <DialogContent className="sm:max-w-[425px]">
+        {userId ? (
+          <>
+            <DialogHeader>
+              {bookInMyBooks === "" ? (
+                <DialogTitle>AJOUTER LIVRE</DialogTitle>
+              ) : (
+                <DialogTitle>MODIFIER MES INFOS</DialogTitle>
+              )}
+              <DialogDescription>{bookInfos?.title}</DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <Form {...form}>
+                <form
+                  className="sticky top-10 z-10 flex flex-col gap-3 bg-background/70 duration-500"
+                  onSubmit={form.handleSubmit(onSubmit)}
+                >
+                  {/* Sans FORMFIELD mais avec CONTROLLER (normalement pareil ms moins lisible...)
+        <RadioGroup defaultValue={BookStatusEnum.read}>
+          <Controller
+            name="bookStatus"
+            control={form.control}
+            defaultValue={BookStatusEnum.read}
+            render={({ field }) => (
+              <RadioGroup
+                value={field.value}
+                onValueChange={field.onChange}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value={BookStatusEnum.read}
+                    id="read"
+                  />
+                  <Label htmlFor="read">Lu</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value={BookStatusEnum.inProgress}
+                    id="inProgress"
+                  />
+                  <Label htmlFor="inProgress">En cours</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value={BookStatusEnum.toRead}
+                    id="toRead"
+                  />
+                  <Label htmlFor="toRead">À lire</Label>
+                </div>
+              </RadioGroup>
+            )}
+          />
+        </RadioGroup> */}
+                  <FormField
+                    control={form.control}
+                    name="bookStatus"
+                    render={({ field }) => (
+                      <RadioGroup
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem
+                            value={BookStatusEnum.booksReadList}
+                            id="booksRead"
+                          />
+                          <Label htmlFor="read">Lu</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem
+                            value={BookStatusEnum.booksInProgressList}
+                            id="booksInProgress"
+                          />
+                          <Label htmlFor="booksInProgress">En cours</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem
+                            value={BookStatusEnum.booksToReadList}
+                            id="toRead"
+                          />
+                          <Label htmlFor="toRead">À lire</Label>
+                        </div>
+                      </RadioGroup>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="commentaires"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Textarea placeholder="Mes commentaires" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  {form.watch().bookStatus === BookStatusEnum.booksReadList && (
+                    <div className="flex items-center justify-around">
+                      <FormField
+                        control={form.control}
+                        name="year"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Input
+                                placeholder="Année"
+                                type="number"
+                                {...field}
+                                //On converti en number sinon : "Expected number, received string" (sinon on pt enlever le onChange)
+                                onChange={(e) =>
+                                  field.onChange(
+                                    e.target.value
+                                      ? parseFloat(e.target.value)
+                                      : null
+                                  )
+                                }
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="note"
+                        render={() => (
+                          <FormItem className="flex justify-center">
+                            <FormControl>
+                              <Controller
+                                name="note"
+                                control={form.control}
+                                render={({ field }) => (
+                                  <StarRating
+                                    value={field.value ?? 0}
+                                    //On converti en number sinon : "Expected number, received string"
+                                    onChange={(value: string) =>
+                                      field.onChange(parseInt(value))
+                                    }
+                                  />
+                                )}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      {form.watch().note !== 0 && (
+                        <X onClick={() => form.setValue("note", 0)} />
+                      )}
+                    </div>
+                  )}
+
+                  {/* <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input placeholder="Email" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        /> */}
+
+                  {/* <DialogFooter>
+                    <DialogClose asChild> */}
+                  <Button type="submit">OK</Button>
+                  {/* </DialogClose>
+                  </DialogFooter> */}
+                </form>
+              </Form>
+            </div>
+          </>
+        ) : (
+          <>
+            <DialogHeader>
+              <DialogTitle>
+                <FeedbackMessage
+                  message="Vous devez être connecté pour ajouter un livre"
+                  type="error"
+                />
+              </DialogTitle>
+              <DialogDescription>
+                <CustomLinkButton linkTo="/login">
+                  Se connecter
+                </CustomLinkButton>
+              </DialogDescription>
+            </DialogHeader>
+          </>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default AddOrUpdateBook;

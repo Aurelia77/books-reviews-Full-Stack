@@ -244,16 +244,11 @@ export const getDocsByQueryFirebase = <T extends BookType | UserType>(
   valueToQuery?: string | boolean | number
 ): Promise<T[]> => {
   console.log("999", collectionName, fieldToQuery, valueToQuery);
-  // const q = query(
-  //   collection(db, collectionName),
-  //   ...(fieldToQuery && valueToQuery
-  //     ? [where(fieldToQuery, "==", valueToQuery)]
-  //     : [])
-  // );
-
   const q = query(
     collection(db, collectionName),
-    ...(fieldToQuery ? [where(fieldToQuery, "==", valueToQuery)] : [])
+    ...(fieldToQuery && valueToQuery
+      ? [where(fieldToQuery, "==", valueToQuery)]
+      : [])
   );
 
   // console.log("FIREBASE collectionName", collectionName);

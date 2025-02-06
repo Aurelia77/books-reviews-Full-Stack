@@ -19,13 +19,14 @@ const MyBooksPage = (): JSX.Element => {
     console.log("999 USEEFFECT");
     console.log("999 currentUser?.uid", currentUser?.uid);
 
-    currentUser &&
+    if (currentUser)
       getDocsByQueryFirebase<UserType>("users", "id", currentUser?.uid).then(
         (users) => {
           setUserInfo(users[0]);
           return users[0];
         }
       );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser?.uid]);
 
   return (
