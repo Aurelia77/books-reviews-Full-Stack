@@ -1,14 +1,12 @@
 export const DEFAULT_BOOK_IMAGE =
-  "https://via.placeholder.com/150?text=No+Cover+Available";
-
-export const DEFAULT_USER_IMAGE =
-  "https://via.placeholder.com/150?text=No+Profile+Picture+Available";
+  "https://placehold.co/150x200?text=Image%0ANon%0ADisponible";
+export const DEFAULT_USER_IMAGE = "https://placehold.co/150x150?text=X";
 
 export const GOOGLE_BOOKS_API_URL =
-  "https://www.googleapis.com/books/v1/volumes"; // use for search
+  "https://www.googleapis.com/books/v1/volumes";
 
-// export const BOOK_STATUS_TRANSLATIONS = {
-//   booksRead: "lu",
-//   booksInProgress: "en cours",
-//   booksToRead: "à lire",
-// };
+export const BOOK_STATUS = {
+  READ: "Lu",
+  IN_PROGRESS: "En cours",
+  TO_READ: "À lire",
+};

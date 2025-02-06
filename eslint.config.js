@@ -1,5 +1,6 @@
 import pluginJs from "@eslint/js";
 import pluginReact from "eslint-plugin-react";
+import pluginReactHooks from "eslint-plugin-react-hooks";
 import tailwind from "eslint-plugin-tailwindcss";
 import globals from "globals";
 import tseslint from "typescript-eslint";
@@ -11,10 +12,21 @@ export default [
   ...tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
   ...tailwind.configs["flat/recommended"],
+
   {
+    plugins: {
+      "react-hooks": pluginReactHooks,
+    },
+    settings: {
+      react: {
+        version: "detect", // Spécifie la version de React à utiliser
+      },
+    },
     rules: {
       "react/react-in-jsx-scope": 0,
       "react/no-unescaped-entities": 0,
+      "react-hooks/rules-of-hooks": "error", // Vérifie les règles des hooks
+      "react-hooks/exhaustive-deps": "warn", // Vérifie les dépendances des hooks
     },
   },
 ];
