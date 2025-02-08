@@ -1,4 +1,3 @@
-import CustomLinkButton from "@/components/CustomLinkButton";
 import FeedbackMessage from "@/components/FeedbackMessage";
 import Title from "@/components/Title";
 import { Button } from "@/components/ui/button";
@@ -12,9 +11,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { loginFirebase } from "@/firebase/firestore";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ChevronsRight } from "lucide-react";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 type LoginFormType = {
@@ -56,7 +56,7 @@ const LoginPage = (): JSX.Element => {
   };
 
   return (
-    <div className="min-h-screen sm:p-2">
+    <div className="min-h-screen sm:p-2 max-w-3xl md:m-auto md:mt-8">
       <Title>Connexion</Title>
       {firebaseError && (
         <FeedbackMessage message={firebaseError} type="error" />
@@ -98,10 +98,30 @@ const LoginPage = (): JSX.Element => {
           </Button>
         </form>
       </Form>
-      <p className="ml-1">Pas encore inscrit ?</p>
+      <div className="bg-primary/20 p-2">
+        <Link
+          to="/forgotpassword"
+          className="text-foreground font-semibold flex gap-5"
+        >
+          <p>Mot de passe oublié ?</p>
+          <ChevronsRight />
+          <p>Cliquez ici !</p>
+        </Link>
+      </div>
+      <div className="bg-secondary/20 p-2 mt-4">
+        <Link
+          to="/register"
+          className="text-foreground font-semibold flex gap-5"
+        >
+          <p>Pas encore inscrit ?</p>
+          <ChevronsRight />
+          <p>Inscrivez-vous ici !</p>
+        </Link>
+      </div>
+      {/* <p className="ml-1">Pas encore inscrit ?</p>
       <CustomLinkButton className="bg-secondary/70" linkTo="/register">
         S'inscrire
-      </CustomLinkButton>
+      </CustomLinkButton> */}
     </div>
   );
 };

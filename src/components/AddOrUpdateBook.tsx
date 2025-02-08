@@ -80,8 +80,10 @@ const AddOrUpdateBook = ({
   const [bookInMyBooks, setBookInMyBooks] = useState<BookStatusEnum | "">("");
   const [userBookInfos, setUserBookInfos] = useState<MyInfoBookType>();
 
-  console.log("789!!!!!!!!! userBookInfos", userBookInfos?.note);
-  console.log("789 bookInMyBooks", bookInMyBooks);
+  // console.log("789!!!!!!!!! userBookInfos", userBookInfos?.note);
+  // console.log("789 bookInMyBooks", bookInMyBooks);
+
+  // console.log("123456", bookInfos.categories);
 
   const [refreshKey, setRefreshKey] = useState(0); // to force MyInfosBook re-render
 

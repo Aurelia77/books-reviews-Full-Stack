@@ -49,10 +49,13 @@ const UserAccountPage = (): JSX.Element => {
   };
 
   return (
-    <div className="min-h-screen sm:p-2" key={userInUrl.userId}>
+    <div
+      className="min-h-screen sm:p-2 max-w-3xl md:m-auto md:mt-8"
+      //key={userInUrl.userId}
+    >
       <Card>
-        <div className="mr-2 flex items-center justify-between">
-          <Title>{userInfo?.userName ?? ""}</Title>
+        <Title>{userInfo?.userName ?? ""}</Title>
+        <div className="mr-2 flex items-center justify-start gap-10 pl-2">
           <CardDescription>
             {isFriend ? (
               <div className="flex gap-2">

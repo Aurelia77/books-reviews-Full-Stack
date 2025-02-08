@@ -15,11 +15,11 @@ const CustomLinkButton = ({
   className,
 }: CustomLinkButtonProps): JSX.Element => {
   return (
-    <Link to={linkTo} className="w-full">
+    <Link to={linkTo}>
       <Button
         size="xxl"
         className={cn(
-          "w-full sm:w-[50%] text-3xl rounded-none sm:rounded-md border border-border shadow-md shadow-foreground/30",
+          "w-full text-3xl rounded-none sm:rounded-md border border-border shadow-md shadow-foreground/30",
           className
         )}
       >

@@ -30,7 +30,7 @@ const MyBooksPage = (): JSX.Element => {
   }, [currentUser?.uid]);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen max-w-3xl md:m-auto md:mt-8">
       <Title level={2}>Mes Livres</Title>
       {userInfo && (
         <AllBooksLists userInfo={userInfo} userIdInUrl={undefined} />

@@ -436,7 +436,7 @@ const BooksSearchPage = (): JSX.Element => {
   };
 
   return (
-    <div className="h-full min-h-screen sm:p-2">
+    <div className="h-full min-h-screen sm:p-2 max-w-3xl md:m-auto md:mt-8">
       <div className="flex h-full flex-col gap-6">
         {/* <Form {...form}>
           <form

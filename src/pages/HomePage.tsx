@@ -6,7 +6,7 @@ const HomePage = (): JSX.Element => {
 
   return (
     <div
-      className="flex min-h-screen flex-col gap-4 py-12"
+      className="flex min-h-screen flex-col gap-4 py-12 max-w-3xl md:m-auto md:mt-8"
       // items-center
     >
       {user ? (
@@ -14,11 +14,8 @@ const HomePage = (): JSX.Element => {
           <CustomLinkButton className="bg-primary" linkTo="/mybooks">
             Mes livres
           </CustomLinkButton>
-          <CustomLinkButton className="bg-secondary/80">
+          <CustomLinkButton className="bg-accent/60">
             Livres de mes amis
-          </CustomLinkButton>
-          <CustomLinkButton className="bg-secondary/80">
-            Mes amis
           </CustomLinkButton>
         </div>
       ) : (
@@ -31,8 +28,8 @@ const HomePage = (): JSX.Element => {
           </CustomLinkButton>
         </div>
       )}
-      <CustomLinkButton className="bg-primary/50">Suggestions</CustomLinkButton>
-      <CustomLinkButton className="bg-accent/60" linkTo="/mybooks/searchbooks">
+      {/* <CustomLinkButton className="bg-primary/50">Suggestions</CustomLinkButton> */}
+      <CustomLinkButton className="bg-primary/50" linkTo="/mybooks/searchbooks">
         Recherche de livre
       </CustomLinkButton>
       <CustomLinkButton className="bg-accent/60" linkTo="/searchusers">

@@ -99,7 +99,7 @@ const NavBar = (): JSX.Element => {
                       )}
                     >
                       {profileImage ? (
-                        <Avatar className="border border-foreground">
+                        <Avatar className="border border-foreground/30">
                           <AvatarImage src={profileImage} />
                         </Avatar>
                       ) : (

@@ -11,7 +11,7 @@ import {
 } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
 import { BookStatusEnum, BookType } from "@/types";
-import { Check, Ellipsis, Smile } from "lucide-react";
+import { Check, Ellipsis, Quote, Smile } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useSWR from "swr";
@@ -171,6 +171,14 @@ const BookInfos = ({
                         <span key={index}>{index > 0 ? ` / ${cat}` : cat}</span>
                       ))}
                   </CardDescription>
+                  {bookInfos.description && (
+                    <CardDescription className="flex gap-2">
+                      <Quote />
+                      <p className="line-clamp-3 text-foreground max-w-[90%]">
+                        {bookInfos.description}
+                      </p>
+                    </CardDescription>
+                  )}
 
                   {(bookInMyList !== "" || bookInFriendList !== "") && (
                     <BookUserInfo

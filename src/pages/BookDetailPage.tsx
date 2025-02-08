@@ -13,6 +13,7 @@ import { DEFAULT_BOOK_IMAGE, GOOGLE_BOOKS_API_URL } from "@/constants";
 import { getDocsByQueryFirebase } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
 import { BookAPIType, BookType } from "@/types";
+import { Quote } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useSWR from "swr";
@@ -209,7 +210,7 @@ const BookDetailPage = (): JSX.Element => {
   };
 
   return (
-    <div className="relative min-h-screen pb-4">
+    <div className="relative min-h-screen pb-4 max-w-4xl md:m-auto md:mt-8">
       {isLoading || apiBooksIsLoading ? (
         <BookSkeleton />
       ) : error || apiBooksError ? (
@@ -448,9 +449,17 @@ const BookDetailPage = (): JSX.Element => {
                   )}
                 </DialogContent>
               </Dialog> */}
-              <p style={{ whiteSpace: "pre-line" }}>
-                {formatDescription(bookInfos.description)}
-              </p>
+              {bookInfos.description && (
+                <div className="flex gap-3">
+                  <Quote />
+                  <p
+                    style={{ whiteSpace: "pre-line" }}
+                    className="text-foreground max-w-[90%]"
+                  >
+                    {formatDescription(bookInfos.description)}
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
         )
