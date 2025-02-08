@@ -12,6 +12,7 @@ import RegisterPage from "./pages/RegisterPage";
 import UserAccountPage from "./pages/UserAccountPage";
 import UsersSearchPage from "./pages/UsersSearchPage";
 import FriendsBooksReadPage from "./pages/FriendsBooksReadPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 
 const App = (): JSX.Element => {
   return (
@@ -33,6 +34,7 @@ const App = (): JSX.Element => {
               path="/friendsbooksread"
               element={<FriendsBooksReadPage />}
             />
+            <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
           </Routes>
           <Footer />
         </BrowserRouter>
