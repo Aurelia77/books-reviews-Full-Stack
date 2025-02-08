@@ -1,4 +1,4 @@
-import AddOrUpdateBook from "@/components/AddOrUpdateBook";
+import AddOrUpdateBookOrBookStatus from "@/components/AddOrUpdateBookOrBookStatus";
 import FeedbackMessage from "@/components/FeedbackMessage";
 import FriendsWhoReadBook from "@/components/FriendsWhoReadBook";
 import BookSkeleton from "@/components/skeletons/BookSkeleton";
@@ -9,7 +9,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { DEFAULT_BOOK_IMAGE, GOOGLE_BOOKS_API_URL } from "@/constants";
+import {
+  DEFAULT_BOOK_IMAGE,
+  GOOGLE_BOOKS_API_URL,
+  NO_DESCRIPTION,
+} from "@/constants";
 import { getDocsByQueryFirebase } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
 import { BookAPIType, BookType } from "@/types";
@@ -245,7 +249,7 @@ const BookDetailPage = (): JSX.Element => {
 
             <CardContent className="relative bg-secondary/30 p-6 shadow-md shadow-primary/30">
               {currentUser?.uid && (
-                <AddOrUpdateBook
+                <AddOrUpdateBookOrBookStatus
                   userId={currentUser?.uid}
                   bookInfos={bookInfos}
                 />
@@ -449,7 +453,7 @@ const BookDetailPage = (): JSX.Element => {
                   )}
                 </DialogContent>
               </Dialog> */}
-              {bookInfos.description && (
+              {bookInfos.description ? (
                 <div className="flex gap-3">
                   <Quote />
                   <p
@@ -459,6 +463,8 @@ const BookDetailPage = (): JSX.Element => {
                     {formatDescription(bookInfos.description)}
                   </p>
                 </div>
+              ) : (
+                <p className="italic">{NO_DESCRIPTION} </p>
               )}
             </CardContent>
           </Card>

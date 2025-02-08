@@ -11,6 +11,7 @@ import MyBooksPage from "./pages/MyBooksPage";
 import RegisterPage from "./pages/RegisterPage";
 import UserAccountPage from "./pages/UserAccountPage";
 import UsersSearchPage from "./pages/UsersSearchPage";
+import FriendsBooksReadPage from "./pages/FriendsBooksReadPage";
 
 const App = (): JSX.Element => {
   return (
@@ -28,6 +29,10 @@ const App = (): JSX.Element => {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/searchusers" element={<UsersSearchPage />} />
+            <Route
+              path="/friendsbooksread"
+              element={<FriendsBooksReadPage />}
+            />
           </Routes>
           <Footer />
         </BrowserRouter>

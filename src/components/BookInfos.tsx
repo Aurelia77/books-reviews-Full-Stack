@@ -4,7 +4,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { DEFAULT_BOOK_IMAGE } from "@/constants";
+import { DEFAULT_BOOK_IMAGE, NO_DESCRIPTION } from "@/constants";
 import {
   findBookCatInUserLibraryFirebase,
   getDocsByQueryFirebase,
@@ -171,13 +171,15 @@ const BookInfos = ({
                         <span key={index}>{index > 0 ? ` / ${cat}` : cat}</span>
                       ))}
                   </CardDescription>
-                  {bookInfos.description && (
+                  {bookInfos.description ? (
                     <CardDescription className="flex gap-2">
                       <Quote />
                       <p className="line-clamp-3 text-foreground max-w-[90%]">
                         {bookInfos.description}
                       </p>
                     </CardDescription>
+                  ) : (
+                    <p className="italic">{NO_DESCRIPTION} </p>
                   )}
 
                   {(bookInMyList !== "" || bookInFriendList !== "") && (
