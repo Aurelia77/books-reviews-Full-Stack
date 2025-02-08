@@ -117,7 +117,7 @@ const MyAccountPage = (): JSX.Element => {
   }, [currentUser?.uid]);
 
   return (
-    <div className="min-h-screen sm:p-2">
+    <div className="min-h-screen sm:p-2 max-w-3xl md:m-auto md:mt-8">
       <Title>Mon compte</Title>
       <Title level={2}>{`Identifiant : ${currentUser?.email ?? ""}`}</Title>
       <Form {...form}>

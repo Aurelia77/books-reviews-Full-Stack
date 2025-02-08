@@ -1,4 +1,3 @@
-import CustomLinkButton from "@/components/CustomLinkButton";
 import FeedbackMessage from "@/components/FeedbackMessage";
 import Title from "@/components/Title";
 import { Button } from "@/components/ui/button";
@@ -16,9 +15,10 @@ import {
 } from "@/firebase/firestore";
 import { UserType } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ChevronsRight } from "lucide-react";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 type RegisterFormType = {
@@ -33,9 +33,14 @@ const registerFormSchema = z
     email: z.string().email({
       message: "Entrez une adresse email valide.",
     }),
-    userName: z.string().min(2, {
-      message: "Entrez un pseudo d'au moins 2 caractères.",
-    }),
+    userName: z
+      .string()
+      .min(2, {
+        message: "Le pseudo doit contenir au moins 2 caractères.",
+      })
+      .max(10, {
+        message: "Le pseudo doit contenir au maximum 10 caractères.",
+      }),
     password: z.string().min(6, {
       message: "Entrez un mot de passe d'au moins 6 caractères.",
     }),
@@ -91,7 +96,7 @@ const RegisterPage = (): JSX.Element => {
   };
 
   return (
-    <div className="min-h-screen sm:p-2">
+    <div className="min-h-screen sm:p-2 max-w-3xl md:m-auto md:mt-8">
       <Title>Inscription</Title>
       {firebaseError && (
         <FeedbackMessage message={firebaseError} type="error" />
@@ -161,10 +166,17 @@ const RegisterPage = (): JSX.Element => {
           </Button>
         </form>
       </Form>
-      <p>Déja inscrit ?</p>
+      <div className="bg-primary/20 p-2 mt-4">
+        <Link to="/login" className="text-foreground font-semibold flex gap-5">
+          <p>Déja inscrit ?</p>
+          <ChevronsRight />
+          <p>Connectez-vous ici !</p>
+        </Link>
+      </div>
+      {/* <p>Déja inscrit ?</p>
       <CustomLinkButton className="bg-secondary/70" linkTo="/login">
         Se connecter
-      </CustomLinkButton>
+      </CustomLinkButton> */}
     </div>
   );
 };
