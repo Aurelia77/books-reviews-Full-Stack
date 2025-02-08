@@ -1,14 +1,14 @@
-import BookInfos from "@/components/BookInfos";
-import FeedbackMessage from "@/components/FeedbackMessage";
-import BookSkeleton from "@/components/skeletons/BookSkeleton";
-import Title from "@/components/Title";
-import { getDocsByQueryFirebase } from "@/firebase/firestore";
-import useUserStore from "@/hooks/useUserStore";
-import { BookAPIType, BookType, UserType } from "@/types";
-import { useEffect, useRef, useState } from "react";
-import useSWR from "swr";
+// import BookInfos from "@/components/BookInfos";
+// import FeedbackMessage from "@/components/FeedbackMessage";
+// import BookSkeleton from "@/components/skeletons/BookSkeleton";
+// import Title from "@/components/Title";
+// import { getDocsByQueryFirebase } from "@/firebase/firestore";
+// import useUserStore from "@/hooks/useUserStore";
+// import { BookAPIType, BookType, UserType } from "@/types";
+// import { useEffect, useRef, useState } from "react";
+// import useSWR from "swr";
 
-const MAX_RESULTS = 4; // jusqu'à 40
+// const MAX_RESULTS = 4; // jusqu'à 40
 
 // const useDebounce = <T extends string[]>(
 //   callback: (...args: T) => void,
@@ -29,7 +29,7 @@ const MAX_RESULTS = 4; // jusqu'à 40
 // };
 
 const FriendsBooksReadPage = (): JSX.Element => {
-  const { currentUser } = useUserStore();
+  //const { currentUser } = useUserStore();
 
   // const booksReadByFriendsFetcher = (
   //   currentUserId: string
