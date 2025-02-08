@@ -1,4 +1,4 @@
-import FeedbackMessage from "@/components/FeedbackMessage";
+//import FeedbackMessage from "@/components/FeedbackMessage";
 import Title from "@/components/Title";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,9 +11,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronsRight } from "lucide-react";
-import { useState } from "react";
+//import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { z } from "zod";
 
 type forgotPasswordType = {
@@ -27,8 +27,8 @@ const forgotPasswordSchema = z.object({
 });
 
 const ForgotPasswordPage = (): JSX.Element => {
-  const navigate = useNavigate();
-  const [firebaseError, setFirebaseError] = useState<string | null>(null);
+  //const navigate = useNavigate();
+  //const [firebaseError, setFirebaseError] = useState<string | null>(null);
 
   const form = useForm<forgotPasswordType>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -37,14 +37,16 @@ const ForgotPasswordPage = (): JSX.Element => {
     },
   });
 
-  const onSubmit: SubmitHandler<forgotPasswordType> = (data) => {};
+  const onSubmit: SubmitHandler<forgotPasswordType> = (data) => {
+    console.log("data", data);
+  };
 
   return (
     <div className="min-h-screen sm:p-2 max-w-3xl md:m-auto md:mt-8">
       <Title>Mot de passe oublié</Title>
-      {firebaseError && (
+      {/* {firebaseError && (
         <FeedbackMessage message={firebaseError} type="error" />
-      )}
+      )} */}
       <Form {...form}>
         <form
           className="mb-20 flex flex-col gap-3"
