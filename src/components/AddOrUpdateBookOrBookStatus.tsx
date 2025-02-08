@@ -72,7 +72,7 @@ type AddOrUpdateBookProps = {
   bookInfos: BookType;
 };
 
-const AddOrUpdateBook = ({
+const AddOrUpdateBookOrBookStatus = ({
   userId,
   bookInfos,
 }: AddOrUpdateBookProps): JSX.Element => {
@@ -210,19 +210,19 @@ const AddOrUpdateBook = ({
               {bookInMyBooks === BookStatusEnum.booksReadList && (
                 <div className="flex justify-center gap-2">
                   <p>J'ai lu ce livre</p>
-                  <Check />
+                  <Check className="rounded-full bg-primary/50 p-1  shadow-sm shadow-foreground" />
                 </div>
               )}
               {bookInMyBooks === BookStatusEnum.booksInProgressList && (
                 <div className="flex justify-center gap-2">
                   <p>Je suis en train de lire ce livre</p>
-                  <Ellipsis />
+                  <Ellipsis className="rounded-full bg-primary/50 p-1  shadow-sm shadow-foreground" />
                 </div>
               )}
               {bookInMyBooks === BookStatusEnum.booksToReadList && (
                 <div className="flex justify-center gap-2">
                   <p>J'aimerais lire ce livre</p>
-                  <Smile />
+                  <Smile className="rounded-full bg-primary/50 p-1  shadow-sm shadow-foreground" />
                 </div>
               )}
             </div>
@@ -464,4 +464,4 @@ const AddOrUpdateBook = ({
   );
 };
 
-export default AddOrUpdateBook;
+export default AddOrUpdateBookOrBookStatus;

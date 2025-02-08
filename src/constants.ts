@@ -10,3 +10,5 @@ export const BOOK_STATUS = {
   IN_PROGRESS: "En cours",
   TO_READ: "À lire",
 };
+
+export const NO_DESCRIPTION = "Pas de description disponible.";

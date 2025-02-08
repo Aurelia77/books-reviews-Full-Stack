@@ -14,7 +14,7 @@ const HomePage = (): JSX.Element => {
           <CustomLinkButton className="bg-primary" linkTo="/mybooks">
             Mes livres
           </CustomLinkButton>
-          <CustomLinkButton className="bg-accent/60">
+          <CustomLinkButton className="bg-accent/60" linkTo="/friendsbooksread">
             Livres de mes amis
           </CustomLinkButton>
         </div>
