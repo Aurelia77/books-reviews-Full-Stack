@@ -63,6 +63,18 @@ export type BookAPIType = {
   };
 };
 
+type FriendsWhoReadBookType = {
+  userId: string;
+  userInfoYear?: number | null;
+  userInfoNote?: number | null;
+  userInfoComment: string;
+};
+
+export type FriendsBooksReadType = {
+  bookId: string;
+  friendsWhoReadBook: FriendsWhoReadBookType[];
+};
+
 // export enum BookStatusEnum {
 //   bookRead = "lu",
 //   bookInProgress = "en cours",
