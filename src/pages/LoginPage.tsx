@@ -100,7 +100,7 @@ const LoginPage = (): JSX.Element => {
       </Form>
       <div className="bg-primary/20 p-2">
         <Link
-          to="/forgotpassword"
+          to="/resetpassword"
           className="text-foreground font-semibold flex gap-5"
         >
           <p>Mot de passe oublié ?</p>

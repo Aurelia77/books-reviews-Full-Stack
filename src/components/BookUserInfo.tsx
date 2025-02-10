@@ -1,23 +1,25 @@
-import { getUserInfosBookFirebase } from "@/firebase/firestore";
+import {
+  getDocsByQueryFirebase,
+  getUserInfosBookFirebase,
+} from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
-import { cn } from "@/lib/utils";
-import { BookStatusEnum, BookType, MyInfoBookType } from "@/types";
+import { BookStatusEnum, MyInfoBookType, UserType } from "@/types";
 import { useEffect, useState } from "react";
 import StarRating from "./StarRating";
 
 const BookUserInfo = ({
   userId,
-  bookInfos,
+  bookInfosId,
   bookStatus,
   friendBookStatus,
 }: {
   userId: string | undefined;
-  bookInfos: BookType;
+  bookInfosId: string;
   bookStatus: BookStatusEnum | "";
   friendBookStatus?: BookStatusEnum | "";
 }) => {
   console.log("555 userId", userId);
-  console.log("555 bookInfos", bookInfos);
+  console.log("555 bookInfosId", bookInfosId);
   console.log("555 bookStatus", bookStatus);
   console.log("555 friendBookStatus", friendBookStatus);
 
@@ -34,17 +36,27 @@ const BookUserInfo = ({
       console.log("5551 bookStatus", bookStatus);
       console.log("5551 friendBookStatus", friendBookStatus);
       console.log("5551 status", status);
-      getUserInfosBookFirebase(userId, bookInfos.id, status).then((myBook) => {
+      getUserInfosBookFirebase(userId, bookInfosId, status).then((myBook) => {
         if (myBook) setUserBookInfos(myBook);
       });
     }
-  }, [bookInfos?.id, bookStatus, friendBookStatus, userId]);
+  }, [bookInfosId, bookStatus, friendBookStatus, userId]);
   //}, [bookInfos?.id]);  // pbm info autre membre ne s'affichaient pas, ms j'ai l'impression que maintenant ça marche même qd il manque des dépendances ??????
 
-  console.log("444 bookInfos", bookInfos?.title, bookStatus);
+  //console.log("444 bookInfos", bookInfos?.title, bookStatus);
   console.log("444 userId", userId);
   console.log("444 userBookInfos", userBookInfos);
   console.log("444 bookStatus", bookStatus);
+
+  const [userName, setUserName] = useState<string | null>(null);
+
+  useEffect(() => {
+    getDocsByQueryFirebase<UserType>("users", "id", userId).then((user) => {
+      if (user) {
+        setUserName(user[0].userName);
+      }
+    });
+  }, [userId]);
 
   return (
     userBookInfos && (
@@ -55,7 +67,7 @@ const BookUserInfo = ({
         <div className="flex flex-col gap-3 rounded-sm bg-background/50 p-2 pr-6">
           <h2 className="font-semibold text-muted">
             {currentUser?.uid !== userId
-              ? "Infos ajoutées par ce membre :"
+              ? "Infos ajoutées par " + userName + "\u00A0:"
               : "Mes infos :"}
           </h2>
 
@@ -69,7 +81,8 @@ const BookUserInfo = ({
               )}
             </div>
           )}
-          <p className={cn("whitespace-pre-wrap")}>
+
+          <p className="whitespace-pre-wrap">
             {userBookInfos?.commentaires ? (
               userBookInfos.commentaires
             ) : (

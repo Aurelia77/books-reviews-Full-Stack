@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { sendPasswordResetEmailFirebase } from "@/firebase/firestore";
+import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronsRight } from "lucide-react";
 //import { useState } from "react";
@@ -27,9 +28,11 @@ const forgotPasswordSchema = z.object({
   }),
 });
 
-const ForgotPasswordPage = (): JSX.Element => {
+const ResetPasswordPage = (): JSX.Element => {
   //const navigate = useNavigate();
   //const [firebaseError, setFirebaseError] = useState<string | null>(null);
+
+  const { toast } = useToast();
 
   const form = useForm<forgotPasswordType>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -41,11 +44,15 @@ const ForgotPasswordPage = (): JSX.Element => {
   const onSubmit: SubmitHandler<forgotPasswordType> = (data) => {
     console.log("data", data);
     sendPasswordResetEmailFirebase(data.email);
+    toast({
+      title: "Mail de réinitialisation envoyé",
+      description: "Pensez à vérifier vos spams !",
+    });
   };
 
   return (
     <div className="min-h-screen sm:p-2 max-w-3xl md:m-auto md:mt-8">
-      <Title>Mot de passe oublié</Title>
+      <Title>Réinitialiser le mot de passe</Title>
       {/* {firebaseError && (
         <FeedbackMessage message={firebaseError} type="error" />
       )} */}
@@ -99,4 +106,4 @@ const ForgotPasswordPage = (): JSX.Element => {
   );
 };
 
-export default ForgotPasswordPage;
+export default ResetPasswordPage;
