@@ -3,6 +3,7 @@ import {
   createUserWithEmailAndPassword,
   getAuth,
   onAuthStateChanged,
+  sendPasswordResetEmail,
   // onAuthStateChanged,
   signInWithEmailAndPassword,
   User,
@@ -90,6 +91,20 @@ onAuthStateChanged(auth, (user) => {
 
 export const signoutFirebase = (): Promise<void> => {
   return auth.signOut();
+};
+
+export const sendPasswordResetEmailFirebase = (
+  email: string
+): Promise<void> => {
+  return sendPasswordResetEmail(auth, email)
+    .then(() => {
+      console.log("Password reset email sent!");
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.error(`Error (${errorCode}): ${errorMessage}`);
+    });
 };
 
 export const addOrUpdateBookInfoToMyBooksFirebase = (
@@ -276,7 +291,7 @@ export const getUserInfosBookFirebase = (
   bookId: string,
   bookStatus: BookStatusEnum
 ): Promise<MyInfoBookType | null> => {
-  console.log("777 ", userId, bookId, bookStatus);
+  console.log("56 ", userId, bookId, bookStatus);
 
   if (userId) {
     return getDocsByQueryFirebase<UserType>("users", "id", userId)
@@ -303,6 +318,8 @@ export const getFriendsWhoReadBookFirebase = (
   // console.log("bookId", bookId);
   // console.log("userViewId", userViewId);
 
+  console.log("***getFriendsWhoReadBookFirebase", bookId);
+
   if (currentUserId && bookId) {
     const q = query(collection(db, "users"), where("id", "==", currentUserId));
 
@@ -319,27 +336,37 @@ export const getFriendsWhoReadBookFirebase = (
             where("id", "in", currentUserFriendsIds) // error if currentUserFriendsIds empty
           );
 
-          return getDocs(q2)
-            .then((querySnapshot) => {
-              const friendsButuserViewId: UserType[] = [];
-              querySnapshot.forEach((doc) => {
-                friendsButuserViewId.push(doc.data() as UserType);
-              });
-              return friendsButuserViewId;
-            })
-            .then((friendsButuserViewId) => {
-              // console.log(
-              //   "***FRIENDS BUT USER ID NOT TO COUNT",
-              //   friendsButuserViewId
-              // );
-              return friendsButuserViewId.filter((friend) =>
-                friend.booksRead.find((book) => book.id === bookId)
-              );
-            })
-            .catch((error) => {
-              console.error("Error getting other users who read book: ", error);
-              throw error;
-            });
+          return (
+            getDocs(q2)
+              .then((querySnapshot) => {
+                const friendsButuserViewId: UserType[] = [];
+                querySnapshot.forEach((doc) => {
+                  friendsButuserViewId.push(doc.data() as UserType);
+                });
+                return friendsButuserViewId;
+              })
+              .then((friendsButuserViewId) => {
+                // console.log(
+                //   "***FRIENDS BUT USER ID NOT TO COUNT",
+                //   friendsButuserViewId
+                // );
+                return friendsButuserViewId.filter((friend) =>
+                  friend.booksRead.find((book) => book.id === bookId)
+                );
+              })
+              // .THEN juste pour voir, à supp !!!!!!!!!!!!
+              .then((friendsWhoReadBook) => {
+                console.log("***FRIENDS WHO READ BOOK", friendsWhoReadBook);
+                return friendsWhoReadBook;
+              })
+              .catch((error) => {
+                console.error(
+                  "Error getting other users who read book: ",
+                  error
+                );
+                throw error;
+              })
+          );
         } else {
           // if no friends
           return Promise.resolve([]);
@@ -392,6 +419,68 @@ export const getFriendsWhoReadBookFirebase = (
 //   //     throw error;
 //   //   });
 // };
+
+export const getFriendsReadBooksIdsFirebase = (
+  currentUserId: string
+): Promise<string[]> => {
+  return (
+    getDocsByQueryFirebase<UserType>("users", "id", currentUserId)
+      .then((users) => {
+        const user = users[0];
+        console.log("888 user friends Ids", user.friends);
+        return user.friends;
+      })
+      .then((friendsIds) => {
+        const promises = friendsIds.map((friendId) =>
+          getDocsByQueryFirebase<UserType>("users", "id", friendId).then(
+            (friend) => friend[0]
+          )
+        );
+        return Promise.all(promises);
+      })
+      .then((friends) => {
+        console.log("888 friends", friends);
+        return friends.map((friend) => {
+          return friend.booksRead;
+          // return { friendId: friend.id, booksRead: friend.booksRead };
+        });
+      })
+      .then((friendsBooksReadInfo) => {
+        console.log(
+          "88888888888888 friendsBooksReadInfo",
+          friendsBooksReadInfo
+        );
+        return friendsBooksReadInfo.map((friendBooksReadInfo) => {
+          console.log(
+            "888888888888999999999999 friendBooksReadInfo",
+            friendBooksReadInfo
+          );
+
+          return friendBooksReadInfo.map((book) => {
+            console.log("888888888888999999999999 book", book);
+            return book.id;
+          });
+        });
+      })
+      .then((friendsBooksReadIds) => {
+        console.log("88888888888888 booksReadID", friendsBooksReadIds);
+        return friendsBooksReadIds.flat();
+      })
+      .then((flattenedBooksReadIds) => {
+        console.log("88888888888888 RESULTATS UNIQUES", [
+          ...new Set(flattenedBooksReadIds),
+        ]);
+        return [...new Set(flattenedBooksReadIds)];
+      })
+      // .then((friendsBooksReadIds) => {
+      //   console.log("88888888888888 booksReadID", friendsBooksReadIds);
+      // })
+      .catch((error) => {
+        console.error("Error getting friends read books: ", error);
+        throw error;
+      })
+  );
+};
 
 export const findBookCatInUserLibraryFirebase = (
   bookId: string | undefined,

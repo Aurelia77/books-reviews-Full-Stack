@@ -9,6 +9,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { sendPasswordResetEmailFirebase } from "@/firebase/firestore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronsRight } from "lucide-react";
 //import { useState } from "react";
@@ -39,6 +40,7 @@ const ForgotPasswordPage = (): JSX.Element => {
 
   const onSubmit: SubmitHandler<forgotPasswordType> = (data) => {
     console.log("data", data);
+    sendPasswordResetEmailFirebase(data.email);
   };
 
   return (
