@@ -185,7 +185,7 @@ const BookInfos = ({
                   {(bookInMyList !== "" || bookInFriendList !== "") && (
                     <BookUserInfo
                       userId={userViewId || currentUser?.uid}
-                      bookInfos={bookInfos}
+                      bookInfosId={bookInfos.id}
                       bookStatus={bookInMyList}
                       friendBookStatus={bookInFriendList}
                     />
@@ -196,12 +196,23 @@ const BookInfos = ({
                     className="absolute bottom-10 right-2 rounded-full bg-primary/50 p-1  shadow-sm shadow-foreground"
                     // className="absolute bottom-2 right-2 rounded-full bg-secondary/60 px-3 py-1 text-secondary-foreground shadow-sm shadow-foreground"
                   >
-                    {bookInMyList === BookStatusEnum.booksReadList && <Check />}
+                    {bookInMyList === BookStatusEnum.booksReadList && (
+                      <div className="flex flex-col items-center text-xs p-1">
+                        lu
+                        <Check />
+                      </div>
+                    )}
                     {bookInMyList === BookStatusEnum.booksInProgressList && (
-                      <Ellipsis />
+                      <div className="flex flex-col items-center text-xs p-1">
+                        en cours
+                        <Ellipsis />
+                      </div>
                     )}
                     {bookInMyList === BookStatusEnum.booksToReadList && (
-                      <Smile />
+                      <div className="flex flex-col items-center text-xs p-1">
+                        à lire
+                        <Smile />
+                      </div>
                     )}
                   </div>
                 )}

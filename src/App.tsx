@@ -4,6 +4,7 @@ import Footer from "./components/Footer";
 import NavBar from "./components/NavBar";
 import BookDetailPage from "./pages/BookDetailPage";
 import BooksSearchPage from "./pages/BooksSearchPage";
+import FriendsBooksReadPage from "./pages/FriendsBooksReadPage";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import MyAccountPage from "./pages/MyAccountPage";
@@ -11,8 +12,7 @@ import MyBooksPage from "./pages/MyBooksPage";
 import RegisterPage from "./pages/RegisterPage";
 import UserAccountPage from "./pages/UserAccountPage";
 import UsersSearchPage from "./pages/UsersSearchPage";
-import FriendsBooksReadPage from "./pages/FriendsBooksReadPage";
-import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 const App = (): JSX.Element => {
   return (
@@ -34,7 +34,7 @@ const App = (): JSX.Element => {
               path="/friendsbooksread"
               element={<FriendsBooksReadPage />}
             />
-            <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
+            <Route path="/resetpassword" element={<ResetPasswordPage />} />
           </Routes>
           <Footer />
         </BrowserRouter>

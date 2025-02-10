@@ -1,4 +1,5 @@
 import BookInfos from "@/components/BookInfos";
+import BookUserInfo from "@/components/BookUserInfo";
 import FeedbackMessage from "@/components/FeedbackMessage";
 import BookSkeleton from "@/components/skeletons/BookSkeleton";
 import Title from "@/components/Title";
@@ -119,12 +120,25 @@ const FriendsBooksReadPage = (): JSX.Element => {
         ) : friendsReadBooksWithInfo ? (
           <ul className="pb-40">
             {friendsReadBooksWithInfo.map((book: FriendsBooksReadType) => (
-              <li key={book.bookId}>
+              <li key={book.bookId} className="border-8">
                 {/* Ici on passe le book en props (et pas le bookId comme dans MyBooksPage) */}
                 <BookInfos
                   bookId={book.bookId}
                   //friendsWhoReadBook={friendsWhoReadBook(book.bookId)}
                 />
+
+                {book.friendsWhoReadBook.map((friendBookInfo) => (
+                  <div
+                    className="border-4 border-primary/20 p-2"
+                    key={friendBookInfo.userId}
+                  >
+                    <BookUserInfo
+                      userId={friendBookInfo.userId}
+                      bookInfosId={book.bookId}
+                      bookStatus={BookStatusEnum.booksReadList}
+                    />
+                  </div>
+                ))}
               </li>
             ))}
           </ul>

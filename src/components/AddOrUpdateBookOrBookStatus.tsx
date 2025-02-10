@@ -253,7 +253,7 @@ const AddOrUpdateBookOrBookStatus = ({
           <BookUserInfo
             key={refreshKey} // refreshKey = key to force re-render when bookInfos changed
             userId={userId}
-            bookInfos={bookInfos}
+            bookInfosId={bookInfos.id}
             bookStatus={bookInMyBooks}
           />
           <DialogTrigger asChild className="flex justify-center">

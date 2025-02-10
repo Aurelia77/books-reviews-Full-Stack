@@ -22,9 +22,10 @@ import {
 import useUserStore from "@/hooks/useUserStore";
 import { AccountFormType, UserType } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Sparkles } from "lucide-react";
+import { ChevronsRight, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { Link } from "react-router-dom";
 import { z } from "zod";
 
 const accountFormSchema = z.object({
@@ -231,6 +232,16 @@ const MyAccountPage = (): JSX.Element => {
         <CustomLinkButton className="bg-secondary/70" linkTo="/mybooks">
           Mes livres
         </CustomLinkButton>
+      </div>
+      <div className="bg-primary/20 p-2 mb-40">
+        <Link
+          to="/resetpassword"
+          className="text-foreground font-semibold flex gap-5"
+        >
+          <p>Changer de mot de passe ?</p>
+          <ChevronsRight />
+          <p>Cliquez ici !</p>
+        </Link>
       </div>
     </div>
   );
