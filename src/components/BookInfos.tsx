@@ -174,9 +174,10 @@ const BookInfos = ({
                       ))}
                   </CardDescription>
                   {bookInfos.description ? (
-                    <CardDescription className="flex gap-2">
-                      <Quote />
+                    <CardDescription className="flex gap-2 relative">
+                      <Quote className="absolute -top-1" />
                       <p className="line-clamp-3 text-foreground max-w-[90%]">
+                        &ensp;&ensp;&ensp;&ensp;
                         {removeOrRemplaceHtmlTags(bookInfos.description)}
                       </p>
                     </CardDescription>

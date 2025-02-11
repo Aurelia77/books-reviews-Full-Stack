@@ -1,3 +1,4 @@
+import { MONTHS } from "@/constants";
 import {
   getDocsByQueryFirebase,
   getUserInfosBookFirebase,
@@ -25,9 +26,20 @@ const BookUserInfo = ({
 
   const [userBookInfos, setUserBookInfos] = useState<MyInfoBookType>();
 
+  console.log("789", userBookInfos?.month);
+
+  if (
+    userBookInfos &&
+    userBookInfos.month !== undefined &&
+    userBookInfos.month !== null
+  )
+    console.log("789", MONTHS[userBookInfos.month]);
+
   const { currentUser } = useUserStore();
 
   const status = (friendBookStatus || bookStatus) as BookStatusEnum;
+
+  const [userName, setUserName] = useState<string | null>(null);
 
   // Récupérer les infos données par l'utilisateur (soit le user visité si friendBookStatus !== "" soit le user connecté)
   useEffect(() => {
@@ -47,8 +59,6 @@ const BookUserInfo = ({
   console.log("444 userId", userId);
   console.log("444 userBookInfos", userBookInfos);
   console.log("444 bookStatus", bookStatus);
-
-  const [userName, setUserName] = useState<string | null>(null);
 
   useEffect(() => {
     getDocsByQueryFirebase<UserType>("users", "id", userId).then((user) => {
@@ -73,8 +83,13 @@ const BookUserInfo = ({
 
           {status === BookStatusEnum.booksReadList && (
             <div className="flex items-center gap-3">
+              {userBookInfos &&
+                userBookInfos.month !== undefined &&
+                userBookInfos.month !== null &&
+                userBookInfos.month !== 0 && (
+                  <p>{MONTHS[userBookInfos?.month]}</p>
+                )}
               <p>{userBookInfos?.year}</p>
-              <p>{userBookInfos?.month}</p>
               {userBookInfos.note ? (
                 <StarRating value={userBookInfos.note} />
               ) : (

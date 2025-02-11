@@ -28,10 +28,10 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
+import { MONTHS } from "@/constants";
 import {
   addBookFirebase,
   addOrUpdateBookInfoToMyBooksFirebase,
@@ -50,9 +50,15 @@ import { Check, Ellipsis, Smile, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 const currentYear = new Date().getFullYear();
-const currentMonth = new Date().getMonth() + 1;
 
 const bookFormSchema = z.object({
   bookStatus: z.nativeEnum(BookStatusEnum),
@@ -64,16 +70,7 @@ const bookFormSchema = z.object({
       message: "Impossible d'ajouter une année dans le future !",
     })
     .optional(),
-  month: z
-    .number()
-    .int()
-    .min(1, {
-      message: "Le mois doit être compris entre 1 et 12",
-    })
-    .max(12, {
-      message: "Le mois doit être compris entre 1 et 12",
-    })
-    .optional(),
+  month: z.number().int().min(0).max(12).optional(), // 0 = non précisé
   note: z.number().int().min(0).max(5).optional(),
   comments: z.string().optional(),
 });
@@ -112,7 +109,7 @@ const AddOrUpdateBookOrBookStatus = ({
   const defaultValues = {
     bookStatus: bookInMyBooks || BookStatusEnum.booksReadList,
     year: userBookInfos?.year || currentYear,
-    month: userBookInfos?.month || currentMonth,
+    month: userBookInfos?.month || 0,
     note: userBookInfos?.note || 0,
     comments: userBookInfos?.comments || "",
   };
@@ -204,7 +201,7 @@ const AddOrUpdateBookOrBookStatus = ({
               form.reset({
                 bookStatus: BookStatusEnum.booksReadList,
                 year: currentYear,
-                month: currentMonth,
+                month: 0,
                 note: 0,
                 comments: "",
               })
@@ -379,37 +376,81 @@ const AddOrUpdateBookOrBookStatus = ({
                     <div className="flex items-center justify-around">
                       <FormField
                         control={form.control}
-                        name="year"
+                        name="month"
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Input
-                                placeholder="Année"
-                                type="number"
-                                {...field}
-                                //////////////////////////////////////////////
-                                //////////////////////////////////////////////
-                                //////////////////////////////////////////////
-                                //////////////////////////////////////////////
-                                //////////////////////////////
-                                //////////////////à remettre ??? comme month ?????
-                                ////
-                                value={field.value ?? currentYear}
-                                //On converti en number sinon : "Expected number, received string" (sinon on pt enlever le onChange)
-                                onChange={(e) =>
-                                  field.onChange(
-                                    e.target.value
-                                      ? parseFloat(e.target.value)
-                                      : null
-                                  )
+                              <Select
+                                value={field.value?.toString() ?? ""}
+                                onValueChange={(value) =>
+                                  field.onChange(parseInt(value))
                                 }
-                              />
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Mois (optionnel)" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {MONTHS.map((month, index) => (
+                                    <SelectItem
+                                      key={index}
+                                      value={index.toString()}
+                                    >
+                                      {month}
+                                    </SelectItem>
+                                  ))}
+                                  {/* {MONTHS.map((month) => (
+                                    <SelectItem
+                                      key={month.value}
+                                      value={month.value.toString()}
+                                    >
+                                      {month.label}
+                                    </SelectItem>
+                                  ))} */}
+                                </SelectContent>
+                              </Select>
                             </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
                       <FormField
+                        control={form.control}
+                        name="year"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Select
+                                value={
+                                  field.value?.toString() ??
+                                  currentYear.toString()
+                                }
+                                onValueChange={(value) =>
+                                  field.onChange(parseInt(value))
+                                }
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Année" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {Array.from(
+                                    { length: currentYear - 1900 + 1 },
+                                    (_, i) => currentYear - i
+                                  ).map((year) => (
+                                    <SelectItem
+                                      key={year}
+                                      value={year.toString()}
+                                    >
+                                      {year}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      {/* <FormField
                         control={form.control}
                         name="month"
                         render={({ field }) => (
@@ -433,7 +474,7 @@ const AddOrUpdateBookOrBookStatus = ({
                             <FormMessage />
                           </FormItem>
                         )}
-                      />
+                      /> */}
                       <FormField
                         control={form.control}
                         name="note"

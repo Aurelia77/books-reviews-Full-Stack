@@ -262,16 +262,26 @@ const BookDetailPage = (): JSX.Element => {
                 />
               )}
               {bookInfos.description ? (
-                <div className="flex gap-3">
-                  <Quote />
+                //   <CardDescription className="flex gap-2">
+                //   <Quote />
+                //   <p className="line-clamp-3 text-foreground max-w-[90%]">
+                //
+                //     {removeOrRemplaceHtmlTags(bookInfos.description)}
+                //   </p>
+                // </CardDescription>
+                <div className="flex gap-3 relative">
+                  <Quote className="absolute -top-1" />
                   <p
                     style={{ whiteSpace: "pre-line" }}
                     className="text-foreground max-w-[90%]"
                   >
+                    &ensp;&ensp;&ensp;&ensp;
                     {removeOrRemplaceHtmlTags(
                       addLineBreaks(bookInfos.description)
                     )}
                   </p>
+                  &ensp;&ensp;&ensp;&ensp;
+                  <Quote className="absolute bottom-0 right-0 rotate-180" />
                 </div>
               ) : (
                 <p className="italic">{NO_DESCRIPTION} </p>
