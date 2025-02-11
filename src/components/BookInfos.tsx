@@ -11,6 +11,7 @@ import {
 } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
 import { BookStatusEnum, BookType } from "@/types";
+import { removeOrRemplaceHtmlTags } from "@/utils";
 import { Check, Ellipsis, Quote, Smile } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -98,9 +99,10 @@ const BookInfos = ({
 
   useEffect(() => {
     // ou gérer le undefined dans fonction bookInMyBooksFirebase ??????????
-    findBookCatInUserLibraryFirebase(bookInfos?.id, currentUser?.uid).then(
-      (bookInMyList) => setBookInMyList(bookInMyList)
-    );
+    currentUser &&
+      findBookCatInUserLibraryFirebase(bookInfos?.id, currentUser?.uid).then(
+        (bookInMyList) => setBookInMyList(bookInMyList)
+      );
 
     if (userViewId !== currentUser?.uid)
       findBookCatInUserLibraryFirebase(bookInfos?.id, userViewId).then(
@@ -175,7 +177,7 @@ const BookInfos = ({
                     <CardDescription className="flex gap-2">
                       <Quote />
                       <p className="line-clamp-3 text-foreground max-w-[90%]">
-                        {bookInfos.description}
+                        {removeOrRemplaceHtmlTags(bookInfos.description)}
                       </p>
                     </CardDescription>
                   ) : (

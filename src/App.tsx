@@ -10,9 +10,9 @@ import LoginPage from "./pages/LoginPage";
 import MyAccountPage from "./pages/MyAccountPage";
 import MyBooksPage from "./pages/MyBooksPage";
 import RegisterPage from "./pages/RegisterPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import UserAccountPage from "./pages/UserAccountPage";
 import UsersSearchPage from "./pages/UsersSearchPage";
-import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 const App = (): JSX.Element => {
   return (
@@ -20,22 +20,27 @@ const App = (): JSX.Element => {
       <div className="h-auto min-h-screen bg-background text-foreground">
         <BrowserRouter>
           <NavBar />
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/mybooks" element={<MyBooksPage />} />
-            <Route path="/mybooks/searchbooks" element={<BooksSearchPage />} />
-            <Route path="/books/:bookId" element={<BookDetailPage />} />
-            <Route path="/account" element={<MyAccountPage />} />
-            <Route path="/account/:userId?" element={<UserAccountPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/searchusers" element={<UsersSearchPage />} />
-            <Route
-              path="/friendsbooksread"
-              element={<FriendsBooksReadPage />}
-            />
-            <Route path="/resetpassword" element={<ResetPasswordPage />} />
-          </Routes>
+          <div className="mb-6">
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/mybooks" element={<MyBooksPage />} />
+              <Route
+                path="/mybooks/searchbooks"
+                element={<BooksSearchPage />}
+              />
+              <Route path="/books/:bookId" element={<BookDetailPage />} />
+              <Route path="/account" element={<MyAccountPage />} />
+              <Route path="/account/:userId?" element={<UserAccountPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/searchusers" element={<UsersSearchPage />} />
+              <Route
+                path="/friendsbooksread"
+                element={<FriendsBooksReadPage />}
+              />
+              <Route path="/resetpassword" element={<ResetPasswordPage />} />
+            </Routes>
+          </div>
           <Footer />
         </BrowserRouter>
       </div>

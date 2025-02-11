@@ -17,23 +17,26 @@ const HomePage = (): JSX.Element => {
           <CustomLinkButton className="bg-accent/60" linkTo="/friendsbooksread">
             Livres de mes amis
           </CustomLinkButton>
+          <CustomLinkButton className="bg-primary/60" linkTo="/searchusers">
+            Voir les Membres
+          </CustomLinkButton>
         </div>
       ) : (
         <div className="flex flex-col gap-4">
-          <CustomLinkButton className="bg-primary/80" linkTo="/login">
+          <CustomLinkButton className="bg-secondary/80" linkTo="/login">
             Se connecter
           </CustomLinkButton>
-          <CustomLinkButton className="bg-secondary/80" linkTo="/register">
+          <CustomLinkButton className="bg-primary/80" linkTo="/register">
             S'inscrire
           </CustomLinkButton>
         </div>
       )}
       {/* <CustomLinkButton className="bg-primary/50">Suggestions</CustomLinkButton> */}
-      <CustomLinkButton className="bg-primary/50" linkTo="/mybooks/searchbooks">
+      <CustomLinkButton
+        className="bg-secondary/50"
+        linkTo="/mybooks/searchbooks"
+      >
         Recherche de livre
-      </CustomLinkButton>
-      <CustomLinkButton className="bg-accent/60" linkTo="/searchusers">
-        Recherche de Membres
       </CustomLinkButton>
     </div>
   );

@@ -15,15 +15,17 @@ export type BookType = {
 export type MyInfoBookType = {
   id: string;
   year?: number | null;
+  month?: number | null;
   note?: number | null;
-  commentaires: string;
+  comments: string;
 };
 
 export type MyInfoBookFormType = {
   bookStatus: BookStatusEnum;
   year?: number;
+  month?: number | null;
   note?: number;
-  commentaires: string;
+  comments: string;
 };
 
 export type UserType = {
@@ -63,11 +65,12 @@ export type BookAPIType = {
   };
 };
 
-type FriendsWhoReadBookType = {
+export type FriendsWhoReadBookType = {
   userId: string;
   userInfoYear?: number | null;
+  userInfoMonth?: number | null;
   userInfoNote?: number | null;
-  userInfoComment: string;
+  userInfoComments: string;
 };
 
 export type FriendsBooksReadType = {

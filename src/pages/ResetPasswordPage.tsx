@@ -46,7 +46,8 @@ const ResetPasswordPage = (): JSX.Element => {
     sendPasswordResetEmailFirebase(data.email);
     toast({
       title: "Mail de réinitialisation envoyé",
-      description: "Pensez à vérifier vos spams !",
+      description:
+        "Si vous ne voyez pas le mail, pensez à vérifier vos spams !",
     });
   };
 

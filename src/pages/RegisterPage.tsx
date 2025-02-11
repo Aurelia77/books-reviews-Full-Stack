@@ -13,6 +13,7 @@ import {
   addOrUpdateUserFirebase,
   registerFirebase,
 } from "@/firebase/firestore";
+import { useToast } from "@/hooks/use-toast";
 import { UserType } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronsRight } from "lucide-react";
@@ -66,6 +67,7 @@ const emptyUser: UserType = {
 const RegisterPage = (): JSX.Element => {
   const navigate = useNavigate();
   const [firebaseError, setFirebaseError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const form = useForm<RegisterFormType>({
     resolver: zodResolver(registerFormSchema),
@@ -88,6 +90,13 @@ const RegisterPage = (): JSX.Element => {
           id: newUser.uid,
         });
         navigate("/");
+      })
+      .then(() => {
+        toast({
+          title: "Inscription réussie",
+          description:
+            "Vous êtes connecté, bonne navigation au travers des livres !",
+        });
       })
       .catch((error) => {
         console.error("Firebase register error:", error.message);
@@ -137,7 +146,11 @@ const RegisterPage = (): JSX.Element => {
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <Input placeholder="Mot de passe" {...field} />
+                  <Input
+                    placeholder="Mot de passe"
+                    {...field}
+                    //type="password"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -152,6 +165,7 @@ const RegisterPage = (): JSX.Element => {
                   <Input
                     placeholder="Vérification du mot de passe"
                     {...field}
+                    //type="password"
                   />
                 </FormControl>
                 <FormMessage />

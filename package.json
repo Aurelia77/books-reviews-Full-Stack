@@ -1,5 +1,6 @@
 {
   "name": "books-reviews",
+  "description": "Application de critiques de livres",
   "private": true,
   "version": "0.0.0",
   "type": "module",

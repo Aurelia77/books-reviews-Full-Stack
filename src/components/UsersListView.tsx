@@ -12,7 +12,7 @@ const UsersListView = ({
   return (
     // <ul className="flex items-center gap-4 p-5">
 
-    <ul className="pb-40">
+    <ul>
       {userInfoList.map((friend: UserType) => (
         <li key={friend.id}>
           <Link
