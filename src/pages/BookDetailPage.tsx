@@ -17,6 +17,7 @@ import {
 import { getDocsByQueryFirebase } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
 import { BookAPIType, BookType } from "@/types";
+import { removeOrRemplaceHtmlTags } from "@/utils";
 import { Quote } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -206,15 +207,21 @@ const BookDetailPage = (): JSX.Element => {
   //   );
   // }, [bookInfos, currentUser?.uid]);
 
-  // On revient à la ligne à chaque fin de phrase, sinon trop compacte
-  const formatDescription = (description: string) => {
-    return description
-      ?.replace(/([.!?])\s*(?=[A-Z])/g, "$1\n")
-      .replace(/<br\s*\/?>\s*<br\s*\/?>/g, "\n");
+  const addLineBreaks = (description: string) => {
+    return (
+      // Ajoute un saut de ligne après chaque : ".", "!", ou "?" suivi d'une lettre majuscule => pour plus de lisibilité
+      description.replace(/([.!?])\s*(?=[A-Z])/g, "$1\n")
+    );
   };
 
+  // const formatDescription = (description: string) => {
+  //   return description
+  //     ?.replace(/([.!?])\s*(?=[A-Z])/g, "$1\n")
+  //     .replace(/<br\s*\/?>\s*<br\s*\/?>/g, "\n");
+  // };
+
   return (
-    <div className="relative min-h-screen pb-4 max-w-4xl md:m-auto md:mt-8">
+    <div className="relative min-h-screen max-w-4xl md:m-auto md:mt-8">
       {isLoading || apiBooksIsLoading ? (
         <BookSkeleton />
       ) : error || apiBooksError ? (
@@ -254,205 +261,6 @@ const BookDetailPage = (): JSX.Element => {
                   bookInfos={bookInfos}
                 />
               )}
-              {/* <Dialog>
-                {bookInMyBooks === "" ? (
-                  <DialogTrigger asChild className="flex justify-center">
-                    <Button className="m-auto mb-6 h-12 w-1/2 border border-border bg-secondary/60 shadow-md shadow-foreground/70">
-                      Ajouter à mes livres
-                    </Button>
-                  </DialogTrigger>
-                ) : (
-                  <div className="relative flex flex-col gap-2">
-                    <div className="flex items-center justify-around">
-                      <div className="mb-2 border border-border bg-secondary/60 p-2 shadow-md shadow-foreground/70">
-                        {bookInMyBooks === BookStatusEnum.booksReadList && (
-                          <div className="flex justify-center gap-2">
-                            <p>J'ai lu ce livre</p>
-                            <Check />
-                          </div>
-                        )}
-                        {bookInMyBooks ===
-                          BookStatusEnum.booksInProgressList && (
-                          <div className="flex justify-center gap-2">
-                            <p>Je suis en train de lire ce livre</p>
-                            <Ellipsis />
-                          </div>
-                        )}
-                        {bookInMyBooks === BookStatusEnum.booksToReadList && (
-                          <div className="flex justify-center gap-2">
-                            <p>J'aimerais lire ce livre</p>
-                            <Smile />
-                          </div>
-                        )}
-                      </div>
-                      <X
-                        className="bottom-8 mr-0 text-destructive-foreground"
-                        onClick={() => handleDeleteBook(bookInfos.id)}
-                      />
-                    </div>
-                    <BookUserInfo
-                      key={refreshKey} // refreshKey = key to force re-render when bookInfos changed
-                      userId={currentUser?.uid}
-                      bookInfos={bookInfos}
-                      bookStatus={bookInMyBooks}
-                    />
-                    <DialogTrigger asChild className="flex justify-center">
-                      <Button className="m-auto mb-6 h-12 w-1/2 border border-border bg-secondary/60 shadow-md shadow-foreground/70">
-                        Modifier mes infos
-                      </Button>
-                    </DialogTrigger>
-                  </div>
-                )}
-                <DialogContent className="sm:max-w-[425px]">
-                  {currentUser?.uid ? (
-                    <>
-                      <DialogHeader>
-                        {bookInMyBooks === "" ? (
-                          <DialogTitle>AJOUTER LIVRE</DialogTitle>
-                        ) : (
-                          <DialogTitle>MODIFIER MES INFOS</DialogTitle>
-                        )}
-                        <DialogDescription>
-                          {bookInfos?.title}
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="grid gap-4 py-4">
-                        <Form {...form}>
-                          <form
-                            className="sticky top-10 z-10 flex flex-col gap-3 bg-background/70 duration-500"
-                            onSubmit={form.handleSubmit(onSubmit)}
-                          >
-                            <FormField
-                              control={form.control}
-                              name="bookStatus"
-                              render={({ field }) => (
-                                <RadioGroup
-                                  value={field.value}
-                                  onValueChange={field.onChange}
-                                >
-                                  <div className="flex items-center space-x-2">
-                                    <RadioGroupItem
-                                      value={BookStatusEnum.booksReadList}
-                                      id="booksRead"
-                                    />
-                                    <Label htmlFor="read">Lu</Label>
-                                  </div>
-                                  <div className="flex items-center space-x-2">
-                                    <RadioGroupItem
-                                      value={BookStatusEnum.booksInProgressList}
-                                      id="booksInProgress"
-                                    />
-                                    <Label htmlFor="booksInProgress">
-                                      En cours
-                                    </Label>
-                                  </div>
-                                  <div className="flex items-center space-x-2">
-                                    <RadioGroupItem
-                                      value={BookStatusEnum.booksToReadList}
-                                      id="toRead"
-                                    />
-                                    <Label htmlFor="toRead">À lire</Label>
-                                  </div>
-                                </RadioGroup>
-                              )}
-                            />
-                            <FormField
-                              control={form.control}
-                              name="commentaires"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormControl>
-                                    <Textarea
-                                      placeholder="Mes commentaires"
-                                      {...field}
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            {form.watch().bookStatus ===
-                              BookStatusEnum.booksReadList && (
-                              <div className="flex items-center justify-around">
-                                <FormField
-                                  control={form.control}
-                                  name="year"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormControl>
-                                        <Input
-                                          placeholder="Année"
-                                          type="number"
-                                          {...field}
-                                          //On converti en number sinon : "Expected number, received string" (sinon on pt enlever le onChange)
-                                          onChange={(e) =>
-                                            field.onChange(
-                                              e.target.value
-                                                ? parseFloat(e.target.value)
-                                                : null
-                                            )
-                                          }
-                                        />
-                                      </FormControl>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                                <FormField
-                                  control={form.control}
-                                  name="note"
-                                  render={() => (
-                                    <FormItem className="flex justify-center">
-                                      <FormControl>
-                                        <Controller
-                                          name="note"
-                                          control={form.control}
-                                          render={({ field }) => (
-                                            <StarRating
-                                              value={field.value ?? 0}
-                                              //On converti en number sinon : "Expected number, received string"
-                                              onChange={(value: string) =>
-                                                field.onChange(parseInt(value))
-                                              }
-                                            />
-                                          )}
-                                        />
-                                      </FormControl>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                              </div>
-                            )}
-
-                            <DialogFooter>
-                              <DialogClose asChild>
-                                <Button type="submit">OK</Button>
-                              </DialogClose>
-                            </DialogFooter>
-                          </form>
-                        </Form>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <DialogHeader>
-                        <DialogTitle>
-                          <FeedbackMessage
-                            message="Vous devez être connecté pour ajouter un livre"
-                            type="error"
-                          />
-                        </DialogTitle>
-                        <DialogDescription>
-                          <CustomLinkButton linkTo="/login">
-                            Se connecter
-                          </CustomLinkButton>
-                        </DialogDescription>
-                      </DialogHeader>
-                    </>
-                  )}
-                </DialogContent>
-              </Dialog> */}
               {bookInfos.description ? (
                 <div className="flex gap-3">
                   <Quote />
@@ -460,7 +268,9 @@ const BookDetailPage = (): JSX.Element => {
                     style={{ whiteSpace: "pre-line" }}
                     className="text-foreground max-w-[90%]"
                   >
-                    {formatDescription(bookInfos.description)}
+                    {removeOrRemplaceHtmlTags(
+                      addLineBreaks(bookInfos.description)
+                    )}
                   </p>
                 </div>
               ) : (

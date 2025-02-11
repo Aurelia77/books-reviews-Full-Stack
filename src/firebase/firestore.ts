@@ -136,8 +136,9 @@ export const addOrUpdateBookInfoToMyBooksFirebase = (
               user.booksRead.push({
                 id: bookId,
                 year: formData.year ?? null,
+                month: formData.month ?? null,
                 note: formData.note ?? 0,
-                commentaires: formData.commentaires,
+                comments: formData.comments,
               });
             }
           }
@@ -153,7 +154,7 @@ export const addOrUpdateBookInfoToMyBooksFirebase = (
             } else {
               user.booksInProgress.push({
                 id: bookId,
-                commentaires: formData.commentaires,
+                comments: formData.comments,
               });
             }
           }
@@ -169,7 +170,7 @@ export const addOrUpdateBookInfoToMyBooksFirebase = (
             } else {
               user.booksToRead.push({
                 id: bookId,
-                commentaires: formData.commentaires,
+                comments: formData.comments,
               });
             }
           }
@@ -266,10 +267,7 @@ export const getDocsByQueryFirebase = <T extends BookType | UserType>(
       : [])
   );
 
-  // console.log("FIREBASE collectionName", collectionName);
-  // console.log("FIREBASE fieldToQuery", fieldToQuery);
-  // console.log("FIREBASE valueToQuery", valueToQuery);
-  // console.log("FIREBASE q", q);
+  console.log("456", collectionName, fieldToQuery, valueToQuery);
 
   return getDocs(q)
     .then((querySnapshot) => {
@@ -487,6 +485,7 @@ export const findBookCatInUserLibraryFirebase = (
   currentUserId: string | undefined
 ): Promise<BookStatusEnum | ""> => {
   if (bookId && currentUserId) {
+    console.log("456 findBookCatInUserLibraryFirebase");
     return getDocsByQueryFirebase<UserType>("users", "id", currentUserId)
       .then((users) => {
         const user = users[0];
@@ -505,6 +504,8 @@ export const findBookCatInUserLibraryFirebase = (
         //   result = BOOK_STATUS.IN_PROGRESS;
         // if (user.booksToRead.some((book) => book.id === bookId))
         //   result = BOOK_STATUS.TO_READ;
+
+        console.log("456 result", result);
 
         return result;
       })

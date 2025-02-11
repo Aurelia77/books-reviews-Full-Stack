@@ -1,3 +1,5 @@
+export const APP_NAME = "Book Reviews";
+
 export const DEFAULT_BOOK_IMAGE =
   "https://placehold.co/150x200?text=Image%0ANon%0ADisponible";
 export const DEFAULT_USER_IMAGE = "https://placehold.co/150x150?text=X";

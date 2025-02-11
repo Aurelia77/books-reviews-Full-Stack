@@ -19,6 +19,7 @@ import {
   storage,
   uploadImageOnFirebase,
 } from "@/firebase/firestore";
+import { useToast } from "@/hooks/use-toast";
 import useUserStore from "@/hooks/useUserStore";
 import { AccountFormType, UserType } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -47,6 +48,7 @@ const MyAccountPage = (): JSX.Element => {
   const [currentUserInfo, setCurrentUserInfo] = useState<UserType | null>(null);
   const [friendsInfo, setFriendsInfo] = useState<UserType[]>([]);
   const { currentUser } = useUserStore();
+  const { toast } = useToast();
 
   console.log("999 userId", currentUser?.uid);
 
@@ -94,6 +96,9 @@ const MyAccountPage = (): JSX.Element => {
     //console.log("data", data);
     addOrUpdateUserFirebase(currentUser?.uid, data);
     useUserStore.getState().setProfileImage(data.imgURL);
+    toast({
+      title: "Profil enregistré !",
+    });
   };
 
   useEffect(() => {
@@ -229,11 +234,14 @@ const MyAccountPage = (): JSX.Element => {
       )}
 
       <div className="my-12 flex flex-col gap-4">
+        <CustomLinkButton className="bg-primary/60" linkTo="/searchusers">
+          Voir les Membres
+        </CustomLinkButton>
         <CustomLinkButton className="bg-secondary/70" linkTo="/mybooks">
           Mes livres
         </CustomLinkButton>
       </div>
-      <div className="bg-primary/20 p-2 mb-40">
+      <div className="bg-primary/20 p-2">
         <Link
           to="/resetpassword"
           className="text-foreground font-semibold flex gap-5"

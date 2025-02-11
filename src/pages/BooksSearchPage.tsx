@@ -528,7 +528,7 @@ const BooksSearchPage = (): JSX.Element => {
         ) : error ? (
           <FeedbackMessage message={message} type="error" />
         ) : bdAndApiBooks?.length > 0 ? (
-          <ul className="pb-40">
+          <ul>
             {bdAndApiBooks.map((book: BookType) => (
               <li key={book.id}>
                 {/* Ici on passe le book en props (et pas le bookId comme dans MyBooksPage) */}

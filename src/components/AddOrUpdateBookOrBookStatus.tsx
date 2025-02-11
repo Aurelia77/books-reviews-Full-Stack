@@ -52,6 +52,7 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 
 const currentYear = new Date().getFullYear();
+const currentMonth = new Date().getMonth() + 1;
 
 const bookFormSchema = z.object({
   bookStatus: z.nativeEnum(BookStatusEnum),
@@ -63,8 +64,18 @@ const bookFormSchema = z.object({
       message: "Impossible d'ajouter une année dans le future !",
     })
     .optional(),
+  month: z
+    .number()
+    .int()
+    .min(1, {
+      message: "Le mois doit être compris entre 1 et 12",
+    })
+    .max(12, {
+      message: "Le mois doit être compris entre 1 et 12",
+    })
+    .optional(),
   note: z.number().int().min(0).max(5).optional(),
-  commentaires: z.string(),
+  comments: z.string().optional(),
 });
 
 type AddOrUpdateBookProps = {
@@ -101,11 +112,10 @@ const AddOrUpdateBookOrBookStatus = ({
   const defaultValues = {
     bookStatus: bookInMyBooks || BookStatusEnum.booksReadList,
     year: userBookInfos?.year || currentYear,
+    month: userBookInfos?.month || currentMonth,
     note: userBookInfos?.note || 0,
-    commentaires: userBookInfos?.commentaires || "",
+    comments: userBookInfos?.comments || "",
   };
-
-  console.log("!!!!! defaultValues NOTE", defaultValues.note);
 
   const form = useForm<MyInfoBookFormType>({
     resolver: zodResolver(bookFormSchema),
@@ -144,6 +154,7 @@ const AddOrUpdateBookOrBookStatus = ({
   };
 
   const onSubmit: SubmitHandler<MyInfoBookFormType> = (formData) => {
+    console.log("789 formData", formData);
     if (bookInfos) {
       {
         if (bookInMyBooks === "") {
@@ -153,7 +164,6 @@ const AddOrUpdateBookOrBookStatus = ({
               bookInfos.title,
               formData.bookStatus
             );
-            // mettre un popup !
             setRefreshKey((prevKey) => prevKey + 1); // Increment refreshKey to trigger re-render
           });
         } else
@@ -194,8 +204,9 @@ const AddOrUpdateBookOrBookStatus = ({
               form.reset({
                 bookStatus: BookStatusEnum.booksReadList,
                 year: currentYear,
+                month: currentMonth,
                 note: 0,
-                commentaires: "",
+                comments: "",
               })
             }
             className="m-auto mb-6 h-12 w-1/2 border border-border bg-secondary/60 shadow-md shadow-foreground/70"
@@ -354,7 +365,7 @@ const AddOrUpdateBookOrBookStatus = ({
                   />
                   <FormField
                     control={form.control}
-                    name="commentaires"
+                    name="comments"
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
@@ -376,6 +387,39 @@ const AddOrUpdateBookOrBookStatus = ({
                                 placeholder="Année"
                                 type="number"
                                 {...field}
+                                //////////////////////////////////////////////
+                                //////////////////////////////////////////////
+                                //////////////////////////////////////////////
+                                //////////////////////////////////////////////
+                                //////////////////////////////
+                                //////////////////à remettre ??? comme month ?????
+                                ////
+                                value={field.value ?? currentYear}
+                                //On converti en number sinon : "Expected number, received string" (sinon on pt enlever le onChange)
+                                onChange={(e) =>
+                                  field.onChange(
+                                    e.target.value
+                                      ? parseFloat(e.target.value)
+                                      : null
+                                  )
+                                }
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="month"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Input
+                                placeholder="Mois"
+                                type="number"
+                                {...field}
+                                value={field.value ?? currentMonth}
                                 //On converti en number sinon : "Expected number, received string" (sinon on pt enlever le onChange)
                                 onChange={(e) =>
                                   field.onChange(

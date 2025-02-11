@@ -84,7 +84,11 @@ const LoginPage = (): JSX.Element => {
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <Input placeholder="Mot de passe" {...field} />
+                  <Input
+                    placeholder="Mot de passe"
+                    {...field}
+                    //type="password"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

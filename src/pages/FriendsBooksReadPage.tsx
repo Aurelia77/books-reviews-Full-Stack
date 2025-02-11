@@ -9,7 +9,11 @@ import {
   getUserInfosBookFirebase,
 } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
-import { BookStatusEnum, FriendsBooksReadType } from "@/types";
+import {
+  BookStatusEnum,
+  FriendsBooksReadType,
+  FriendsWhoReadBookType,
+} from "@/types";
 import useSWR from "swr";
 
 const FriendsBooksReadPage = (): JSX.Element => {
@@ -52,13 +56,16 @@ const FriendsBooksReadPage = (): JSX.Element => {
                     userId,
                     bookIdAndFriendsWhoReadBooksIds.bookId,
                     BookStatusEnum.booksReadList
-                  ).then((userInfo) => ({
-                    //bookId: bookIdAndFriendsWhoReadBooksIds.bookId,
-                    userId,
-                    userInfoYear: userInfo?.year,
-                    userInfoNote: userInfo?.note,
-                    userInfoComment: userInfo?.commentaires || "",
-                  }));
+                  ).then(
+                    (userInfo): FriendsWhoReadBookType => ({
+                      //bookId: bookIdAndFriendsWhoReadBooksIds.bookId,
+                      userId,
+                      userInfoYear: userInfo?.year,
+                      userInfoMonth: userInfo?.month,
+                      userInfoNote: userInfo?.note,
+                      userInfoComments: userInfo?.comments || "",
+                    })
+                  );
                 }
               );
 
@@ -92,7 +99,7 @@ const FriendsBooksReadPage = (): JSX.Element => {
   // ici on utilise une constante et pas un state car les message ne change pas et s'affiche seulement si useSWR renvoie une erreur
   const message = `Un problème est survenu dans la récupération des informations sur les livres => ${error?.message}`;
 
-  console.log("88856 friendsReadBooks", friendsReadBooksWithInfo);
+  console.log("88856 friendsReadBooks", friendsReadBooksWithInfo?.length);
 
   // useEffect(() => {
   //   const filteredUsers = otherUsers.filter((user) =>
@@ -117,8 +124,8 @@ const FriendsBooksReadPage = (): JSX.Element => {
           </div>
         ) : error ? (
           <FeedbackMessage message={message} type="error" />
-        ) : friendsReadBooksWithInfo ? (
-          <ul className="pb-40">
+        ) : friendsReadBooksWithInfo && friendsReadBooksWithInfo.length > 0 ? (
+          <ul>
             {friendsReadBooksWithInfo.map((book: FriendsBooksReadType) => (
               <li key={book.bookId} className="border-8">
                 {/* Ici on passe le book en props (et pas le bookId comme dans MyBooksPage) */}
@@ -143,7 +150,7 @@ const FriendsBooksReadPage = (): JSX.Element => {
             ))}
           </ul>
         ) : (
-          <FeedbackMessage message="Aucun livre trouvé" type="info" />
+          <FeedbackMessage message="Aucun livre pour l'instant" type="info" />
         )}
       </div>
     </div>
