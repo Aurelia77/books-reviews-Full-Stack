@@ -123,9 +123,22 @@ export const addOrUpdateBookInfoToMyBooksFirebase = (
         return;
       }
 
+      user.booksRead = user.booksRead.filter((book) => book.id !== bookId);
+      user.booksInProgress = user.booksInProgress.filter(
+        (book) => book.id !== bookId
+      );
+      user.booksToRead = user.booksToRead.filter((book) => book.id !== bookId);
+
+      // We remove the book from the old list if it was already in one and add the book to the right list according to the status
       switch (formData.bookStatus) {
         case BookStatusEnum.booksReadList:
           {
+            user.booksInProgress = user.booksInProgress.filter(
+              (book) => book.id !== bookId
+            );
+            user.booksToRead = user.booksToRead.filter(
+              (book) => book.id !== bookId
+            );
             const bookIndex = user.booksRead.findIndex(
               (book) => book.id === bookId
             );
@@ -145,6 +158,12 @@ export const addOrUpdateBookInfoToMyBooksFirebase = (
           break;
         case BookStatusEnum.booksInProgressList:
           {
+            user.booksRead = user.booksRead.filter(
+              (book) => book.id !== bookId
+            );
+            user.booksToRead = user.booksToRead.filter(
+              (book) => book.id !== bookId
+            );
             const bookIndex = user.booksInProgress.findIndex(
               (book) => book.id === bookId
             );
@@ -161,6 +180,12 @@ export const addOrUpdateBookInfoToMyBooksFirebase = (
           break;
         case BookStatusEnum.booksToReadList:
           {
+            user.booksRead = user.booksRead.filter(
+              (book) => book.id !== bookId
+            );
+            user.booksInProgress = user.booksInProgress.filter(
+              (book) => book.id !== bookId
+            );
             const bookIndex = user.booksToRead.findIndex(
               (book) => book.id === bookId
             );
