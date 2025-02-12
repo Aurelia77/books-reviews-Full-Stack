@@ -14,3 +14,19 @@ export const BOOK_STATUS = {
 };
 
 export const NO_DESCRIPTION = "Pas de description disponible.";
+
+export const MONTHS = [
+  "Non précisé",
+  "Janvier",
+  "Février",
+  "Mars",
+  "Avril",
+  "Mai",
+  "Juin",
+  "Juillet",
+  "Août",
+  "Septembre",
+  "Octobre",
+  "Novembre",
+  "Décembre",
+];

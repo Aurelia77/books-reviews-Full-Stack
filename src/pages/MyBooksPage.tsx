@@ -35,10 +35,7 @@ const MyBooksPage = (): JSX.Element => {
       {userInfo && (
         <AllBooksLists userInfo={userInfo} userIdInUrl={undefined} />
       )}
-      <CustomLinkButton
-        className="bg-secondary/80"
-        linkTo="/mybooks/searchbooks"
-      >
+      <CustomLinkButton className="bg-primary/80" linkTo="/mybooks/searchbooks">
         Recherche de livre
       </CustomLinkButton>
     </div>

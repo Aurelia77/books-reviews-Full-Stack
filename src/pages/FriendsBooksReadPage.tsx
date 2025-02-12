@@ -1,9 +1,11 @@
 import BookInfos from "@/components/BookInfos";
 import BookUserInfo from "@/components/BookUserInfo";
+import CustomLinkButton from "@/components/CustomLinkButton";
 import FeedbackMessage from "@/components/FeedbackMessage";
 import BookSkeleton from "@/components/skeletons/BookSkeleton";
 import Title from "@/components/Title";
 import {
+  getDocsByQueryFirebase,
   getFriendsReadBooksIdsFirebase,
   getFriendsWhoReadBookFirebase,
   getUserInfosBookFirebase,
@@ -13,11 +15,24 @@ import {
   BookStatusEnum,
   FriendsBooksReadType,
   FriendsWhoReadBookType,
+  UserType,
 } from "@/types";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
 
 const FriendsBooksReadPage = (): JSX.Element => {
   const { currentUser } = useUserStore();
+  const [nbFriends, setNbFriends] = useState<number>(0);
+
+  useEffect(() => {
+    getDocsByQueryFirebase<UserType>("users", "id", currentUser?.uid).then(
+      (user) => {
+        if (user) {
+          setNbFriends(user[0].friends.length);
+        }
+      }
+    );
+  }, [currentUser?.uid]);
 
   const booksReadByFriendsFetcher = (
     currentUserId: string
@@ -153,6 +168,12 @@ const FriendsBooksReadPage = (): JSX.Element => {
           <FeedbackMessage message="Aucun livre pour l'instant" type="info" />
         )}
       </div>
+      <div className="bg-primary/20 p-2 mb-2">
+        <p>Vous avez {nbFriends} amis, vous pouvez en ajouter ici :</p>
+      </div>
+      <CustomLinkButton className="bg-secondary/60" linkTo="/searchusers">
+        Voir les Membres
+      </CustomLinkButton>
     </div>
   );
 };
