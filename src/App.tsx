@@ -28,6 +28,10 @@ const App = (): JSX.Element => {
                 path="/mybooks/searchbooks"
                 element={<BooksSearchPage />}
               />
+              <Route
+                path="/mybooks/searchbooks/authors/:author"
+                element={<BooksSearchPage />}
+              />
               <Route path="/books/:bookId" element={<BookDetailPage />} />
               <Route path="/account" element={<MyAccountPage />} />
               <Route path="/account/:userId?" element={<UserAccountPage />} />

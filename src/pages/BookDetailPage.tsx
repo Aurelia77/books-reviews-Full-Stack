@@ -21,7 +21,7 @@ import { BookAPIType, BookType } from "@/types";
 import { cleanDescription } from "@/utils";
 import { Quote } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import useSWR, { useSWRConfig } from "swr";
 
 // const bookFormSchema = z.object({
@@ -260,9 +260,15 @@ const BookDetailPage = (): JSX.Element => {
               />
               <CardHeader className="flex flex-col justify-between overflow-hidden">
                 <CardTitle>{bookInfos?.title}</CardTitle>
-                <CardDescription className="text-muted">
-                  {bookInfos?.author}
-                </CardDescription>
+                <Link
+                  // path="/mybooks/searchbooks/authors/:author"
+                  to={`/mybooks/searchbooks/authors/${bookInfos?.author}`}
+                  className="text-foreground underline"
+                >
+                  <CardDescription className="text-muted">
+                    {bookInfos?.author}
+                  </CardDescription>
+                </Link>
                 <div className="grid grid-cols-2 gap-x-8">
                   {bookInfos?.categories?.map((cat: string, index: number) => (
                     <CardDescription key={index}>{cat}</CardDescription>
