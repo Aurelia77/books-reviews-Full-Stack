@@ -72,7 +72,9 @@ const BooksSearchPage = (): JSX.Element => {
   const [titleInput, setTitleInput] = useState<string>(
     urlParam.author ? "" : localStorage.getItem("titleInput") || ""
   );
-  const [authorInput, setAuthorInput] = useState<string>(urlParam.author || "");
+  const [authorInput, setAuthorInput] = useState<string>(
+    urlParam.author || localStorage.getItem("authorInput") || ""
+  );
   //console.log("titleInput", titleInput);
   const titleInputRef = useRef<HTMLInputElement>(null);
   const authorInputRef = useRef<HTMLInputElement>(null);
@@ -428,6 +430,15 @@ const BooksSearchPage = (): JSX.Element => {
     }
     localStorage.setItem(key, value);
   };
+
+  console.log("localStorage", localStorage);
+
+  useEffect(() => {
+    if (urlParam.author) {
+      localStorage.setItem("titleInput", "");
+      localStorage.setItem("authorInput", urlParam.author);
+    }
+  }, [urlParam.author]);
 
   // console.log("LOCAL STORAGE TITLE", localStorage.getItem("titleInput"));
   // console.log("LOCAL STORAGE AUTHOR", localStorage.getItem("authorInput"));
