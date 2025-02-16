@@ -15,7 +15,10 @@ import {
   GOOGLE_BOOKS_API_URL,
   NO_DESCRIPTION,
 } from "@/constants";
-import { getDocsByQueryFirebase } from "@/firebase/firestore";
+import {
+  getCommentsOfUsersWhoReadBookFirebase,
+  getDocsByQueryFirebase,
+} from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
 import { BookAPIType, BookType } from "@/types";
 import { cleanDescription } from "@/utils";
@@ -275,6 +278,15 @@ const BookDetailPage = (): JSX.Element => {
                   ))}
                 </div>
                 <AverageBookRating bookInfos={bookInfos} />
+                {bookId && (
+                  <p
+                    onClick={() =>
+                      getCommentsOfUsersWhoReadBookFirebase(bookId)
+                    }
+                  >
+                    CLIC
+                  </p>
+                )}
               </CardHeader>
             </div>
             <FriendsWhoReadBook bookId={bookInfos.id} />
