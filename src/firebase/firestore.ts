@@ -344,6 +344,46 @@ export const addOrUpdateUserFirebase = (
   }
 };
 
+export const getCommentsOfUsersWhoReadBookFirebase = (
+  bookId: string
+): Promise<{ userName: string; userId: string; userComments: string }[]> => {
+  const q = query(collection(db, "users")); // Récupère tous les utilisateurs
+
+  return getDocs(q)
+    .then((querySnapshot) => {
+      const users: UserType[] = [];
+      querySnapshot.forEach((doc) => {
+        users.push(doc.data() as UserType);
+      });
+      return users;
+    })
+    .then((users) => {
+      console.log("usersComments users", users);
+
+      // Filtre les utilisateurs qui ont lu le livre avec l'ID donné
+      const usersWhoReadBook = users.filter((user) =>
+        user.booksRead.some((book) => book.id === bookId)
+      );
+
+      return usersWhoReadBook.map((user) => {
+        const book = user.booksRead.find((book) => book.id === bookId);
+        return {
+          userName: user.userName,
+          userId: user.id,
+          userComments: book?.userComments ?? "",
+        };
+      });
+    })
+    .then((usersComments) => {
+      console.log("usersComments", usersComments);
+      return usersComments;
+    })
+    .catch((error) => {
+      console.error("Error getting comments of users who read book: ", error);
+      throw error;
+    });
+};
+
 // Cette fction retourne des BookType[] ou des UserType[] (fonction générique)
 export const getDocsByQueryFirebase = <T extends BookType | UserType>(
   collectionName: string,
