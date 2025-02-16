@@ -32,6 +32,7 @@ import {
   BookType,
   MyInfoBookFormType,
   MyInfoBookType,
+  UserBookInfoType,
   UserType,
 } from "../types";
 import { firebaseConfig } from "./firebaseConfig";
@@ -344,9 +345,9 @@ export const addOrUpdateUserFirebase = (
   }
 };
 
-export const getCommentsOfUsersWhoReadBookFirebase = (
+export const getUsersWhoReadBookCommentsAndNotesFirebase = (
   bookId: string
-): Promise<{ userName: string; userId: string; userComments: string }[]> => {
+): Promise<UserBookInfoType[]> => {
   const q = query(collection(db, "users")); // Récupère tous les utilisateurs
 
   return getDocs(q)
@@ -365,14 +366,20 @@ export const getCommentsOfUsersWhoReadBookFirebase = (
         user.booksRead.some((book) => book.id === bookId)
       );
 
-      return usersWhoReadBook.map((user) => {
-        const book = user.booksRead.find((book) => book.id === bookId);
-        return {
-          userName: user.userName,
-          userId: user.id,
-          userComments: book?.userComments ?? "",
-        };
-      });
+      return usersWhoReadBook
+        .map((user) => {
+          const book = user.booksRead.find((book) => book.id === bookId);
+          return {
+            userName: user.userName,
+            userId: user.id,
+            userComments: book?.userComments ?? "",
+            userNote: book?.userNote ?? 0,
+          } as UserBookInfoType;
+        })
+        .filter(
+          (userBookInfo) =>
+            userBookInfo.userComments !== "" || userBookInfo.userNote !== 0
+        );
     })
     .then((usersComments) => {
       console.log("usersComments", usersComments);

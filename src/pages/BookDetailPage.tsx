@@ -3,6 +3,7 @@ import AverageBookRating from "@/components/AverageBookRating";
 import FeedbackMessage from "@/components/FeedbackMessage";
 import FriendsWhoReadBook from "@/components/FriendsWhoReadBook";
 import BookSkeleton from "@/components/skeletons/BookSkeleton";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -11,16 +12,24 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   DEFAULT_BOOK_IMAGE,
   GOOGLE_BOOKS_API_URL,
   NO_DESCRIPTION,
 } from "@/constants";
 import {
-  getCommentsOfUsersWhoReadBookFirebase,
   getDocsByQueryFirebase,
+  getUsersWhoReadBookCommentsAndNotesFirebase,
 } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
-import { BookAPIType, BookType } from "@/types";
+import { BookAPIType, BookType, UserBookInfoType } from "@/types";
 import { cleanDescription } from "@/utils";
 import { Quote } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -236,6 +245,26 @@ const BookDetailPage = (): JSX.Element => {
     );
   };
 
+  const [
+    usersWhoReadBookCommentsAndNotes,
+    setUsersWhoReadBookCommentsAndNotes,
+  ] = useState<UserBookInfoType[]>([]);
+
+  console.log(
+    "usersWhoReadBookCommentsAndNotes",
+    usersWhoReadBookCommentsAndNotes
+  );
+
+  const fillUserCommentsTab = () => {
+    if (bookInfos)
+      getUsersWhoReadBookCommentsAndNotesFirebase(bookInfos.id).then(
+        (commentsAndNotes) => {
+          console.log("comments", commentsAndNotes);
+          setUsersWhoReadBookCommentsAndNotes(commentsAndNotes);
+        }
+      );
+  };
+
   return (
     <div className="relative min-h-screen max-w-4xl md:m-auto md:mt-8">
       {isBookInDB ? (
@@ -277,14 +306,85 @@ const BookDetailPage = (): JSX.Element => {
                     <CardDescription key={index}>{cat}</CardDescription>
                   ))}
                 </div>
-                <AverageBookRating bookInfos={bookInfos} />
-                {bookId && (
-                  <p
-                    onClick={() =>
-                      getCommentsOfUsersWhoReadBookFirebase(bookId)
-                    }
-                  >
-                    CLIC
+                {bookInfos.rating?.count > 0 ? (
+                  <div>
+                    <AverageBookRating bookInfos={bookInfos} />
+                    <Dialog
+                    // open={isDialogOpen} onOpenChange={setIsDialogOpen}
+                    >
+                      {/* <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}> */}
+                      {/* {bookInMyBooks === "" ? ( */}
+
+                      <DialogTrigger asChild className="flex justify-center">
+                        <Button onClick={fillUserCommentsTab}>
+                          Commentaires et notes des membres
+                        </Button>
+                        {/* absolute -top-1 left-1/4  */}
+                        {/* <Button
+                        onClick={() =>
+                          form.reset({
+                            bookStatus: BookStatusEnum.booksReadList,
+                            year: currentYear,
+                            month: 0,
+                            userNote: 0,
+                            userComments: "",
+                          })
+                        }
+                        className="m-auto mb-6 h-12 w-1/2 border border-border bg-secondary/60 shadow-md shadow-foreground/70"
+                      > */}
+                        {/* </Button> */}
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[425px]">
+                        {/* {userId ? ( */}
+                        <>
+                          <DialogHeader>
+                            {/* {bookInMyBooks === "" ? ( */}
+                            <DialogTitle>{bookInfos?.title}</DialogTitle>
+                            {/* ) : (
+                            <DialogTitle>MODIFIER MES INFOS</DialogTitle>
+                          )} */}
+                          </DialogHeader>
+                          <DialogDescription></DialogDescription>
+                          {usersWhoReadBookCommentsAndNotes.map(
+                            (userCommentsAndNote) => {
+                              return (
+                                <div
+                                  key={userCommentsAndNote.userId}
+                                  className="p-1 m-1 bg-primary/50 rounded-md"
+                                >
+                                  <Link
+                                    to={`/account/${userCommentsAndNote.userId}`}
+                                  >
+                                    <DialogDescription className="flex">
+                                      Membre :
+                                      <p className="underline">
+                                        &nbsp;{userCommentsAndNote.userName}
+                                      </p>
+                                    </DialogDescription>
+                                  </Link>
+                                  <DialogDescription>
+                                    Commentaires :{" "}
+                                    {userCommentsAndNote.userComments ||
+                                      " Aucun commentaire"}
+                                  </DialogDescription>
+                                  <DialogDescription>
+                                    Note :{" "}
+                                    {userCommentsAndNote.userNote ||
+                                      " Aucune note"}
+                                  </DialogDescription>
+                                </div>
+                              );
+                              <p>{userCommentsAndNote.userNote} </p>;
+                            }
+                          )}
+                          <div className="grid gap-4 py-4"></div>
+                        </>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                ) : (
+                  <p className="italic">
+                    Les membres n'ont pas encore noté ce livre.
                   </p>
                 )}
               </CardHeader>
