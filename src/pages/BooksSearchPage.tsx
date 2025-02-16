@@ -8,6 +8,7 @@ import { getDocsByQueryFirebase } from "@/firebase/firestore";
 import { BookAPIType, BookType } from "@/types";
 import { X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
 import useSWR from "swr";
 
 const MAX_RESULTS = 4; // jusqu'à 40
@@ -55,6 +56,10 @@ const useDebounceEffect = (
 };
 
 const BooksSearchPage = (): JSX.Element => {
+  const urlParam = useParams<{ author: string }>();
+
+  console.log("authorQuery", urlParam);
+
   const [dbBooks, setDbBooks] = useState<BookType[]>([]);
   console.log("**1-books from BDD", dbBooks);
 
@@ -65,12 +70,15 @@ const BooksSearchPage = (): JSX.Element => {
   console.log("**3-ALL-books from BDD and API", bdAndApiBooks.length);
 
   const [titleInput, setTitleInput] = useState<string>(
-    localStorage.getItem("titleInput") || ""
+    urlParam.author ? "" : localStorage.getItem("titleInput") || ""
+  );
+  const [authorInput, setAuthorInput] = useState<string>(
+    urlParam.author || localStorage.getItem("authorInput") || ""
   );
   //console.log("titleInput", titleInput);
   const titleInputRef = useRef<HTMLInputElement>(null);
   const authorInputRef = useRef<HTMLInputElement>(null);
-  const [authorInput, setAuthorInput] = useState<string>("");
+  console.log("authorInputRef", authorInputRef);
   // const [inFriendsLists, setInFriendsLists] = useState(true);
   // const [inApi, setInApi] = useState(true);
 
@@ -422,6 +430,15 @@ const BooksSearchPage = (): JSX.Element => {
     }
     localStorage.setItem(key, value);
   };
+
+  console.log("localStorage", localStorage);
+
+  useEffect(() => {
+    if (urlParam.author) {
+      localStorage.setItem("titleInput", "");
+      localStorage.setItem("authorInput", urlParam.author);
+    }
+  }, [urlParam.author]);
 
   // console.log("LOCAL STORAGE TITLE", localStorage.getItem("titleInput"));
   // console.log("LOCAL STORAGE AUTHOR", localStorage.getItem("authorInput"));
