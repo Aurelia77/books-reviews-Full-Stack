@@ -119,11 +119,11 @@ const MyAccountPage = (): JSX.Element => {
             });
           }
         }
-      );
+      ); // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser?.uid]);
 
   return (
-    <div className="min-h-screen sm:p-2 max-w-3xl md:m-auto md:mt-8">
+    <div className="max-w-3xl min-h-screen md:m-auto md:mt-8 sm:p-2">
       <Title>Mon compte</Title>
       <Title level={2}>{`Identifiant : ${currentUser?.email ?? ""}`}</Title>
       <Form {...form}>
@@ -244,7 +244,7 @@ const MyAccountPage = (): JSX.Element => {
       <div className="bg-primary/20 p-2">
         <Link
           to="/resetpassword"
-          className="text-foreground font-semibold flex gap-5"
+          className="flex gap-5 font-semibold text-foreground"
         >
           <p>Changer de mot de passe ?</p>
           <ChevronsRight />

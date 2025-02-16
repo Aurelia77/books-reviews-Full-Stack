@@ -11,13 +11,13 @@ const MyBooksPage = (): JSX.Element => {
 
   const { currentUser } = useUserStore();
 
-  console.log("99999 currentUser", currentUser);
+  //console.log("99999 currentUser", currentUser);
 
-  console.log(currentUser);
+  //console.log(currentUser);
 
   useEffect(() => {
-    console.log("999 USEEFFECT");
-    console.log("999 currentUser?.uid", currentUser?.uid);
+    //console.log("999 USEEFFECT");
+    //console.log("999 currentUser?.uid", currentUser?.uid);
 
     if (currentUser)
       getDocsByQueryFirebase<UserType>("users", "id", currentUser?.uid).then(

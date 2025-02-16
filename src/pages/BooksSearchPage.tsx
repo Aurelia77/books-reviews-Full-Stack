@@ -50,7 +50,7 @@ const useDebounceEffect = (
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
-    };
+    }; // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [...deps, delay]);
 };
 
@@ -128,6 +128,10 @@ const BooksSearchPage = (): JSX.Element => {
                 imageLink: book.volumeInfo.imageLinks?.thumbnail,
                 language: book.volumeInfo.language,
                 isFromAPI: true,
+                rating: {
+                  totalRating: 0,
+                  count: 0,
+                },
               };
             });
           console.log("**35-booksFromAPI", booksFromAPI);
@@ -436,7 +440,7 @@ const BooksSearchPage = (): JSX.Element => {
   };
 
   return (
-    <div className="h-full min-h-screen sm:p-2 max-w-3xl md:m-auto md:mt-8">
+    <div className="min-h-screen h-full max-w-3xl md:mt-8 md:m-auto sm:p-2">
       <div className="flex h-full flex-col gap-6">
         {/* <Form {...form}>
           <form

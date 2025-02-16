@@ -20,7 +20,7 @@ const StarRating = ({ value, onChange }: StarRatingProps): JSX.Element => {
           key={index}
           onClick={() => handleClick(index)}
           className={`size-6 cursor-pointer ${
-            index < value ? "text-secondary" : "text-gray-300"
+            index < Math.round(value) ? "text-secondary" : "text-gray-300"
           }`}
           fill="currentColor"
           //viewBox="0 0 20 20"

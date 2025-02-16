@@ -12,15 +12,9 @@ export default [
   ...tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
   ...tailwind.configs["flat/recommended"],
-
   {
     plugins: {
       "react-hooks": pluginReactHooks,
-    },
-    settings: {
-      react: {
-        version: "detect", // Spécifie la version de React à utiliser
-      },
     },
     rules: {
       "react/react-in-jsx-scope": 0,

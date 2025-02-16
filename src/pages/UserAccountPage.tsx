@@ -34,7 +34,7 @@ const UserAccountPage = (): JSX.Element => {
       })
       .then((user) => isUserMyFriendFirebase(user.id, currentUser?.uid))
       .then((isFriend) => setIsFriend(isFriend));
-  }, [userInUrl]);
+  }, [userInUrl, currentUser?.uid]);
 
   const addFriendHandler = () => {
     addUserIdToMyFriendsFirebase(currentUser?.uid, userInUrl.userId).then(() =>

@@ -71,47 +71,54 @@ const bookFormSchema = z.object({
     })
     .optional(),
   month: z.number().int().min(0).max(12).optional(), // 0 = non précisé
-  note: z.number().int().min(0).max(5).optional(),
-  comments: z.string().optional(),
+  userNote: z.number().int().min(0).max(5).optional(),
+  userComments: z.string().optional(),
 });
 
 type AddOrUpdateBookProps = {
   userId: string;
   bookInfos: BookType;
+  onUpdate: () => void;
 };
 
 const AddOrUpdateBookOrBookStatus = ({
   userId,
   bookInfos,
+  onUpdate,
 }: AddOrUpdateBookProps): JSX.Element => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [bookInMyBooks, setBookInMyBooks] = useState<BookStatusEnum | "">("");
-  const [userBookInfos, setUserBookInfos] = useState<MyInfoBookType>();
+  console.log("bookInMyBooks", bookInMyBooks);
+  const [userBookInfos, setUserBookInfos] = useState<MyInfoBookType | null>();
 
-  // console.log("789!!!!!!!!! userBookInfos", userBookInfos?.note);
+  console.log("bookInMyBooks userBookInfos", userBookInfos);
+  console.log("bookInMyBooks userBookInfos", userBookInfos?.userNote);
+
+  console.log("123456", bookInfos.rating);
   // console.log("789 bookInMyBooks", bookInMyBooks);
 
-  // console.log("123456", bookInfos.categories);
+  const [refreshKey, setRefreshKey] = useState(0); // to force MyInfosBook re-render when userBookInfos changed
 
-  const [refreshKey, setRefreshKey] = useState(0); // to force MyInfosBook re-render
+  console.log("refreshKey", refreshKey);
 
-  // const form = useForm<MyInfoBookFormType>({
-  //   resolver: zodResolver(bookFormSchema),
-  //   // Tjs mettre des valeurs par défaut sinon ERREUR : Warning: A component is changing an uncontrolled input to be controlled
-  //   defaultValues: {
-  //     bookStatus: bookInMyBooks || BookStatusEnum.booksReadList,
-  //     year: userBookInfos?.year || currentYear,
-  //     note: userBookInfos?.note || 0,
-  //     commentaires: userBookInfos?.commentaires || "",
-  //   },
-  // });
+  const handleUpdate = () => {
+    console.log("handleUpdate");
+    setRefreshKey((prevKey) => prevKey + 1);
+    onUpdate(); // Call the parent update function
+  };
+
+  useEffect(() => {
+    console.log("handleUpdate useEffect");
+    handleUpdate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userBookInfos]);
 
   const defaultValues = {
     bookStatus: bookInMyBooks || BookStatusEnum.booksReadList,
     year: userBookInfos?.year || currentYear,
     month: userBookInfos?.month || 0,
-    note: userBookInfos?.note || 0,
-    comments: userBookInfos?.comments || "",
+    userNote: userBookInfos?.userNote || 0,
+    userComments: userBookInfos?.userComments || "",
   };
 
   const form = useForm<MyInfoBookFormType>({
@@ -119,69 +126,101 @@ const AddOrUpdateBookOrBookStatus = ({
     defaultValues: defaultValues,
   });
 
-  const updateUserInfoBook = () => {
+  ////////////// Voir les 2 fonctions ci dessous getUserInfosBookFirebase => retourne un user avec booksRead = [] !!!!
+  ////////////// Voir les 2 fonctions ci dessous getUserInfosBookFirebase => retourne un user avec booksRead = [] !!!!
+  ////////////// Voir les 2 fonctions ci dessous getUserInfosBookFirebase => retourne un user avec booksRead = [] !!!!
+  ////////////// Voir les 2 fonctions ci dessous getUserInfosBookFirebase => retourne un user avec booksRead = [] !!!!
+  ////////////// Voir les 2 fonctions ci dessous getUserInfosBookFirebase => retourne un user avec booksRead = [] !!!!
+  ////////////// Voir les 2 fonctions ci dessous getUserInfosBookFirebase => retourne un user avec booksRead = [] !!!!
+  const updateUserBookInfos = () => {
+    console.log("updateUserBookInfos");
     if (bookInMyBooks && bookInfos) {
+      //console.log("UserBookInfos ")
+      //console.log("UserBookInfos ")
+      //console.log("UserBookInfos ")
+      //console.log("UserBookInfos ")
+      //console.log("UserBookInfos ")
       getUserInfosBookFirebase(userId, bookInfos.id, bookInMyBooks).then(
         (myBook) => {
-          console.log("!!!!!!!!!!! myBook", myBook);
-          if (myBook) setUserBookInfos(myBook);
+          console.log("updateUserBookInfos !!!!!!!!!!! myBook", myBook);
+          setUserBookInfos(myBook);
+          // if (myBook) setUserBookInfos(myBook);
         }
       );
     }
   };
 
   useEffect(() => {
+    console.log("bookInMyBooks change ??? useEffect setUserBookInfos");
     if (bookInMyBooks && bookInfos) {
+      console.log("bookInMyBooks && bookInfos", bookInMyBooks, bookInfos);
       getUserInfosBookFirebase(userId, bookInfos.id, bookInMyBooks).then(
         (myBook) => {
+          console.log("bookInMyBooks !!!!!!!!!!!!!!", myBook);
           if (myBook) setUserBookInfos(myBook);
         }
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bookInfos?.id, bookInMyBooks, userId]);
 
   useEffect(() => {
-    form.reset(defaultValues);
-  }, [userBookInfos]);
+    form.reset(defaultValues); // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userBookInfos, form]);
 
-  const handleDeleteBook = (bookId: string) => {
-    deleteBookFromMyBooksFirebase(userId, bookId, bookInMyBooks).then(() =>
-      setBookInMyBooks("")
-    );
+  // ici j'utilise async/await car le .then ne fonctionne pas, pourtant normalement ça fait exactement la même chose !!!
+  const handleDeleteBook = async (bookId: string) => {
+    await deleteBookFromMyBooksFirebase(userId, bookId, bookInMyBooks);
+    setBookInMyBooks("");
+    updateUserBookInfos();
+    // deleteBookFromMyBooksFirebase(userId, bookId, bookInMyBooks).then(() => {
+    //   setBookInMyBooks("");
+    //   handleUpdate();
+    // });
   };
 
-  const onSubmit: SubmitHandler<MyInfoBookFormType> = (formData) => {
-    console.log("789 formData", formData);
+  // ici j'utilise async/await car le .then ne fonctionne pas, pourtant normalement ça fait exactement la même chose !!!
+  const onSubmit: SubmitHandler<MyInfoBookFormType> = async (formData) => {
+    // console.log("789 formData", formData);
+    // console.log("789 bookInMyBooks", bookInMyBooks);
+    // console.log("789 bookInfos", bookInfos);
+
     if (bookInfos) {
       {
         if (bookInMyBooks === "") {
-          addBookFirebase(userId, bookInfos, formData).then(() => {
-            console.log(
-              "Livre ajouté ! ",
-              bookInfos.title,
-              formData.bookStatus
-            );
-            setRefreshKey((prevKey) => prevKey + 1); // Increment refreshKey to trigger re-render
-          });
+          console.log("bookInMyBooks", bookInMyBooks);
+
+          await addBookFirebase(userId, bookInfos, formData); // Ajout de await ici
+          console.log("Livre ajouté ! ", bookInfos.title, formData.bookStatus);
+          updateUserBookInfos();
+          // addBookFirebase(userId, bookInfos, formData).then(() => {
+          //   console.log(
+          //     "Livre ajouté ! ",
+          //     bookInfos.title,
+          //     formData.bookStatus
+          //   );
+
+          //   updateUserBookInfos();
+          // });
         } else
           addOrUpdateBookInfoToMyBooksFirebase(
             userId,
             bookInfos.id,
-            formData
+            formData,
+            userBookInfos?.userNote
           ).then(() => {
-            updateUserInfoBook();
+            updateUserBookInfos();
             console.log(
               "Livre ajouté ! ",
               bookInfos.title,
               formData.bookStatus
             );
-            // mettre un popup !
-            setRefreshKey((prevKey) => prevKey + 1); // Increment refreshKey to trigger re-render
           });
       }
     }
     setBookInMyBooks(formData.bookStatus);
     setIsDialogOpen(false);
+    setRefreshKey((prevKey) => prevKey + 1); // Increment refreshKey to trigger re-render of this component
   };
 
   useEffect(() => {
@@ -202,8 +241,8 @@ const AddOrUpdateBookOrBookStatus = ({
                 bookStatus: BookStatusEnum.booksReadList,
                 year: currentYear,
                 month: 0,
-                note: 0,
-                comments: "",
+                userNote: 0,
+                userComments: "",
               })
             }
             className="m-auto mb-6 h-12 w-1/2 border border-border bg-secondary/60 shadow-md shadow-foreground/70"
@@ -245,7 +284,7 @@ const AddOrUpdateBookOrBookStatus = ({
                   </AlertDialogTitle>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel className="bg-primary border-none">
+                  <AlertDialogCancel className="border-none bg-primary">
                     Annuler
                   </AlertDialogCancel>
                   <AlertDialogAction
@@ -362,7 +401,7 @@ const AddOrUpdateBookOrBookStatus = ({
                   />
                   <FormField
                     control={form.control}
-                    name="comments"
+                    name="userComments"
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
@@ -374,6 +413,43 @@ const AddOrUpdateBookOrBookStatus = ({
                   />
                   {form.watch().bookStatus === BookStatusEnum.booksReadList && (
                     <div className="flex items-center justify-around">
+                      <FormField
+                        control={form.control}
+                        name="year"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Select
+                                value={
+                                  field.value?.toString() ??
+                                  currentYear.toString()
+                                }
+                                onValueChange={(value) =>
+                                  field.onChange(parseInt(value))
+                                }
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Année" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {Array.from(
+                                    { length: currentYear - 1900 + 1 },
+                                    (_, i) => currentYear - i
+                                  ).map((year) => (
+                                    <SelectItem
+                                      key={year}
+                                      value={year.toString()}
+                                    >
+                                      {year}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                       <FormField
                         control={form.control}
                         name="month"
@@ -413,43 +489,6 @@ const AddOrUpdateBookOrBookStatus = ({
                           </FormItem>
                         )}
                       />
-                      <FormField
-                        control={form.control}
-                        name="year"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Select
-                                value={
-                                  field.value?.toString() ??
-                                  currentYear.toString()
-                                }
-                                onValueChange={(value) =>
-                                  field.onChange(parseInt(value))
-                                }
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Année" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {Array.from(
-                                    { length: currentYear - 1900 + 1 },
-                                    (_, i) => currentYear - i
-                                  ).map((year) => (
-                                    <SelectItem
-                                      key={year}
-                                      value={year.toString()}
-                                    >
-                                      {year}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
                       {/* <FormField
                         control={form.control}
                         name="month"
@@ -477,12 +516,12 @@ const AddOrUpdateBookOrBookStatus = ({
                       /> */}
                       <FormField
                         control={form.control}
-                        name="note"
+                        name="userNote"
                         render={() => (
                           <FormItem className="flex justify-center">
                             <FormControl>
                               <Controller
-                                name="note"
+                                name="userNote"
                                 control={form.control}
                                 render={({ field }) => (
                                   <StarRating
@@ -499,8 +538,8 @@ const AddOrUpdateBookOrBookStatus = ({
                           </FormItem>
                         )}
                       />
-                      {form.watch().note !== 0 && (
-                        <X onClick={() => form.setValue("note", 0)} />
+                      {form.watch().userNote !== 0 && (
+                        <X onClick={() => form.setValue("userNote", 0)} />
                       )}
                     </div>
                   )}
