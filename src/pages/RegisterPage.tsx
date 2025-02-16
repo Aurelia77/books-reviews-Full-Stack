@@ -1,3 +1,4 @@
+import CustomLinkButton from "@/components/CustomLinkButton";
 import FeedbackMessage from "@/components/FeedbackMessage";
 import Title from "@/components/Title";
 import { Button } from "@/components/ui/button";
@@ -16,10 +17,9 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { UserType } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChevronsRight } from "lucide-react";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 type RegisterFormType = {
@@ -180,13 +180,10 @@ const RegisterPage = (): JSX.Element => {
           </Button>
         </form>
       </Form>
-      <div className="bg-primary/20 p-2 mt-4">
-        <Link to="/login" className="text-foreground font-semibold flex gap-5">
-          <p>Déja inscrit ?</p>
-          <ChevronsRight />
-          <p>Connectez-vous ici !</p>
-        </Link>
-      </div>
+      <CustomLinkButton className="bg-primary/50 mb-4" linkTo="/resetpassword">
+        Connexion
+      </CustomLinkButton>
+
       {/* <p>Déja inscrit ?</p>
       <CustomLinkButton className="bg-secondary/70" linkTo="/login">
         Se connecter

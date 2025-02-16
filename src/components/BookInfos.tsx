@@ -11,11 +11,12 @@ import {
 } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
 import { BookStatusEnum, BookType } from "@/types";
-import { removeOrRemplaceHtmlTags } from "@/utils";
+import { cleanDescription } from "@/utils";
 import { Check, Ellipsis, Quote, Smile } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useSWR from "swr";
+import AverageBookRating from "./AverageBookRating";
 import BookUserInfo from "./BookUserInfo";
 import FeedbackMessage from "./FeedbackMessage";
 import FriendsWhoReadBook from "./FriendsWhoReadBook";
@@ -34,10 +35,10 @@ const BookInfos = ({
   bookId,
   userViewId,
 }: BookInfosProps): JSX.Element => {
-  //console.log("bookId", bookId);
+  ////console.log("bookId", bookId);
 
   const [bookInfos, setBookInfos] = useState<BookType | null>(book || null);
-  console.log("bookInfos", bookInfos);
+  //console.log("bookInfos", bookInfos);
   const [bookInMyList, setBookInMyList] = useState<BookStatusEnum | "">("");
   const [bookInFriendList, setBookInFriendList] = useState<BookStatusEnum | "">(
     ""
@@ -50,10 +51,10 @@ const BookInfos = ({
 
   const { currentUser } = useUserStore();
 
-  console.log("5555 userViewId", userViewId);
-  console.log("5555 currentUser", currentUser?.uid);
-  console.log("55555 bookInMyList", bookInMyList);
-  console.log("55555 bookInFriendList", bookInFriendList);
+  //console.log("5555 userViewId", userViewId);
+  //console.log("5555 currentUser", currentUser?.uid);
+  //console.log("55555 bookInMyList", bookInMyList);
+  //console.log("55555 bookInFriendList", bookInFriendList);
   // VOIR !!!!!!!!!! avec hook Perso !!!!!!
   //const { data: bookFromId, error, isLoading } = useBookId(bookId);
 
@@ -63,12 +64,12 @@ const BookInfos = ({
     //   "Erreur simulée !"
     // );
 
-    //console.log("FETCHING BookInfos", bookId);
+    ////console.log("FETCHING BookInfos", bookId);
 
     return getDocsByQueryFirebase<BookType>("books", "id", bookId)
       .then((books) => {
         if (books.length > 0) {
-          //console.log("BOOKS", books);
+          ////console.log("BOOKS", books);
           return books[0];
         } else {
           return null;
@@ -99,7 +100,7 @@ const BookInfos = ({
 
   useEffect(() => {
     // ou gérer le undefined dans fonction bookInMyBooksFirebase ??????????
-    currentUser &&
+    if (currentUser)
       findBookCatInUserLibraryFirebase(bookInfos?.id, currentUser?.uid).then(
         (bookInMyList) => setBookInMyList(bookInMyList)
       );
@@ -114,7 +115,7 @@ const BookInfos = ({
   //   // ou gérer le undefined dans fonction bookInMyBooksFirebase ??????????
   //   findBookCatInUserLibraryFirebase(bookInfos?.id, currentUser?.uid).then(
   //     (bookInMyList) => {
-  //       console.log("5552 bookInMyList", bookInMyList);
+  //       //console.log("5552 bookInMyList", bookInMyList);
   //       setBookInMyList(bookInMyList);
   //     }
   //   );
@@ -122,7 +123,7 @@ const BookInfos = ({
   //   if (userViewId !== currentUser?.uid)
   //     findBookCatInUserLibraryFirebase(bookInfos?.id, userViewId).then(
   //       (bookInFriendList) => {
-  //         console.log("5552 bookInFriendList", bookInFriendList);
+  //         //console.log("5552 bookInFriendList", bookInFriendList);
   //         setBookInFriendList(bookInFriendList);
   //       }
   //     );
@@ -174,16 +175,17 @@ const BookInfos = ({
                       ))}
                   </CardDescription>
                   {bookInfos.description ? (
-                    <CardDescription className="flex gap-2 relative">
+                    <CardDescription className="relative flex gap-2">
                       <Quote className="absolute -top-1" />
-                      <p className="line-clamp-3 text-foreground max-w-[90%]">
+                      <span className="max-w-[90%] line-clamp-3 text-foreground">
                         &ensp;&ensp;&ensp;&ensp;
-                        {removeOrRemplaceHtmlTags(bookInfos.description)}
-                      </p>
+                        {cleanDescription(bookInfos.description)}
+                      </span>
                     </CardDescription>
                   ) : (
                     <p className="italic">{NO_DESCRIPTION} </p>
                   )}
+                  <AverageBookRating bookInfos={bookInfos} />
 
                   {(bookInMyList !== "" || bookInFriendList !== "") && (
                     <BookUserInfo
@@ -200,19 +202,19 @@ const BookInfos = ({
                     // className="absolute bottom-2 right-2 rounded-full bg-secondary/60 px-3 py-1 text-secondary-foreground shadow-sm shadow-foreground"
                   >
                     {bookInMyList === BookStatusEnum.booksReadList && (
-                      <div className="flex flex-col items-center text-xs p-1">
+                      <div className="flex flex-col items-center p-1 text-xs">
                         lu
                         <Check />
                       </div>
                     )}
                     {bookInMyList === BookStatusEnum.booksInProgressList && (
-                      <div className="flex flex-col items-center text-xs p-1">
+                      <div className="flex flex-col items-center p-1 text-xs">
                         en cours
                         <Ellipsis />
                       </div>
                     )}
                     {bookInMyList === BookStatusEnum.booksToReadList && (
-                      <div className="flex flex-col items-center text-xs p-1">
+                      <div className="flex flex-col items-center p-1 text-xs">
                         à lire
                         <Smile />
                       </div>

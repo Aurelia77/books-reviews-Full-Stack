@@ -77,8 +77,8 @@ const FriendsBooksReadPage = (): JSX.Element => {
                       userId,
                       userInfoYear: userInfo?.year,
                       userInfoMonth: userInfo?.month,
-                      userInfoNote: userInfo?.note,
-                      userInfoComments: userInfo?.comments || "",
+                      userInfoNote: userInfo?.userNote,
+                      userInfoComments: userInfo?.userComments || "",
                     })
                   );
                 }
@@ -126,7 +126,7 @@ const FriendsBooksReadPage = (): JSX.Element => {
   //console.log("otherUsers", otherUsers);
 
   return (
-    <div className="h-full min-h-screen sm:p-2 max-w-3xl md:m-auto md:mt-8">
+    <div className="min-h-screen h-full max-w-3xl md:m-auto md:mt-8 sm:p-2">
       <div className="flex h-full flex-col gap-6">
         <div className="sticky top-10 z-10 flex flex-col gap-3 bg-background/70 duration-500">
           <Title>Livres lus par mes amis</Title>
@@ -168,7 +168,7 @@ const FriendsBooksReadPage = (): JSX.Element => {
           <FeedbackMessage message="Aucun livre pour l'instant" type="info" />
         )}
       </div>
-      <div className="bg-primary/20 p-2 mb-2">
+      <div className="mb-2 p-2 bg-primary/20">
         <p>Vous avez {nbFriends} amis, vous pouvez en ajouter ici :</p>
       </div>
       <CustomLinkButton className="bg-secondary/60" linkTo="/searchusers">

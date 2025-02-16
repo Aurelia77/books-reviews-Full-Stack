@@ -16,7 +16,7 @@ export const BOOK_STATUS = {
 export const NO_DESCRIPTION = "Pas de description disponible.";
 
 export const MONTHS = [
-  "Non précisé",
+  "Mois non précisé",
   "Janvier",
   "Février",
   "Mars",

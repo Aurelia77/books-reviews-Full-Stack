@@ -27,6 +27,7 @@ import {
 import useUserStore from "../hooks/useUserStore";
 import {
   AccountFormType,
+  BookRatingType,
   BookStatusEnum,
   BookType,
   MyInfoBookFormType,
@@ -98,7 +99,7 @@ export const sendPasswordResetEmailFirebase = (
 ): Promise<void> => {
   return sendPasswordResetEmail(auth, email)
     .then(() => {
-      console.log("Password reset email sent!");
+      //console.log("Password reset email sent!");
     })
     .catch((error) => {
       const errorCode = error.code;
@@ -107,16 +108,67 @@ export const sendPasswordResetEmailFirebase = (
     });
 };
 
+export const updateBookAverageRatingFirebase = (
+  action: "add" | "remove",
+  bookId: string,
+  userNote: number | undefined,
+  previousNote?: number | null
+): void => {
+  console.log("userNote", userNote);
+  console.log("previousNote", previousNote);
+
+  getDocsByQueryFirebase<BookType>("books", "id", bookId).then((books) => {
+    console.log("/*/*bookAverageRating", books[0].rating);
+
+    const newRating: BookRatingType = books[0].rating;
+
+    // pas besoin if newratting car tjs rempli maintenant !!!
+    // pas besoin if newratting car tjs rempli maintenant !!!
+    // pas besoin if newratting car tjs rempli maintenant !!!
+    // pas besoin if newratting car tjs rempli maintenant !!!
+    if (action === "add") {
+      if (userNote) {
+        console.log("qqq 1");
+        if (previousNote) {
+          console.log("qqq 2");
+          newRating.totalRating += userNote - previousNote;
+        } else {
+          console.log("qqq 3");
+          newRating.count += 1;
+          newRating.totalRating += userNote;
+        }
+      }
+    } else if (action === "remove") {
+      if (userNote) {
+        console.log("qqq 4");
+        newRating.count -= 1;
+        newRating.totalRating -= userNote;
+      }
+    }
+
+    console.log("qqq newRating", newRating);
+
+    setDoc(
+      doc(db, "books", bookId),
+      {
+        rating: newRating,
+      },
+      { merge: true }
+    );
+  });
+};
+
 export const addOrUpdateBookInfoToMyBooksFirebase = (
   currentUserId: string | undefined,
   bookId: string,
-  formData: MyInfoBookFormType
+  formData: MyInfoBookFormType,
+  previousNote?: number | null
 ): Promise<void> => {
   return getDocsByQueryFirebase<UserType>("users", "id", currentUserId)
     .then((users) => {
       const user = users[0];
 
-      console.log("999formdata", formData);
+      //console.log("999formdata", formData);
 
       if (!user) {
         console.error("User not found");
@@ -150,8 +202,8 @@ export const addOrUpdateBookInfoToMyBooksFirebase = (
                 id: bookId,
                 year: formData.year ?? null,
                 month: formData.month ?? null,
-                note: formData.note ?? 0,
-                comments: formData.comments,
+                userNote: formData.userNote ?? 0,
+                userComments: formData.userComments,
               });
             }
           }
@@ -173,7 +225,7 @@ export const addOrUpdateBookInfoToMyBooksFirebase = (
             } else {
               user.booksInProgress.push({
                 id: bookId,
-                comments: formData.comments,
+                userComments: formData.userComments,
               });
             }
           }
@@ -195,7 +247,7 @@ export const addOrUpdateBookInfoToMyBooksFirebase = (
             } else {
               user.booksToRead.push({
                 id: bookId,
-                comments: formData.comments,
+                userComments: formData.userComments,
               });
             }
           }
@@ -205,9 +257,17 @@ export const addOrUpdateBookInfoToMyBooksFirebase = (
           return;
       }
 
-      console.log("99user", user);
+      //console.log("99user", user);
 
       return addOrUpdateUserFirebase(currentUserId, user);
+    })
+    .then(() => {
+      updateBookAverageRatingFirebase(
+        "add",
+        bookId,
+        formData.userNote,
+        previousNote
+      );
     })
     .catch((error) => {
       console.error("Error adding book to myReadBooks: ", error);
@@ -220,7 +280,7 @@ export const addBookFirebase = (
   book: BookType,
   formData: MyInfoBookFormType
 ): Promise<void> => {
-  //console.log("ADD BOOK : ", book);
+  ////console.log("ADD BOOK : ", book);
 
   if (currentUserId) {
     const bookInfoToAddToDB: BookType = {
@@ -235,6 +295,7 @@ export const addBookFirebase = (
       imageLink: book.imageLink ?? "",
       language: book.language ?? "",
       isFromAPI: book.isFromAPI ?? false,
+      rating: { totalRating: 0, count: 0 },
     };
     return setDoc(doc(db, "books", book.id), bookInfoToAddToDB)
       .then(() =>
@@ -253,7 +314,7 @@ export const addOrUpdateUserFirebase = (
   currentUserId: string | undefined,
   data: UserType | AccountFormType
 ): Promise<void> => {
-  //console.log("data", data);
+  ////console.log("data", data);
   // on ajoute "{ merge: true }" pour ne pas remplacer les champs qui ne sont pas modifiés (par ex l'id)
 
   // function isUserType(data): data is UserType {
@@ -261,17 +322,22 @@ export const addOrUpdateUserFirebase = (
   // }
 
   // if (isUserType(data)) {
-  //   console.log("9999userBOOKSREAD", data.booksRead);
+  //   //console.log("9999userBOOKSREAD", data.booksRead);
   // }
 
-  // console.log("9999user", data);
+  // //console.log("9999user", data);
 
   if (currentUserId) {
-    return setDoc(doc(db, "users", currentUserId), data, { merge: true }).catch(
-      (error) => {
-        console.error("Error adding user to Firestore: ", error);
-        throw error;
-      }
+    return (
+      setDoc(doc(db, "users", currentUserId), data, { merge: true })
+        // .then A SUPP =>  juste pour voir
+        .then(() => {
+          console.log("!!!!! user mis à jour !!! addOrUpdateUserFirebase");
+        })
+        .catch((error) => {
+          console.error("Error adding user to Firestore: ", error);
+          throw error;
+        })
     );
   } else {
     return Promise.resolve();
@@ -284,7 +350,12 @@ export const getDocsByQueryFirebase = <T extends BookType | UserType>(
   fieldToQuery?: string,
   valueToQuery?: string | boolean | number
 ): Promise<T[]> => {
-  console.log("999", collectionName, fieldToQuery, valueToQuery);
+  console.log(
+    "**********FIREBASE zzz FETCHING-1 getDocsByQueryFirebase",
+    collectionName,
+    fieldToQuery,
+    valueToQuery
+  );
   const q = query(
     collection(db, collectionName),
     ...(fieldToQuery && valueToQuery
@@ -292,7 +363,7 @@ export const getDocsByQueryFirebase = <T extends BookType | UserType>(
       : [])
   );
 
-  console.log("456", collectionName, fieldToQuery, valueToQuery);
+  //console.log("456", collectionName, fieldToQuery, valueToQuery);
 
   return getDocs(q)
     .then((querySnapshot) => {
@@ -300,7 +371,7 @@ export const getDocsByQueryFirebase = <T extends BookType | UserType>(
       querySnapshot.forEach((doc) => {
         docs.push(doc.data() as T);
       });
-      //console.log("DOCS", docs);
+      ////console.log("DOCS", docs);
       return docs;
     })
     .catch((error) => {
@@ -314,13 +385,17 @@ export const getUserInfosBookFirebase = (
   bookId: string,
   bookStatus: BookStatusEnum
 ): Promise<MyInfoBookType | null> => {
-  console.log("56 ", userId, bookId, bookStatus);
+  //console.log("56 ", userId, bookId, bookStatus);
+  console.log("bookInMyBooks !!!!!!!!!!!!!!", bookId, bookStatus);
 
   if (userId) {
     return getDocsByQueryFirebase<UserType>("users", "id", userId)
       .then((users) => {
         const user = users[0];
+        console.log("bookInMyBooks !!!!!!!!!!!!!!", users[0]);
         const book = user[bookStatus].find((book) => book.id === bookId);
+        console.log("bookInMyBooks !!!!!!!!!!!!!!", book);
+
         return book ?? null;
       })
       .catch((error) => {
@@ -337,11 +412,11 @@ export const getFriendsWhoReadBookFirebase = (
   currentUserId: string | undefined,
   userViewId: string = ""
 ): Promise<UserType[]> => {
-  // console.log("currentUserId", currentUserId);
-  // console.log("bookId", bookId);
-  // console.log("userViewId", userViewId);
+  // //console.log("currentUserId", currentUserId);
+  // //console.log("bookId", bookId);
+  // //console.log("userViewId", userViewId);
 
-  console.log("***getFriendsWhoReadBookFirebase", bookId);
+  //console.log("***getFriendsWhoReadBookFirebase", bookId);
 
   if (currentUserId && bookId) {
     const q = query(collection(db, "users"), where("id", "==", currentUserId));
@@ -350,7 +425,7 @@ export const getFriendsWhoReadBookFirebase = (
       .then((querySnapshot) => querySnapshot.docs[0].data() as UserType)
       .then((currentUser: UserType) => currentUser.friends)
       .then((currentUserFriendsIds: string[]) => {
-        //console.log("***CURRENT USER FRIENDS", currentUserFriendsIds);
+        ////console.log("***CURRENT USER FRIENDS", currentUserFriendsIds);
 
         if (currentUserFriendsIds.length > 0) {
           const q2 = query(
@@ -369,7 +444,7 @@ export const getFriendsWhoReadBookFirebase = (
                 return friendsButuserViewId;
               })
               .then((friendsButuserViewId) => {
-                // console.log(
+                // //console.log(
                 //   "***FRIENDS BUT USER ID NOT TO COUNT",
                 //   friendsButuserViewId
                 // );
@@ -379,7 +454,7 @@ export const getFriendsWhoReadBookFirebase = (
               })
               // .THEN juste pour voir, à supp !!!!!!!!!!!!
               .then((friendsWhoReadBook) => {
-                console.log("***FRIENDS WHO READ BOOK", friendsWhoReadBook);
+                //console.log("***FRIENDS WHO READ BOOK", friendsWhoReadBook);
                 return friendsWhoReadBook;
               })
               .catch((error) => {
@@ -403,17 +478,17 @@ export const getFriendsWhoReadBookFirebase = (
 //   // On récupère tous les utilisateurs qui ont lu le livre
 //   return getDocsByQueryFirebase<UserType>("users", "id", userId)
 //     .then((users) => {
-//       console.log("USERS", users);
+//       //console.log("USERS", users);
 //       return users.filter((user) => user.id !== userId);
 //     })
 //     .then((otherUsers) => {
-//       console.log("OTHER USERS", otherUsers);
+//       //console.log("OTHER USERS", otherUsers);
 //       return otherUsers.map((user) => {
 //         return user.booksRead.find((book) => book.bookId === bookId);
 //       });
 //     })
 //     .then((books) => {
-//       console.log("BOOKS", books);
+//       //console.log("BOOKS", books);
 //       return books;
 //     })
 
@@ -450,7 +525,7 @@ export const getFriendsReadBooksIdsFirebase = (
     getDocsByQueryFirebase<UserType>("users", "id", currentUserId)
       .then((users) => {
         const user = users[0];
-        console.log("888 user friends Ids", user.friends);
+        //console.log("888 user friends Ids", user.friends);
         return user.friends;
       })
       .then((friendsIds) => {
@@ -462,41 +537,33 @@ export const getFriendsReadBooksIdsFirebase = (
         return Promise.all(promises);
       })
       .then((friends) => {
-        console.log("888 friends", friends);
+        //console.log("888 friends", friends);
         return friends.map((friend) => {
           return friend.booksRead;
           // return { friendId: friend.id, booksRead: friend.booksRead };
         });
       })
       .then((friendsBooksReadInfo) => {
-        console.log(
-          "88888888888888 friendsBooksReadInfo",
-          friendsBooksReadInfo
-        );
+        //console.log( "88888888888888 friendsBooksReadInfo",        friendsBooksReadInfo        );
         return friendsBooksReadInfo.map((friendBooksReadInfo) => {
-          console.log(
-            "888888888888999999999999 friendBooksReadInfo",
-            friendBooksReadInfo
-          );
+          //console.log(            "888888888888999999999999 friendBooksReadInfo",            friendBooksReadInfo          );
 
           return friendBooksReadInfo.map((book) => {
-            console.log("888888888888999999999999 book", book);
+            //console.log("888888888888999999999999 book", book);
             return book.id;
           });
         });
       })
       .then((friendsBooksReadIds) => {
-        console.log("88888888888888 booksReadID", friendsBooksReadIds);
+        //console.log("88888888888888 booksReadID", friendsBooksReadIds);
         return friendsBooksReadIds.flat();
       })
       .then((flattenedBooksReadIds) => {
-        console.log("88888888888888 RESULTATS UNIQUES", [
-          ...new Set(flattenedBooksReadIds),
-        ]);
+        //console.log("88888888888888 RESULTATS UNIQUES", [          ...new Set(flattenedBooksReadIds),        ]);
         return [...new Set(flattenedBooksReadIds)];
       })
       // .then((friendsBooksReadIds) => {
-      //   console.log("88888888888888 booksReadID", friendsBooksReadIds);
+      //   //console.log("88888888888888 booksReadID", friendsBooksReadIds);
       // })
       .catch((error) => {
         console.error("Error getting friends read books: ", error);
@@ -510,18 +577,25 @@ export const findBookCatInUserLibraryFirebase = (
   currentUserId: string | undefined
 ): Promise<BookStatusEnum | ""> => {
   if (bookId && currentUserId) {
-    console.log("456 findBookCatInUserLibraryFirebase");
+    //console.log("456 findBookCatInUserLibraryFirebase");
     return getDocsByQueryFirebase<UserType>("users", "id", currentUserId)
       .then((users) => {
         const user = users[0];
         let result: BookStatusEnum | "" = "";
 
-        if (user.booksRead.some((book) => book.id === bookId))
-          result = BookStatusEnum.booksReadList;
-        if (user.booksToRead.some((book) => book.id === bookId))
-          result = BookStatusEnum.booksToReadList;
-        if (user.booksInProgress.some((book) => book.id === bookId))
-          result = BookStatusEnum.booksInProgressList;
+        switch (true) {
+          case user.booksRead.some((book) => book.id === bookId):
+            result = BookStatusEnum.booksReadList;
+            break;
+          case user.booksToRead.some((book) => book.id === bookId):
+            result = BookStatusEnum.booksToReadList;
+            break;
+          case user.booksInProgress.some((book) => book.id === bookId):
+            result = BookStatusEnum.booksInProgressList;
+            break;
+          default:
+            result = "";
+        }
 
         // if (user.booksRead.some((book) => book.id === bookId))
         //   result = BOOK_STATUS.READ;
@@ -530,7 +604,7 @@ export const findBookCatInUserLibraryFirebase = (
         // if (user.booksToRead.some((book) => book.id === bookId))
         //   result = BOOK_STATUS.TO_READ;
 
-        console.log("456 result", result);
+        //console.log("456 result", result);
 
         return result;
       })
@@ -577,7 +651,7 @@ export const isUserMyFriendFirebase = (
       .then((users) => {
         const user = users[0];
 
-        // console.log(
+        // //console.log(
         //   "friendId",
         //   friendId,
         //   "currentUserId",
@@ -725,41 +799,57 @@ export const deleteBookFromMyBooksFirebase = (
   bookId: string,
   bookStatus: keyof UserType | ""
 ): Promise<void> => {
-  //console.log("bookStatus", bookStatus);
+  ////console.log("bookStatus", bookStatus);
+
+  let noteToRemove: number;
 
   if (currentUserId && bookStatus !== "") {
-    return getDocsByQueryFirebase<UserType>("users", "id", currentUserId)
-      .then((users: UserType[]) => users[0])
-      .then((user: UserType) => {
-        //("xxx", user);
-        return user;
-      })
-      .then((user: UserType) => {
-        // Destructuring to get the books according to the status
-        const {
-          [bookStatus as keyof UserType]: booksAccordingToStatus,
-          ...rest
-        } = user;
+    return (
+      getDocsByQueryFirebase<UserType>("users", "id", currentUserId)
+        .then((users: UserType[]) => users[0])
+        .then((user: UserType) => {
+          //("xxx", user);
+          return user;
+        })
+        .then((user: UserType) => {
+          // Destructuring to get the books according to the status
+          const {
+            [bookStatus as keyof UserType]: booksAccordingToStatus,
+            ...rest
+          } = user;
 
-        // we need to type the booksAccordingToStatus
-        const booksAccordingToStatusTyped =
-          booksAccordingToStatus as MyInfoBookType[];
+          // we need to type the booksAccordingToStatus
+          const booksAccordingToStatusTyped =
+            booksAccordingToStatus as MyInfoBookType[];
 
-        // console.log("rest", rest);
-        // console.log("booksRead", booksAccordingToStatus);
-        const booksReadFiltered = booksAccordingToStatusTyped.filter(
-          (book: MyInfoBookType) => book.id !== bookId
-        );
-        console.log("booksReadFiltered", booksReadFiltered);
-        return addOrUpdateUserFirebase(currentUserId, {
-          [bookStatus]: booksReadFiltered,
-          ...rest,
-        } as UserType);
-      })
-      .catch((error) => {
-        console.error("Error deleting book from my books: ", error);
-        throw error;
-      });
+          // recupéré la note à supprimer
+          const bookIndex = booksAccordingToStatusTyped.findIndex(
+            (book) => book.id === bookId
+          );
+          //console.log("bookIndex", bookIndex);
+          noteToRemove = booksAccordingToStatusTyped[bookIndex].userNote ?? 0;
+
+          // //console.log("rest", rest);
+          // //console.log("booksRead", booksAccordingToStatus);
+          const booksReadFiltered = booksAccordingToStatusTyped.filter(
+            (book: MyInfoBookType) => book.id !== bookId
+          );
+          //console.log("booksReadFiltered", booksReadFiltered);
+          return addOrUpdateUserFirebase(currentUserId, {
+            [bookStatus]: booksReadFiltered,
+            ...rest,
+          } as UserType);
+        })
+        // remove the note from the book average rating
+        .then(() => {
+          console.log("noteToRemove", noteToRemove);
+          updateBookAverageRatingFirebase("remove", bookId, noteToRemove);
+        })
+        .catch((error) => {
+          console.error("Error deleting book from my books: ", error);
+          throw error;
+        })
+    );
   } else {
     return Promise.resolve();
   }

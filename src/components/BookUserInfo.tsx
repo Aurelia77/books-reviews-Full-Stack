@@ -19,21 +19,14 @@ const BookUserInfo = ({
   bookStatus: BookStatusEnum | "";
   friendBookStatus?: BookStatusEnum | "";
 }) => {
-  console.log("555 userId", userId);
-  console.log("555 bookInfosId", bookInfosId);
-  console.log("555 bookStatus", bookStatus);
-  console.log("555 friendBookStatus", friendBookStatus);
+  //console.log("555 userId", userId);
+  //console.log("555 bookInfosId", bookInfosId);
+  //console.log("555 bookStatus", bookStatus);
+  //console.log("555 friendBookStatus", friendBookStatus);
 
   const [userBookInfos, setUserBookInfos] = useState<MyInfoBookType>();
 
-  console.log("789", userBookInfos?.month);
-
-  if (
-    userBookInfos &&
-    userBookInfos.month !== undefined &&
-    userBookInfos.month !== null
-  )
-    console.log("789", MONTHS[userBookInfos.month]);
+  //console.log("789", userBookInfos?.month);
 
   const { currentUser } = useUserStore();
 
@@ -44,21 +37,21 @@ const BookUserInfo = ({
   // Récupérer les infos données par l'utilisateur (soit le user visité si friendBookStatus !== "" soit le user connecté)
   useEffect(() => {
     if (friendBookStatus !== "" || bookStatus !== "") {
-      console.log("ok123");
-      console.log("5551 bookStatus", bookStatus);
-      console.log("5551 friendBookStatus", friendBookStatus);
-      console.log("5551 status", status);
+      //console.log("ok123");
+      //console.log("5551 bookStatus", bookStatus);
+      //console.log("5551 friendBookStatus", friendBookStatus);
+      //console.log("5551 status", status);
       getUserInfosBookFirebase(userId, bookInfosId, status).then((myBook) => {
         if (myBook) setUserBookInfos(myBook);
       });
     }
-  }, [bookInfosId, bookStatus, friendBookStatus, userId]);
+  }, [bookInfosId, bookStatus, friendBookStatus, userId, status]);
   //}, [bookInfos?.id]);  // pbm info autre membre ne s'affichaient pas, ms j'ai l'impression que maintenant ça marche même qd il manque des dépendances ??????
 
-  //console.log("444 bookInfos", bookInfos?.title, bookStatus);
-  console.log("444 userId", userId);
-  console.log("444 userBookInfos", userBookInfos);
-  console.log("444 bookStatus", bookStatus);
+  ////console.log("444 bookInfos", bookInfos?.title, bookStatus);
+  //console.log("444 userId", userId);
+  //console.log("444 userBookInfos", userBookInfos);
+  //console.log("444 bookStatus", bookStatus);
 
   useEffect(() => {
     getDocsByQueryFirebase<UserType>("users", "id", userId).then((user) => {
@@ -90,8 +83,8 @@ const BookUserInfo = ({
                   <p>{MONTHS[userBookInfos?.month]}</p>
                 )}
               <p>{userBookInfos?.year}</p>
-              {userBookInfos.note ? (
-                <StarRating value={userBookInfos.note} />
+              {userBookInfos.userNote ? (
+                <StarRating value={userBookInfos.userNote} />
               ) : (
                 <p className="italic">Aucune note attribuée</p>
               )}
@@ -99,8 +92,8 @@ const BookUserInfo = ({
           )}
 
           <p className="whitespace-pre-wrap">
-            {userBookInfos?.comments ? (
-              userBookInfos.comments
+            {userBookInfos?.userComments ? (
+              userBookInfos.userComments
             ) : (
               <span className="italic">Aucun commentaire</span>
             )}

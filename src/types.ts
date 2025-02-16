@@ -10,22 +10,33 @@ export type BookType = {
   imageLink: string;
   language: string;
   isFromAPI: boolean;
+  rating: BookRatingType;
+};
+
+export type BookRatingType = {
+  totalRating: number;
+  count: number;
 };
 
 export type MyInfoBookType = {
   id: string;
   year?: number | null;
   month?: number | null;
-  note?: number | null;
-  comments: string;
+  userNote?: number | null;
+  userComments: string;
+};
+
+export type MyInfoBookPlusTitleAndNote = MyInfoBookType & {
+  bookTitle: string;
+  bookNote?: number | null;
 };
 
 export type MyInfoBookFormType = {
   bookStatus: BookStatusEnum;
   year?: number;
   month?: number | null;
-  note?: number;
-  comments: string;
+  userNote?: number;
+  userComments: string;
 };
 
 export type UserType = {
@@ -39,6 +50,12 @@ export type UserType = {
   booksToRead: MyInfoBookType[];
   friends: string[];
   isMyFriend?: boolean;
+};
+
+export type UserTypePlusBooksTitleAndNote = UserType & {
+  booksRead: MyInfoBookPlusTitleAndNote[];
+  booksInProgress: MyInfoBookPlusTitleAndNote[];
+  booksToRead: MyInfoBookPlusTitleAndNote[];
 };
 
 export type AccountFormType = {
@@ -88,3 +105,8 @@ export enum BookStatusEnum {
   booksInProgressList = "booksInProgress",
   booksToReadList = "booksToRead",
 }
+
+export type SortStateType = {
+  criteria: "title" | "date" | "note";
+  order: "asc" | "desc";
+};
