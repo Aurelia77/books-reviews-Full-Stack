@@ -17,10 +17,10 @@ const SortBooksButtons = ({
 }: SortBooksButtonsType): JSX.Element => {
   console.log("booksStatus", booksStatus);
   return (
-    <div className="flex items-center justify-around max-w-md p-1 bg-secondary rounded-md ml-2">
+    <div className="ml-2 flex max-w-md items-center justify-around rounded-md bg-secondary p-1">
       <Button
         onClick={() => handleSort("title")}
-        className={`w-24 flex gap-2 text-white border border-foreground ${
+        className={`flex w-24 gap-2 border border-foreground text-white ${
           sortState[booksStatus].criteria === "title"
             ? "bg-background/90 hover:bg-background/80"
             : "bg-muted-foreground/50"
@@ -37,7 +37,7 @@ const SortBooksButtons = ({
       {booksStatus === BookStatusEnum.booksReadList && (
         <Button
           onClick={() => handleSort("date")}
-          className={`w-24 text-white flex gap-2 border border-foreground ${
+          className={`flex w-24 gap-2 border border-foreground text-white ${
             sortState[booksStatus].criteria === "date"
               ? "bg-background/90 hover:bg-background/80"
               : "bg-muted-foreground/50"
@@ -54,7 +54,7 @@ const SortBooksButtons = ({
       )}
       <Button
         onClick={() => handleSort("note")}
-        className={`w-24 text-white flex gap-2 border border-foreground ${
+        className={`flex w-24 gap-2 border border-foreground text-white ${
           sortState[booksStatus].criteria === "note"
             ? "bg-background/90 hover:bg-background/80"
             : "bg-muted-foreground/50"

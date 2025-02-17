@@ -52,7 +52,7 @@ const ResetPasswordPage = (): JSX.Element => {
   };
 
   return (
-    <div className="min-h-screen sm:p-2 max-w-3xl md:m-auto md:mt-8">
+    <div className="min-h-screen max-w-3xl sm:p-2 md:m-auto md:mt-8">
       <Title>Réinitialiser le mot de passe</Title>
       {/* {firebaseError && (
         <FeedbackMessage message={firebaseError} type="error" />
@@ -83,16 +83,16 @@ const ResetPasswordPage = (): JSX.Element => {
         </form>
       </Form>
       <div className="bg-primary/20 p-2">
-        <Link to="/login" className="text-foreground font-semibold flex gap-5">
+        <Link to="/login" className="flex gap-5 font-semibold text-foreground">
           <p>Se connecter ?</p>
           <ChevronsRight />
           <p>Cliquez ici !</p>
         </Link>
       </div>
-      <div className="bg-secondary/20 p-2 mt-4">
+      <div className="mt-4 bg-secondary/20 p-2">
         <Link
           to="/register"
-          className="text-foreground font-semibold flex gap-5"
+          className="flex gap-5 font-semibold text-foreground"
         >
           <p>Pas encore inscrit ?</p>
           <ChevronsRight />

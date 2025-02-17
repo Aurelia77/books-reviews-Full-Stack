@@ -56,7 +56,7 @@ const LoginPage = (): JSX.Element => {
   };
 
   return (
-    <div className="min-h-screen max-w-3xl md:m-auto md:mt-8 sm:p-2">
+    <div className="min-h-screen max-w-3xl sm:p-2 md:m-auto md:mt-8">
       <Title>Connexion</Title>
       {firebaseError && (
         <FeedbackMessage message={firebaseError} type="error" />

@@ -344,7 +344,7 @@ const BookDetailPage = (): JSX.Element => {
                               return (
                                 <div
                                   key={userCommentsAndNote.userId}
-                                  className="p-1 m-1 bg-primary/50 rounded-md"
+                                  className="m-1 rounded-md bg-primary/50 p-1"
                                 >
                                   <Link
                                     to={`/account/${userCommentsAndNote.userId}`}

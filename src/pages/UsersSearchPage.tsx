@@ -114,7 +114,7 @@ const UsersSearchPage = (): JSX.Element => {
   // }, []);
 
   return (
-    <div className="h-full min-h-screen sm:p-2 max-w-3xl md:m-auto md:mt-8">
+    <div className="h-full min-h-screen max-w-3xl sm:p-2 md:m-auto md:mt-8">
       <div className="flex h-full flex-col gap-6">
         <div className="sticky top-10 z-10 flex flex-col gap-3 bg-background/70 duration-500">
           <Title>Recherche de membres</Title>
