@@ -13,6 +13,7 @@ import RegisterPage from "./pages/RegisterPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import UserAccountPage from "./pages/UserAccountPage";
 import UsersSearchPage from "./pages/UsersSearchPage";
+import NotFound404Page from "./pages/NotFound404Page";
 
 const App = (): JSX.Element => {
   return (
@@ -43,6 +44,7 @@ const App = (): JSX.Element => {
                 element={<FriendsBooksReadPage />}
               />
               <Route path="/resetpassword" element={<ResetPasswordPage />} />
+              <Route path="*" element={<NotFound404Page />} />
             </Routes>
           </div>
           <Footer />

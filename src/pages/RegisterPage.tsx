@@ -180,7 +180,7 @@ const RegisterPage = (): JSX.Element => {
           </Button>
         </form>
       </Form>
-      <CustomLinkButton className="bg-primary/50 mb-4" linkTo="/resetpassword">
+      <CustomLinkButton className="bg-primary/50 mb-4" linkTo="/login">
         Connexion
       </CustomLinkButton>
 
