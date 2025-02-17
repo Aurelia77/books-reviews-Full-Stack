@@ -5,7 +5,7 @@ const HomePage = (): JSX.Element => {
   const { currentUser: user } = useUserStore();
 
   return (
-    <div className="flex flex-col min-h-screen gap-4 py-12 max-w-3xl md:m-auto md:mt-8">
+    <div className="flex min-h-screen max-w-3xl flex-col gap-4 py-12 md:m-auto md:mt-8">
       {user ? (
         <div className="flex flex-col gap-4">
           <CustomLinkButton className="bg-primary" linkTo="/mybooks">

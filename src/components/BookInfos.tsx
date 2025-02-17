@@ -177,7 +177,7 @@ const BookInfos = ({
                   {bookInfos.description ? (
                     <CardDescription className="relative flex gap-2">
                       <Quote className="absolute -top-1" />
-                      <span className="max-w-[90%] line-clamp-3 text-foreground">
+                      <span className="line-clamp-3 max-w-[90%] text-foreground">
                         &ensp;&ensp;&ensp;&ensp;
                         {cleanDescription(bookInfos.description)}
                       </span>

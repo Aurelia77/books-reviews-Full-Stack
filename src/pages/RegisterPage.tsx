@@ -105,7 +105,7 @@ const RegisterPage = (): JSX.Element => {
   };
 
   return (
-    <div className="min-h-screen sm:p-2 max-w-3xl md:m-auto md:mt-8">
+    <div className="min-h-screen max-w-3xl sm:p-2 md:m-auto md:mt-8">
       <Title>Inscription</Title>
       {firebaseError && (
         <FeedbackMessage message={firebaseError} type="error" />
@@ -180,7 +180,7 @@ const RegisterPage = (): JSX.Element => {
           </Button>
         </form>
       </Form>
-      <CustomLinkButton className="bg-primary/50 mb-4" linkTo="/login">
+      <CustomLinkButton className="mb-4 bg-primary/50" linkTo="/login">
         Connexion
       </CustomLinkButton>
 

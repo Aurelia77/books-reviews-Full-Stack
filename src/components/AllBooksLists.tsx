@@ -185,6 +185,7 @@ const AllBooksLists = ({
 
   useEffect(() => {
     sortBooks(displayedBooksUserInfo);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortState, displayedBooksUserInfo]);
 
   return (

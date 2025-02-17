@@ -11,7 +11,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useSWR from "swr";
 
-const MAX_RESULTS = 4; // jusqu'à 40
+const MAX_RESULTS = 7; // jusqu'à 40
 
 // const useDebounce = <T extends string[]>(
 //   callback: (...args: T) => void,
@@ -58,16 +58,18 @@ const useDebounceEffect = (
 const BooksSearchPage = (): JSX.Element => {
   const urlParam = useParams<{ author: string }>();
 
-  console.log("authorQuery", urlParam);
-
-  const [dbBooks, setDbBooks] = useState<BookType[]>([]);
-  console.log("**1-books from BDD", dbBooks);
+  const [dbBooks, setDbBooks] = useState<BookType[]>();
+  console.log("+++books from BDD", dbBooks);
+  if (dbBooks) console.log("+++books[0] from BDD", dbBooks[0]?.title);
 
   const [booksApiUrl, setBooksApiUrl] = useState(
     `${GOOGLE_BOOKS_API_URL}?q=subject:general&maxResults=${MAX_RESULTS}`
   );
+  console.log("useDebounceEffect +++booksApiUrl", booksApiUrl);
+
   const [bdAndApiBooks, setDbAndApiBooks] = useState<BookType[]>([]);
-  console.log("**3-ALL-books from BDD and API", bdAndApiBooks.length);
+  console.log("+++bdAndApiBooks", bdAndApiBooks);
+  console.log("+++bdAndApiBooks[0]", bdAndApiBooks[0]);
 
   const [titleInput, setTitleInput] = useState<string>(
     urlParam.author ? "" : localStorage.getItem("titleInput") || ""
@@ -82,74 +84,68 @@ const BooksSearchPage = (): JSX.Element => {
   // const [inFriendsLists, setInFriendsLists] = useState(true);
   // const [inApi, setInApi] = useState(true);
 
-  // 2-DEBUT============================FAIRE HOOK PERSO !!!
+  // DEBUT============================FAIRE HOOK PERSO !!!
   const fetchAPIBooks = (booksApiUrl: string): Promise<BookType[]> => {
     // throw new Error(
     //   "Erreur simulée !"
     // );
-    return (
-      fetch(booksApiUrl)
-        //.then((res) => res.json())    // idem sans TS
-        .then((res: Response): Promise<{ items: BookAPIType[] }> => res.json())
-        //.then((data) => data.items)
-        // Gérer erreur ci-dessous ???
-        .then((data) => {
-          //console.log("DATA", data);
-          if (!data.items) {
-            return [];
-            //throw new Error("No items found in the response");
-          }
-          return data.items;
-        })
-        .then((items) => {
-          const dbBooksIds = dbBooks.map((book) => book.id);
-          ////////////////////////////////////////////
-          ////////////////////////////////////////////
-          /////////////// A VOIR PK VIDE ????????????????????????
-          /////////////////////////////
-          ////////////////////////////////////////////
-          ////////////////////////////////////////////
-          ////////////////////////////////////////////
-          ////////////////////////////////////////////
-          console.log("**31-dbBooksIds", dbBooksIds);
-          console.log("**32-items", items);
-
-          const booksFromAPI: BookType[] = items
-            .filter((book: BookAPIType) => {
-              console.log("**33-book.id", book.id);
-              console.log(
-                "**34-!dbBooksIds.includes(book.id)",
-                !dbBooksIds.includes(book.id)
-              );
-              return !dbBooksIds.includes(book.id);
-            })
-            .map((book: BookAPIType) => {
-              return {
-                id: book.id,
-                title: book.volumeInfo.title,
-                author: book.volumeInfo?.authors?.[0] ?? "Auteur inconnu",
-                description: book.volumeInfo.description,
-                categories: book.volumeInfo.categories,
-                pageCount: book.volumeInfo.pageCount,
-                publishedDate: book.volumeInfo.publishedDate,
-                publisher: book.volumeInfo.publisher,
-                imageLink: book.volumeInfo.imageLinks?.thumbnail,
-                language: book.volumeInfo.language,
-                isFromAPI: true,
-                rating: {
-                  totalRating: 0,
-                  count: 0,
-                },
-              };
-            });
-          console.log("**35-booksFromAPI", booksFromAPI);
-          return booksFromAPI;
-        })
-        .catch((error) => {
-          console.error("Error fetching books:", error);
+    return fetch(booksApiUrl)
+      .then((res: Response): Promise<{ items: BookAPIType[] }> => res.json())
+      .then((data) => {
+        if (!data.items) {
           return [];
-        })
-    );
+          //throw new Error("No items found in the response");
+        }
+        return data.items;
+      })
+      .then((items) => {
+        let dbBooksIds: string[] = [];
+        if (dbBooks) {
+          dbBooksIds = dbBooks.map((book) => book.id);
+        }
+        ///////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////
+        /////////////// A VOIR PK VIDE ????????????????????????
+        ///////////////////////////////////////////////////////////
+        console.log("**31-dbBooksIds", dbBooksIds);
+        console.log("**32-items", items);
+
+        const booksFromAPI: BookType[] = items
+          // we don't want books that are in our database
+          .filter((book: BookAPIType) => {
+            // console.log("**33-book.id", book.id);
+            // console.log(
+            //   "**34-!dbBooksIds.includes(book.id)",
+            //   !dbBooksIds.includes(book.id)
+            // );
+            return !dbBooksIds.includes(book.id);
+          })
+          .map((book: BookAPIType) => {
+            return {
+              id: book.id,
+              title: book.volumeInfo.title,
+              author: book.volumeInfo?.authors?.[0] ?? "Auteur inconnu",
+              description: book.volumeInfo.description,
+              categories: book.volumeInfo.categories,
+              pageCount: book.volumeInfo.pageCount,
+              publishedDate: book.volumeInfo.publishedDate,
+              publisher: book.volumeInfo.publisher,
+              imageLink: book.volumeInfo.imageLinks?.thumbnail,
+              language: book.volumeInfo.language,
+              isFromAPI: true,
+              rating: {
+                totalRating: 0,
+                count: 0,
+              },
+            };
+          });
+        console.log("**35-booksFromAPI", booksFromAPI);
+        return booksFromAPI;
+      })
+      .catch((error) => {
+        console.error("Error fetching books:", error);
+        return [];
+      });
   };
 
   const {
@@ -157,30 +153,9 @@ const BooksSearchPage = (): JSX.Element => {
     error,
     isLoading,
   } = useSWR<BookType[]>(booksApiUrl, fetchAPIBooks);
-  // 2-FIN============================FAIRE HOOK PERSO !!!
+  // FIN============================FAIRE HOOK PERSO !!!
 
   console.log("**2-books from API", apiBooks);
-
-  // // Utiliser useDebounce pour retarder la mise à jour de l'URL de l'API
-  // const debounceUpdateUrl = useDebounce((title: string, author: string) => {
-  //   let query = "";
-  //   if (title) {
-  //     query += `+intitle:${encodeURIComponent(title)}`;
-  //   }
-  //   if (author) {
-  //     query += `+inauthor:${encodeURIComponent(author)}`;
-  //   }
-  //   if (query) {
-  //     setBooksApiUrl(
-  //       `${GOOGLE_BOOKS_API_BASE_URL}?q=${query}&maxResults=${MAX_RESULTS}`
-  //     );
-  //   }
-  // }, 300);
-
-  // // Mettre à jour l'URL de l'API lorsque les entrées changent
-  // useEffect(() => {
-  //   debounceUpdateUrl(titleInput, authorInput);
-  // }, [titleInput, authorInput, debounceUpdateUrl]);
 
   // ici on utilise une constante et pas un state car les message ne change pas et s'affiche seulement si useSWR renvoie une erreur
   const message = `Un problème est survenu dans la récupération de livres de Google Books => ${error?.message}`;
@@ -226,164 +201,49 @@ const BooksSearchPage = (): JSX.Element => {
 
   // Mis à jour de dbBooks au montage du composant
   useEffect(() => {
+    console.log("+++ useEffect-1, dbBooks = ", dbBooks);
     if (titleInputRef.current) {
       titleInputRef.current.focus();
     }
 
-    getDocsByQueryFirebase<BookType>("books", "isFromAPI", true)
+    getDocsByQueryFirebase<BookType>("books")
       .then((books) => {
-        console.log("**11-books from BDD", books);
+        // je vx filtrer les livres selon inputTitle et inputAuthor s'ils ne sont pas vides
+        return books.filter((book: BookType) => {
+          if (titleInput && authorInput) {
+            return (
+              book.title.toLowerCase().includes(titleInput.toLowerCase()) &&
+              book.author.toLowerCase().includes(authorInput.toLowerCase())
+            );
+          } else if (titleInput) {
+            return book.title.toLowerCase().includes(titleInput.toLowerCase());
+          } else if (authorInput) {
+            return book.author
+              .toLowerCase()
+              .includes(authorInput.toLowerCase());
+          } else {
+            return true;
+          }
+        });
+      })
+      .then((books: BookType[]) => {
+        console.log("++++ books from BDD dans USEEFFECT-1", books);
         setDbBooks(books);
       })
       .catch((error: Error) => {
         console.error("Error fetching books: ", error);
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // // Mise à jour de booksApiUrl et dbBooks en fonction de la recherche
-  // useEffect(() => {
-  //   let queryApi = "";
-  //   let dbSearchBooks: BookType[] = [];
-
-  //   if (!titleInput && !authorInput) {
-  //     queryApi = getRandomChar(); // pour résultats alléatoires si pas de recherche
-
-  //     // REVOIR CETTE FONCTION !!!!!!!!
-  //     getDocsByQueryFirebase("books", "bookIsFromAPI", true)
-  //       .then((books: BookType[]) => {
-  //         //console.log("books from BDD", books);
-  //         dbSearchBooks = books;
-  //         //setDbBooks(books);
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error fetching books: ", error);
-  //       });
-  //   } else {
-  //     if (titleInput) {
-  //       queryApi += `+intitle:${encodeURIComponent(titleInput)}`;
-  //       dbSearchBooks = dbBooks.filter((book: BookType) =>
-  //         book.bookTitle.toLowerCase().includes(titleInput.toLowerCase())
-  //       );
-  //     }
-  //     if (authorInput) {
-  //       queryApi += `+inauthor:${encodeURIComponent(authorInput)}`;
-  //       dbSearchBooks = dbBooks.filter((book: BookType) =>
-  //         book.bookAuthor.toLowerCase().includes(authorInput.toLowerCase())
-  //       );
-  //     }
-
-  //     if (titleInput && authorInput) {
-  //       dbSearchBooks = dbBooks.filter(
-  //         (book: BookType) =>
-  //           book.bookTitle.toLowerCase().includes(titleInput.toLowerCase()) &&
-  //           book.bookAuthor.toLowerCase().includes(authorInput.toLowerCase())
-  //       );
-  //     }
-  //   }
-
-  //   // console.log("query", query);
-  //   console.log(
-  //     "url",
-  //     `${GOOGLE_BOOKS_API_BASE_URL}?q=${queryApi}&maxResults=${MAX_RESULTS}`
-  //   );
-  //   //console.log("dbSearchBooks", dbSearchBooks);
-
-  //   setBooksApiUrl(
-  //     `${GOOGLE_BOOKS_API_BASE_URL}?q=${queryApi}&maxResults=${MAX_RESULTS}`
-  //   );
-  //   setDbBooks(dbSearchBooks);
-
-  //   // `https://www.googleapis.com/books/v1/volumes?q=${title}+inauthor:${author}&maxResults=${MAX_RESULTS}`;
-  // }, [titleInput, authorInput]);
-
-  // Mise à jour de booksApiUrl et dbBooks en fonction de la recherche avec délai
-  // 3 arguments : fonction à exécuter, dépendances, délai
-  useDebounceEffect(
-    () => {
-      let queryApi = "";
-      let dbSearchBooks: BookType[] = [];
-
-      if (!titleInput && !authorInput) {
-        queryApi = getRandomChar(); // pour résultats alléatoires si pas de recherche
-
-        // REVOIR CETTE FONCTION !!!!!!!!
-        getDocsByQueryFirebase<BookType>("books", "bookIsFromAPI", true)
-          .then((books) => {
-            //console.log("**books from BDD", books);
-            setDbBooks(books);
-            //dbSearchBooks = books;
-            //console.log("**1/dbSearchBooks", dbSearchBooks);
-          })
-          .catch((error) => {
-            console.error("Error fetching books: ", error);
-          });
-      } else {
-        if (titleInput) {
-          queryApi += `+intitle:${encodeURIComponent(titleInput)}`;
-          dbSearchBooks = dbBooks.filter((book: BookType) =>
-            book.title.toLowerCase().includes(titleInput.toLowerCase())
-          );
-        }
-        if (authorInput) {
-          queryApi += `+inauthor:${encodeURIComponent(authorInput)}`;
-          dbSearchBooks = dbBooks.filter((book: BookType) =>
-            book.author.toLowerCase().includes(authorInput.toLowerCase())
-          );
-        }
-        // if (titleInput && authorInput) {
-        //   dbSearchBooks = dbBooks.filter(
-        //     (book: BookType) =>
-        //       book.bookTitle.toLowerCase().includes(titleInput.toLowerCase()) &&
-        //       book.bookAuthor.toLowerCase().includes(authorInput.toLowerCase())
-        //   );
-        // }
-
-        setDbBooks(dbSearchBooks);
-      }
-
-      // console.log("**query", queryApi);
-      // console.log(
-      //   "url",
-      //   `${GOOGLE_BOOKS_API_BASE_URL}?q=${queryApi}&maxResults=${MAX_RESULTS}`
-      // );
-      // console.log("**2/dbSearchBooks", dbSearchBooks);
-
-      setBooksApiUrl(
-        `${GOOGLE_BOOKS_API_URL}?q=${queryApi}&maxResults=${MAX_RESULTS}`
-      );
-
-      // Pk opérateur ternaire ne marche pas !!!!???
-      //inFriendsLists ? setDbBooks(dbSearchBooks) : setDbBooks([]);
-      // if (inFriendsLists) {
-      //   console.log("/////////////");
-      //setDbBooks(dbSearchBooks);
-      // } else {
-      //   setDbBooks([]);
-      // }
-
-      // `https://www.googleapis.com/books/v1/volumes?q=${title}+inauthor:${author}&maxResults=${MAX_RESULTS}`;
-    },
-    [
-      titleInput,
-      authorInput,
-      //inFriendsLists
-    ],
-    500
-  );
 
   // Mise à jour de bdAndApiBooks
   useEffect(() => {
-    if (
-      apiBooks
-      // && inApi
-    ) {
+    console.log("+++ useEffect-2, dbBooks = ", dbBooks);
+
+    if (apiBooks && dbBooks) {
       setDbAndApiBooks(shuffle2ArraysPreserveOrder(dbBooks, apiBooks));
     }
-  }, [
-    apiBooks,
-    dbBooks,
-    //inApi
-  ]);
+  }, [apiBooks, dbBooks]);
 
   const formRef = useRef<HTMLDivElement>(null);
 
@@ -416,6 +276,83 @@ const BooksSearchPage = (): JSX.Element => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  // Mise à jour de booksApiUrl et dbBooks en fonction de la recherche avec délai
+  // 3 arguments : fonction à exécuter, dépendances, délai
+  useDebounceEffect(
+    () => {
+      console.log("+++ useDebounceEffect dbBooks = ", dbBooks);
+
+      let queryApi = "";
+      let dbSearchBooks: BookType[] = [];
+
+      if (!titleInput && !authorInput) {
+        queryApi = getRandomChar(); // pour résultats alléatoires si pas de recherche
+
+        // REVOIR CETTE FONCTION !!!!!!!!
+        getDocsByQueryFirebase<BookType>("books", "bookIsFromAPI", true)
+          .then((books) => {
+            //console.log("**books from BDD", books);
+            setDbBooks(books);
+            //dbSearchBooks = books;
+            //console.log("**1/dbSearchBooks", dbSearchBooks);
+          })
+          .catch((error) => {
+            console.error("Error fetching books: ", error);
+          });
+      } else {
+        if (titleInput) {
+          queryApi += `+intitle:${encodeURIComponent(titleInput)}`;
+          // dbSearchBooks = dbBooks.filter((book: BookType) =>
+          //   book.title.toLowerCase().includes(titleInput.toLowerCase())
+          // );
+        }
+        if (authorInput) {
+          queryApi += `+inauthor:${encodeURIComponent(authorInput)}`;
+          // dbSearchBooks = dbBooks.filter((book: BookType) =>
+          //   book.author.toLowerCase().includes(authorInput.toLowerCase())
+          // );
+        }
+        // if (titleInput && authorInput) {
+        //   dbSearchBooks = dbBooks.filter(
+        //     (book: BookType) =>
+        //       book.bookTitle.toLowerCase().includes(titleInput.toLowerCase()) &&
+        //       book.bookAuthor.toLowerCase().includes(authorInput.toLowerCase())
+        //   );
+        // }
+
+        //setDbBooks(dbSearchBooks);
+      }
+
+      // console.log("**query", queryApi);
+      // console.log(
+      //   "url",
+      //   `${GOOGLE_BOOKS_API_BASE_URL}?q=${queryApi}&maxResults=${MAX_RESULTS}`
+      // );
+      // console.log("**2/dbSearchBooks", dbSearchBooks);
+
+      console.log("useDebounceEffect Titre", titleInput);
+      console.log("useDebounceEffect Auteur", authorInput);
+      console.log("useDebounceEffect queryApi", queryApi);
+
+      setBooksApiUrl(
+        `${GOOGLE_BOOKS_API_URL}?q=${queryApi}&maxResults=${MAX_RESULTS}`
+      );
+
+      // Pk opérateur ternaire ne marche pas !!!!???
+      //inFriendsLists ? setDbBooks(dbSearchBooks) : setDbBooks([]);
+      // if (inFriendsLists) {
+      //   console.log("/////////////");
+      //setDbBooks(dbSearchBooks);
+      // } else {
+      //   setDbBooks([]);
+      // }
+
+      // `https://www.googleapis.com/books/v1/volumes?q=${title}+inauthor:${author}&maxResults=${MAX_RESULTS}`;
+    },
+    [titleInput, authorInput],
+    500
+  );
 
   // utiliser un useCallback ???
   const handleChangeInput = (
@@ -457,7 +394,8 @@ const BooksSearchPage = (): JSX.Element => {
   };
 
   return (
-    <div className="min-h-screen h-full max-w-3xl md:mt-8 md:m-auto sm:p-2">
+    <div className="h-full min-h-screen max-w-3xl sm:p-2 md:m-auto md:mt-8">
+      <p>Nombre de résultats : {bdAndApiBooks.length} </p>
       <div className="flex h-full flex-col gap-6">
         {/* <Form {...form}>
           <form
