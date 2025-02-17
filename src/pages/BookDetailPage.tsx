@@ -62,7 +62,7 @@ const BookDetailPage = (): JSX.Element => {
 
   const [bookInfos, setBookInfos] = useState<BookType>();
   console.log("zzz bookInfos", bookInfos);
-  console.log("zzz bookInfos rating", bookInfos?.rating);
+  //console.log("zzz bookInfos rating", bookInfos?.rating);
 
   //const [bookInMyBooks, setBookInMyBooks] = useState<BookStatusEnum | "">(""); //////////////////////////////////////////////////
   //  const [bookInMyBooks, setBookInMyBooks] = useState<BookStatusEnum>();
@@ -116,13 +116,7 @@ const BookDetailPage = (): JSX.Element => {
     data: fetchedBookFromId,
     error,
     isLoading,
-  } = useSWR<BookType | null>(
-    // currentUser?.uid && bookId ? `book-${bookId}-${currentUser.uid}` : null,
-    // () => fetchBookInfoDB(bookId!)
-    // avec ces 2 lignes ci-dessous le fetcher ne s'éxecutait pas qd currentUser se mettait à jour (je comprends pas pk car l'autre useSWR de cette page s'éxecute bien qd isBookInDB change) => donc copilot m'a conseillé la ligne ci-dessus : ça marche !
-    bookId,
-    currentUser?.uid ? fetchBookInfoDB : null //////////////// A VOIR si besoin d'être connecté et sinon, erreur ???
-  );
+  } = useSWR<BookType | null>(currentUser ? bookId : null, fetchBookInfoDB);
 
   console.log(
     "zzz after FETCHING-1 fetchedBookFromId n'est plus undefined !",
