@@ -284,7 +284,6 @@ const BooksSearchPage = (): JSX.Element => {
       console.log("+++ useDebounceEffect dbBooks = ", dbBooks);
 
       let queryApi = "";
-      let dbSearchBooks: BookType[] = [];
 
       if (!titleInput && !authorInput) {
         queryApi = getRandomChar(); // pour résultats alléatoires si pas de recherche
@@ -303,33 +302,11 @@ const BooksSearchPage = (): JSX.Element => {
       } else {
         if (titleInput) {
           queryApi += `+intitle:${encodeURIComponent(titleInput)}`;
-          // dbSearchBooks = dbBooks.filter((book: BookType) =>
-          //   book.title.toLowerCase().includes(titleInput.toLowerCase())
-          // );
         }
         if (authorInput) {
           queryApi += `+inauthor:${encodeURIComponent(authorInput)}`;
-          // dbSearchBooks = dbBooks.filter((book: BookType) =>
-          //   book.author.toLowerCase().includes(authorInput.toLowerCase())
-          // );
         }
-        // if (titleInput && authorInput) {
-        //   dbSearchBooks = dbBooks.filter(
-        //     (book: BookType) =>
-        //       book.bookTitle.toLowerCase().includes(titleInput.toLowerCase()) &&
-        //       book.bookAuthor.toLowerCase().includes(authorInput.toLowerCase())
-        //   );
-        // }
-
-        //setDbBooks(dbSearchBooks);
       }
-
-      // console.log("**query", queryApi);
-      // console.log(
-      //   "url",
-      //   `${GOOGLE_BOOKS_API_BASE_URL}?q=${queryApi}&maxResults=${MAX_RESULTS}`
-      // );
-      // console.log("**2/dbSearchBooks", dbSearchBooks);
 
       console.log("useDebounceEffect Titre", titleInput);
       console.log("useDebounceEffect Auteur", authorInput);
@@ -338,17 +315,6 @@ const BooksSearchPage = (): JSX.Element => {
       setBooksApiUrl(
         `${GOOGLE_BOOKS_API_URL}?q=${queryApi}&maxResults=${MAX_RESULTS}`
       );
-
-      // Pk opérateur ternaire ne marche pas !!!!???
-      //inFriendsLists ? setDbBooks(dbSearchBooks) : setDbBooks([]);
-      // if (inFriendsLists) {
-      //   console.log("/////////////");
-      //setDbBooks(dbSearchBooks);
-      // } else {
-      //   setDbBooks([]);
-      // }
-
-      // `https://www.googleapis.com/books/v1/volumes?q=${title}+inauthor:${author}&maxResults=${MAX_RESULTS}`;
     },
     [titleInput, authorInput],
     500
