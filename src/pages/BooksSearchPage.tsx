@@ -13,23 +13,41 @@ import useSWR from "swr";
 
 const MAX_RESULTS = 7; // jusqu'à 40
 
-// const useDebounce = <T extends string[]>(
-//   callback: (...args: T) => void,
-//   delay: number
-// ) => {
-//   const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+const shuffle2ArraysPreserveOrder = <T, U>(
+  array1: T[],
+  array2: U[]
+): (T | U)[] => {
+  const combinedArray = [
+    ...array1.map((item) => ({ item, from: "array1" })),
+    ...array2.map((item) => ({ item, from: "array2" })),
+  ];
 
-//   const onDebounce = (...args: T) => {
-//     if (timeout.current) {
-//       clearTimeout(timeout.current);
-//     }
-//     timeout.current = setTimeout(() => {
-//       callback(...args);
-//     }, delay);
-//   };
+  // Mélanger le tableau combiné
+  for (let i = combinedArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [combinedArray[i], combinedArray[j]] = [combinedArray[j], combinedArray[i]];
+  }
 
-//   return onDebounce;
-// };
+  // Extraire les éléments mélangés tout en conservant l'ordre relatif
+  const shuffledArray: (T | U)[] = [];
+  let array1Index = 0;
+  let array2Index = 0;
+
+  for (const element of combinedArray) {
+    if (element.from === "array1") {
+      shuffledArray.push(array1[array1Index++]);
+    } else {
+      shuffledArray.push(array2[array2Index++]);
+    }
+  }
+  return shuffledArray;
+};
+
+const getRandomChar = (): string => {
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  const randomIndex = Math.floor(Math.random() * chars.length);
+  return chars[randomIndex];
+};
 
 const useDebounceEffect = (
   effect: () => void,
@@ -59,7 +77,7 @@ const BooksSearchPage = (): JSX.Element => {
   const urlParam = useParams<{ author: string }>();
 
   const [dbBooks, setDbBooks] = useState<BookType[]>();
-  console.log("+++books from BDD", dbBooks);
+  console.log("111+++++books from BDD", dbBooks);
   if (dbBooks) console.log("+++books[0] from BDD", dbBooks[0]?.title);
 
   const [booksApiUrl, setBooksApiUrl] = useState(
@@ -68,8 +86,8 @@ const BooksSearchPage = (): JSX.Element => {
   console.log("useDebounceEffect +++booksApiUrl", booksApiUrl);
 
   const [bdAndApiBooks, setDbAndApiBooks] = useState<BookType[]>([]);
-  console.log("+++bdAndApiBooks", bdAndApiBooks);
-  console.log("+++bdAndApiBooks[0]", bdAndApiBooks[0]);
+  console.log("333+++++bdAndApiBooks", bdAndApiBooks);
+  console.log("444+++++bdAndApiBooks[0]", bdAndApiBooks[0]?.title);
 
   const [titleInput, setTitleInput] = useState<string>(
     urlParam.author ? "" : localStorage.getItem("titleInput") || ""
@@ -98,29 +116,42 @@ const BooksSearchPage = (): JSX.Element => {
         }
         return data.items;
       })
-      .then((items) => {
+      .then((apiBooks) => {
+        // on récupère les id des livres de la base de données pour ne pas ajouter les livres de l'API qui ont les mêmes id
         let dbBooksIds: string[] = [];
         if (dbBooks) {
           dbBooksIds = dbBooks.map((book) => book.id);
         }
-        ///////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////
-        /////////////// A VOIR PK VIDE ????????????????????????
-        ///////////////////////////////////////////////////////////
-        console.log("**31-dbBooksIds", dbBooksIds);
-        console.log("**32-items", items);
+        console.log("+++++-dbBooks", dbBooks);
+        console.log("+++++-dbBooksIds", dbBooksIds);
+        console.log("**32-apiBooks", apiBooks);
 
-        const booksFromAPI: BookType[] = items
-          // we don't want books that are in our database
+        const apiBooksIds = apiBooks.map((book) => book.id);
+        const uniquesApiBooksIds = new Set(apiBooksIds);
+
+        const objetsUniques = apiBooks.filter((apiBook) => {
+          if (uniquesApiBooksIds.has(apiBook.id)) {
+            uniquesApiBooksIds.delete(apiBook.id); // Supprimer l'id du Set pour éviter les doublons
+            return true;
+          }
+          return false;
+        });
+
+        console.log("+++++++++++++++++", objetsUniques);
+
+        const uniqueApiBooks: BookType[] = objetsUniques
           .filter((book: BookAPIType) => {
-            // console.log("**33-book.id", book.id);
+            console.log("+++++", book.volumeInfo.title, book.id, dbBooksIds);
             // console.log(
-            //   "**34-!dbBooksIds.includes(book.id)",
-            //   !dbBooksIds.includes(book.id)
+            //   "123456",
+            //   !dbBooksIds.includes(book.id) && !uniqueBooks.has(book.id)
             // );
+            // Vérifie si le livre est déjà dans la base de données ou dans le Set uniqueBooks
+            //return !dbBooksIds.includes(book.id) && !uniqueBooks.has(book.id);
             return !dbBooksIds.includes(book.id);
           })
           .map((book: BookAPIType) => {
+            //uniqueBooks.add(book.id);
             return {
               id: book.id,
               title: book.volumeInfo.title,
@@ -139,8 +170,8 @@ const BooksSearchPage = (): JSX.Element => {
               },
             };
           });
-        console.log("**35-booksFromAPI", booksFromAPI);
-        return booksFromAPI;
+        console.log("9+++++-uniqueApiBooks", uniqueApiBooks);
+        return uniqueApiBooks;
       })
       .catch((error) => {
         console.error("Error fetching books:", error);
@@ -152,52 +183,14 @@ const BooksSearchPage = (): JSX.Element => {
     data: apiBooks,
     error,
     isLoading,
-  } = useSWR<BookType[]>(booksApiUrl, fetchAPIBooks);
+  } = useSWR<BookType[]>(dbBooks ? booksApiUrl : null, fetchAPIBooks);
   // FIN============================FAIRE HOOK PERSO !!!
 
-  console.log("**2-books from API", apiBooks);
+  console.log("222+++++ apiBooks", apiBooks);
+  if (apiBooks) console.log("212121+++++ apiBooks", apiBooks[0].title);
 
   // ici on utilise une constante et pas un state car les message ne change pas et s'affiche seulement si useSWR renvoie une erreur
   const message = `Un problème est survenu dans la récupération de livres de Google Books => ${error?.message}`;
-
-  const shuffle2ArraysPreserveOrder = <T, U>(
-    array1: T[],
-    array2: U[]
-  ): (T | U)[] => {
-    const combinedArray = [
-      ...array1.map((item) => ({ item, from: "array1" })),
-      ...array2.map((item) => ({ item, from: "array2" })),
-    ];
-
-    // Mélanger le tableau combiné
-    for (let i = combinedArray.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [combinedArray[i], combinedArray[j]] = [
-        combinedArray[j],
-        combinedArray[i],
-      ];
-    }
-
-    // Extraire les éléments mélangés tout en conservant l'ordre relatif
-    const shuffledArray: (T | U)[] = [];
-    let array1Index = 0;
-    let array2Index = 0;
-
-    for (const element of combinedArray) {
-      if (element.from === "array1") {
-        shuffledArray.push(array1[array1Index++]);
-      } else {
-        shuffledArray.push(array2[array2Index++]);
-      }
-    }
-    return shuffledArray;
-  };
-
-  const getRandomChar = (): string => {
-    const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-    const randomIndex = Math.floor(Math.random() * chars.length);
-    return chars[randomIndex];
-  };
 
   // Mis à jour de dbBooks au montage du composant
   useEffect(() => {
