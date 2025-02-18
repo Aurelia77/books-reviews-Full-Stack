@@ -318,43 +318,35 @@ const BooksSearchPage = (): JSX.Element => {
           // if (!titleInput && !authorInput) {
           //   return books;
           // }
-          // je vx filtrer les livres selon inputTitle et inputAuthor s'ils ne sont pas vides
+          // je vx filtrer les livres de le BDD et mettre à jour l'URL de l'API => selon inputTitle et inputAuthor (s'ils ne sont pas vides)
           return books.filter((book: BookType) => {
-            if (!titleInput && !authorInput) {
-              queryApi = getRandomChar(); // pour résultats alléatoires si pas de recherche
+            let shouldIncludeBook = false;
 
-              return book;
+            if (!titleInput && !authorInput) {
+              queryApi = getRandomChar(); // résultats alléatoires si pas de recherche
+
+              shouldIncludeBook = true;
             } else {
               if (titleInput) {
+                console.log("queryApi titleInput", titleInput);
                 queryApi += `+intitle:${encodeURIComponent(titleInput)}`;
-                return book.title
+                shouldIncludeBook = book.title
                   .toLowerCase()
                   .includes(titleInput.toLowerCase());
               }
               if (authorInput) {
                 queryApi += `+inauthor:${encodeURIComponent(authorInput)}`;
-                return book.author
+                shouldIncludeBook = book.author
                   .toLowerCase()
                   .includes(authorInput.toLowerCase());
               }
             }
 
-            // if (titleInput && authorInput) {
-            //   return (
-            //     book.title.toLowerCase().includes(titleInput.toLowerCase()) &&
-            //     book.author.toLowerCase().includes(authorInput.toLowerCase())
-            //   );
-            // } else if (titleInput) {
-            //   return book.title
-            //     .toLowerCase()
-            //     .includes(titleInput.toLowerCase());
-            // } else if (authorInput) {
-            //   return book.author
-            //     .toLowerCase()
-            //     .includes(authorInput.toLowerCase());
-            // } else {
-            //   return book;
-            // }
+            setBooksApiUrl(
+              `${GOOGLE_BOOKS_API_URL}?q=${queryApi}&maxResults=${MAX_RESULTS}`
+            );
+
+            return shouldIncludeBook;
           });
         })
         .then((books: BookType[]) => {
@@ -368,10 +360,6 @@ const BooksSearchPage = (): JSX.Element => {
       console.log("useDebounceEffect Titre", titleInput);
       console.log("useDebounceEffect Auteur", authorInput);
       console.log("useDebounceEffect queryApi", queryApi);
-
-      setBooksApiUrl(
-        `${GOOGLE_BOOKS_API_URL}?q=${queryApi}&maxResults=${MAX_RESULTS}`
-      );
     },
     [titleInput, authorInput],
     500
