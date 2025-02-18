@@ -29,10 +29,7 @@ const HomePage = (): JSX.Element => {
         </div>
       )}
       {/* <CustomLinkButton className="bg-primary/50">Suggestions</CustomLinkButton> */}
-      <CustomLinkButton
-        className="bg-secondary/50"
-        linkTo="/mybooks/searchbooks"
-      >
+      <CustomLinkButton className="bg-secondary/50" linkTo="/searchbooks">
         Recherche de livre
       </CustomLinkButton>
     </div>

@@ -35,68 +35,10 @@ const MyBooksPage = (): JSX.Element => {
       {userInfo && (
         <AllBooksLists userInfo={userInfo} userIdInUrl={undefined} />
       )}
-      <CustomLinkButton className="bg-primary/80" linkTo="/mybooks/searchbooks">
+      <CustomLinkButton className="bg-primary/80" linkTo="/searchbooks">
         Recherche de livre
       </CustomLinkButton>
     </div>
-    // <div className="h-full min-h-screen">
-    //   <Title>Mes livres lus</Title>
-
-    //   {isLoading ? (
-    //     <div>
-    //       <BookSkeleton />
-    //       <BookSkeleton />
-    //       <BookSkeleton />
-    //     </div>
-    //   ) : error ? (
-    //     <FeedbackMessage message={message} type="error" />
-    //   ) : myReadBooksIds && myReadBooksIds.length > 0 ? (
-    //     <div>
-    //       <ul className="flex h-full flex-col pb-16">
-    //         {myReadBooksIds.map(
-    //           (bookId) =>
-    //             bookId && (
-    //               // Ici on passe le bookId en props (et pas le book complet comme dans BooksSearchPage)
-    //               <BookInfos
-    //                 key={bookId}
-    //                 bookId={bookId}
-    //                 //friendsWhoReadBook={["Loulou"]}
-    //               />
-    //             )
-    //         )}
-    //       </ul>
-    //       <CustomLinkButton
-    //         className="bg-accent/60"
-    //         linkTo="/mybooks/searchbooks"
-    //       >
-    //         Ajouter d'autres livres
-    //       </CustomLinkButton>
-    //     </div>
-    //   ) : (
-    //     <div>
-    //       <FeedbackMessage message="Aucun livre pour l'instant" />
-    //       <div className="flex flex-col gap-4 py-12">
-    //         <p className="ml-1">Essayez d'aller par là !</p>
-    //         <CustomLinkButton
-    //           className="bg-accent/60"
-    //           linkTo="/mybooks/searchbooks"
-    //         >
-    //           Recherche de livre
-    //         </CustomLinkButton>
-    //         <CustomLinkButton className="bg-secondary/80">
-    //           Livres de mes amis
-    //         </CustomLinkButton>
-    //         <CustomLinkButton className="bg-primary/50">
-    //           Suggestions
-    //         </CustomLinkButton>
-    //         {/* <FeedbackMessage
-    //         message="Vous n'avez pas encore lu de livre."
-    //         type="error"
-    //       /> */}
-    //       </div>
-    //     </div>
-    //   )}
-    // </div>
   );
 };
 

@@ -55,12 +55,12 @@ const NavBar = (): JSX.Element => {
           </NavigationMenuItem>
           {/* RECHERCHE DE LIVRES */}
           <NavigationMenuItem>
-            <Link to="/mybooks/searchbooks">
+            <Link to="/searchbooks">
               <NavigationMenuLink asChild>
                 <span
                   className={cn(
                     navigationMenuTriggerStyle(),
-                    location.pathname === "/mybooks/searchbooks" &&
+                    location.pathname === "/searchbooks" &&
                       "bg-primary/90 text-foreground"
                   )}
                 >

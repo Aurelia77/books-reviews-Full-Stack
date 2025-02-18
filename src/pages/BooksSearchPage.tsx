@@ -77,16 +77,17 @@ const BooksSearchPage = (): JSX.Element => {
   const urlParam = useParams<{ author: string }>();
 
   const [dbBooks, setDbBooks] = useState<BookType[]>();
-  console.log("111+++++books from BDD", dbBooks);
+
+  console.log("%c 111+++++**books from BDD", "color: tomato", dbBooks);
   if (dbBooks) console.log("+++books[0] from BDD", dbBooks[0]?.title);
 
   const [booksApiUrl, setBooksApiUrl] = useState(
     `${GOOGLE_BOOKS_API_URL}?q=subject:general&maxResults=${MAX_RESULTS}`
   );
-  console.log("useDebounceEffect +++booksApiUrl", booksApiUrl);
+  console.log("+++**booksApiUrl", booksApiUrl);
 
   const [bdAndApiBooks, setDbAndApiBooks] = useState<BookType[]>([]);
-  console.log("333+++++bdAndApiBooks", bdAndApiBooks);
+  console.log("333+++++**bdAndApiBooks", bdAndApiBooks);
   console.log("444+++++bdAndApiBooks[0]", bdAndApiBooks[0]?.title);
 
   const [titleInput, setTitleInput] = useState<string>(
@@ -104,6 +105,12 @@ const BooksSearchPage = (): JSX.Element => {
 
   // DEBUT============================FAIRE HOOK PERSO !!!
   const fetchAPIBooks = (booksApiUrl: string): Promise<BookType[]> => {
+    /////////////////////// Pk n'affiche pas dbBooks !!!
+    ///////////////////////
+    ///////////////////////
+    ///////////////////////
+    ///////////////////////
+    console.log("+++** FETCHER : dbBooks = ", dbBooks);
     // throw new Error(
     //   "Erreur simulée !"
     // );
@@ -186,8 +193,9 @@ const BooksSearchPage = (): JSX.Element => {
   } = useSWR<BookType[]>(dbBooks ? booksApiUrl : null, fetchAPIBooks);
   // FIN============================FAIRE HOOK PERSO !!!
 
-  console.log("222+++++ apiBooks", apiBooks);
-  if (apiBooks) console.log("212121+++++ apiBooks", apiBooks[0].title);
+  console.log("222+++++** apiBooks", apiBooks);
+  if (apiBooks && apiBooks.length > 0)
+    console.log("212121+++++ apiBooks", apiBooks[0].title);
 
   // ici on utilise une constante et pas un state car les message ne change pas et s'affiche seulement si useSWR renvoie une erreur
   const message = `Un problème est survenu dans la récupération de livres de Google Books => ${error?.message}`;
@@ -199,39 +207,63 @@ const BooksSearchPage = (): JSX.Element => {
       titleInputRef.current.focus();
     }
 
-    getDocsByQueryFirebase<BookType>("books")
-      .then((books) => {
-        // je vx filtrer les livres selon inputTitle et inputAuthor s'ils ne sont pas vides
-        return books.filter((book: BookType) => {
-          if (titleInput && authorInput) {
-            return (
-              book.title.toLowerCase().includes(titleInput.toLowerCase()) &&
-              book.author.toLowerCase().includes(authorInput.toLowerCase())
-            );
-          } else if (titleInput) {
-            return book.title.toLowerCase().includes(titleInput.toLowerCase());
-          } else if (authorInput) {
-            return book.author
-              .toLowerCase()
-              .includes(authorInput.toLowerCase());
-          } else {
-            return true;
-          }
-        });
-      })
-      .then((books: BookType[]) => {
-        console.log("++++ books from BDD dans USEEFFECT-1", books);
-        setDbBooks(books);
-      })
-      .catch((error: Error) => {
-        console.error("Error fetching books: ", error);
-      });
+    // getDocsByQueryFirebase<BookType>("books")
+    //   .then((books) => {
+    //     return filterBooks(books, titleInput, authorInput);
+    //   })
+    //   .then((books: BookType[]) => {
+    //     console.log("++++** books from BDD dans USEEFFECT-1", books);
+    //     setDbBooks(books);
+    //   })
+    //   .catch((error: Error) => {
+    //     console.error("Error fetching books: ", error);
+    //   });
+    //////////////
+    //////////////
+    //////////////
+    //////////////
+    // getDocsByQueryFirebase<BookType>("books")
+    //   .then((books) => {
+    //     // if (!titleInput && !authorInput) {
+    //     //   return books;
+    //     // }
+    //     // je vx filtrer les livres selon inputTitle et inputAuthor s'ils ne sont pas vides
+    //     return books.filter((book: BookType) => {
+    //       if (titleInput && authorInput) {
+    //         return (
+    //           book.title.toLowerCase().includes(titleInput.toLowerCase()) &&
+    //           book.author.toLowerCase().includes(authorInput.toLowerCase())
+    //         );
+    //       } else if (titleInput) {
+    //         return book.title.toLowerCase().includes(titleInput.toLowerCase());
+    //       } else if (authorInput) {
+    //         return book.author
+    //           .toLowerCase()
+    //           .includes(authorInput.toLowerCase());
+    //       } else {
+    //         return book;
+    //       }
+    //     });
+    //   })
+    //   .then((books: BookType[]) => {
+    //     console.log("++++** books from BDD dans USEEFFECT-1", books);
+    //     setDbBooks(books);
+    //   })
+    //   .catch((error: Error) => {
+    //     console.error("Error fetching books: ", error);
+    //   });
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Mise à jour de bdAndApiBooks
   useEffect(() => {
-    console.log("+++ useEffect-2, dbBooks = ", dbBooks);
+    console.log("+++*** useEffect-2, dbBooks = ", dbBooks);
+    console.log("+++*** useEffect-2, apiBooks = ", apiBooks);
+    // console.log(
+    //   "+++*** useEffect-2, dbAndApiBooks = ",
+    //   shuffle2ArraysPreserveOrder(dbBooks, apiBooks)
+    // );
 
     if (apiBooks && dbBooks) {
       setDbAndApiBooks(shuffle2ArraysPreserveOrder(dbBooks, apiBooks));
@@ -274,32 +306,64 @@ const BooksSearchPage = (): JSX.Element => {
   // 3 arguments : fonction à exécuter, dépendances, délai
   useDebounceEffect(
     () => {
-      console.log("+++ useDebounceEffect dbBooks = ", dbBooks);
+      console.log(
+        "//////////////////++++** useDebounceEffect dbBooks = ",
+        dbBooks
+      );
 
       let queryApi = "";
 
-      if (!titleInput && !authorInput) {
-        queryApi = getRandomChar(); // pour résultats alléatoires si pas de recherche
+      getDocsByQueryFirebase<BookType>("books")
+        .then((books) => {
+          // if (!titleInput && !authorInput) {
+          //   return books;
+          // }
+          // je vx filtrer les livres selon inputTitle et inputAuthor s'ils ne sont pas vides
+          return books.filter((book: BookType) => {
+            if (!titleInput && !authorInput) {
+              queryApi = getRandomChar(); // pour résultats alléatoires si pas de recherche
 
-        // REVOIR CETTE FONCTION !!!!!!!!
-        getDocsByQueryFirebase<BookType>("books", "bookIsFromAPI", true)
-          .then((books) => {
-            //console.log("**books from BDD", books);
-            setDbBooks(books);
-            //dbSearchBooks = books;
-            //console.log("**1/dbSearchBooks", dbSearchBooks);
-          })
-          .catch((error) => {
-            console.error("Error fetching books: ", error);
+              return book;
+            } else {
+              if (titleInput) {
+                queryApi += `+intitle:${encodeURIComponent(titleInput)}`;
+                return book.title
+                  .toLowerCase()
+                  .includes(titleInput.toLowerCase());
+              }
+              if (authorInput) {
+                queryApi += `+inauthor:${encodeURIComponent(authorInput)}`;
+                return book.author
+                  .toLowerCase()
+                  .includes(authorInput.toLowerCase());
+              }
+            }
+
+            // if (titleInput && authorInput) {
+            //   return (
+            //     book.title.toLowerCase().includes(titleInput.toLowerCase()) &&
+            //     book.author.toLowerCase().includes(authorInput.toLowerCase())
+            //   );
+            // } else if (titleInput) {
+            //   return book.title
+            //     .toLowerCase()
+            //     .includes(titleInput.toLowerCase());
+            // } else if (authorInput) {
+            //   return book.author
+            //     .toLowerCase()
+            //     .includes(authorInput.toLowerCase());
+            // } else {
+            //   return book;
+            // }
           });
-      } else {
-        if (titleInput) {
-          queryApi += `+intitle:${encodeURIComponent(titleInput)}`;
-        }
-        if (authorInput) {
-          queryApi += `+inauthor:${encodeURIComponent(authorInput)}`;
-        }
-      }
+        })
+        .then((books: BookType[]) => {
+          console.log("++++** books from BDD dans USEEFFECT-1", books);
+          setDbBooks(books);
+        })
+        .catch((error: Error) => {
+          console.error("Error fetching books: ", error);
+        });
 
       console.log("useDebounceEffect Titre", titleInput);
       console.log("useDebounceEffect Auteur", authorInput);
