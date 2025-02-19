@@ -137,7 +137,7 @@ const BookInfos = ({
         <FeedbackMessage message={message} type="error" />
       ) : (
         bookInfos && (
-          <Card className="relative mb-4">
+          <Card className="relative">
             <Link to={`/books/${bookInfos.id}`} className="relative">
               <CardDescription className="absolute right-2 top-2 rounded-full bg-secondary/60 px-3 py-1 text-secondary-foreground shadow-sm shadow-foreground">
                 {bookInfos.language}

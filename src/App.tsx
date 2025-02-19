@@ -4,16 +4,16 @@ import Footer from "./components/Footer";
 import NavBar from "./components/NavBar";
 import BookDetailPage from "./pages/BookDetailPage";
 import BooksSearchPage from "./pages/BooksSearchPage";
-import FriendsBooksReadPage from "./pages/FriendsBooksReadPage";
+import UsersBooksReadPage from "./pages/UsersBooksReadPage";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import MyAccountPage from "./pages/MyAccountPage";
 import MyBooksPage from "./pages/MyBooksPage";
+import NotFound404Page from "./pages/NotFound404Page";
 import RegisterPage from "./pages/RegisterPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import UserAccountPage from "./pages/UserAccountPage";
 import UsersSearchPage from "./pages/UsersSearchPage";
-import NotFound404Page from "./pages/NotFound404Page";
 
 const App = (): JSX.Element => {
   return (
@@ -38,7 +38,11 @@ const App = (): JSX.Element => {
               <Route path="/searchusers" element={<UsersSearchPage />} />
               <Route
                 path="/friendsbooksread"
-                element={<FriendsBooksReadPage />}
+                element={<UsersBooksReadPage />}
+              />
+              <Route
+                path="/allusersbooksread"
+                element={<UsersBooksReadPage />}
               />
               <Route path="/resetpassword" element={<ResetPasswordPage />} />
               <Route path="*" element={<NotFound404Page />} />

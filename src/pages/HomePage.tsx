@@ -12,7 +12,7 @@ const HomePage = (): JSX.Element => {
             Mes livres
           </CustomLinkButton>
           <CustomLinkButton className="bg-accent/60" linkTo="/friendsbooksread">
-            Livres de mes amis
+            Livres lus par les membres
           </CustomLinkButton>
           <CustomLinkButton className="bg-primary/60" linkTo="/searchusers">
             Voir les Membres

@@ -1,4 +1,4 @@
-import { getFriendsWhoReadBookFirebase } from "@/firebase/firestore";
+import { getUsersWhoReadBookFirebase } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -23,7 +23,7 @@ const FriendsWhoReadBook = ({
   const { currentUser } = useUserStore();
 
   useEffect(() => {
-    getFriendsWhoReadBookFirebase(bookId, currentUser?.uid, userViewId).then(
+    getUsersWhoReadBookFirebase(bookId, currentUser?.uid, userViewId).then(
       (users) => {
         //console.log("xxx***USERS", users);
         const friends = users.map((user) => ({
