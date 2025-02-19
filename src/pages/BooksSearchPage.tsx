@@ -500,7 +500,7 @@ const BooksSearchPage = (): JSX.Element => {
         ) : bdAndApiBooks?.length > 0 ? (
           <ul>
             {bdAndApiBooks.map((book: BookType) => (
-              <li key={book.id}>
+              <li key={book.id} className="mb-4">
                 {/* Ici on passe le book en props (et pas le bookId comme dans MyBooksPage) */}
                 <BookInfos
                   book={book}

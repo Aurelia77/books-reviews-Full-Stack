@@ -454,7 +454,7 @@ export const getUserInfosBookFirebase = (
   }
 };
 
-export const getFriendsWhoReadBookFirebase = (
+export const getUsersWhoReadBookFirebase = (
   bookId: string,
   currentUserId: string | undefined,
   userViewId: string = ""
@@ -565,37 +565,74 @@ export const getFriendsWhoReadBookFirebase = (
 //   //   });
 // };
 
-export const getFriendsReadBooksIdsFirebase = (
-  currentUserId: string
+export const getUsersReadBooksIdsFirebase = (
+  currentUserId: string,
+  onlyFriends: boolean = false
 ): Promise<string[]> => {
+  const queryCondition = onlyFriends
+    ? ["users", "id", currentUserId]
+    : ["users"];
+
+  console.log("8888 currentUserId", currentUserId);
+  console.log("8888 conditions", queryCondition);
+  console.log("8888 conditions 0", queryCondition[0]);
+  console.log("8888 conditions 1", queryCondition[1]);
+  console.log("8888 conditions 2", queryCondition[2]);
+
   return (
-    getDocsByQueryFirebase<UserType>("users", "id", currentUserId)
+    getDocsByQueryFirebase<UserType>(
+      queryCondition[0],
+      queryCondition[1],
+      queryCondition[2]
+    )
+      // on recherche l'utilisateur coonecté
+      // OU tous les utilisateurs
       .then((users) => {
+        console.log("8888 users", users);
         const user = users[0];
         //console.log("888 user friends Ids", user.friends);
-        return user.friends;
+        if (onlyFriends) {
+          return user.friends;
+        } else {
+          return users;
+        }
       })
-      .then((friendsIds) => {
-        const promises = friendsIds.map((friendId) =>
-          getDocsByQueryFirebase<UserType>("users", "id", friendId).then(
-            (friend) => friend[0]
-          )
-        );
-        return Promise.all(promises);
+      // on retourne les id de ses amis
+      // OU tous les utilisateurs
+      .then((usersIdsOrAllUsers) => {
+        let promises;
+        if (onlyFriends) {
+          promises = usersIdsOrAllUsers.map((friendId) =>
+            getDocsByQueryFirebase<UserType>(
+              "users",
+              "id",
+              friendId as string
+            ).then((friend) => friend[0])
+          );
+          return Promise.all(promises);
+        } else {
+          return usersIdsOrAllUsers as UserType[]; // ici allUsers car onlFriends = false
+        }
       })
-      .then((friends) => {
-        //console.log("888 friends", friends);
-        return friends.map((friend) => {
-          return friend.booksRead;
+      // on récupère toutes les infos des amis
+      ////////////////////idem les 2
+      ////////////////////idem les 2
+      ////////////////////idem les 2
+      ////////////////////idem les 2
+      .then((users) => {
+        console.log("8888 friends", users);
+        return users.map((user) => {
+          return user.booksRead;
           // return { friendId: friend.id, booksRead: friend.booksRead };
         });
       })
-      .then((friendsBooksReadInfo) => {
+      // on récupère les info de leurs livres lus
+      .then((usersBooksReadInfo) => {
         //console.log( "88888888888888 friendsBooksReadInfo",        friendsBooksReadInfo        );
-        return friendsBooksReadInfo.map((friendBooksReadInfo) => {
+        return usersBooksReadInfo.map((userBooksReadInfo) => {
           //console.log(            "888888888888999999999999 friendBooksReadInfo",            friendBooksReadInfo          );
 
-          return friendBooksReadInfo.map((book) => {
+          return userBooksReadInfo.map((book) => {
             //console.log("888888888888999999999999 book", book);
             return book.id;
           });

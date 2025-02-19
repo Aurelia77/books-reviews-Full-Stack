@@ -220,11 +220,13 @@ const AllBooksLists = ({
           />
           {displayedBooksUserInfo && displayedBooksUserInfo.length > 0 ? (
             displayedBooksUserInfo.map((book: MyInfoBookType) => (
-              <BookInfos
-                key={book.id}
-                bookId={book.id}
-                userViewId={userInfo.id}
-              />
+              <div className="mb-4">
+                <BookInfos
+                  key={book.id}
+                  bookId={book.id}
+                  userViewId={userInfo.id}
+                />
+              </div>
             ))
           ) : (
             <FeedbackMessage
