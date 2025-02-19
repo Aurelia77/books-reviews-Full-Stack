@@ -472,7 +472,7 @@ export const getUsersWhoReadBookFirebase = (
       .then((querySnapshot) => querySnapshot.docs[0].data() as UserType)
       .then((currentUser: UserType) => currentUser.friends)
       .then((currentUserFriendsIds: string[]) => {
-        ////console.log("***CURRENT USER FRIENDS", currentUserFriendsIds);
+        console.log("***CURRENT USER FRIENDS", currentUserFriendsIds);
 
         if (currentUserFriendsIds.length > 0) {
           const q2 = query(

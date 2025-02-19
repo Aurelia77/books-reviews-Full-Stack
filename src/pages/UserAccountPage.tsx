@@ -88,9 +88,7 @@ const UserAccountPage = (): JSX.Element => {
       </Card>
 
       <Title level={2}>Livres du membre</Title>
-      {userInfo && userInUrl.userId && (
-        <AllBooksLists userInfo={userInfo} userIdInUrl={userInUrl.userId} />
-      )}
+      {userInfo && userInUrl.userId && <AllBooksLists userInfo={userInfo} />}
     </div>
   );
 };

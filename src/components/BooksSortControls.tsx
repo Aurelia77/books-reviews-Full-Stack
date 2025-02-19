@@ -2,20 +2,41 @@ import { BookStatusEnum, SortStateType } from "@/types";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "./ui/button";
 
-type SortBooksButtonsType = {
+type BooksSortControls = {
   booksStatus: BookStatusEnum;
   sortState: {
     [key in BookStatusEnum]: SortStateType;
   };
-  handleSort: (criteria: "title" | "date" | "note") => void;
+  setSortState: React.Dispatch<
+    React.SetStateAction<{ [key in BookStatusEnum]: SortStateType }>
+  >;
 };
 
-const SortBooksButtons = ({
+const BooksSortControls = ({
   booksStatus,
   sortState,
-  handleSort,
-}: SortBooksButtonsType): JSX.Element => {
+  setSortState,
+}: BooksSortControls): JSX.Element => {
   console.log("booksStatus", booksStatus);
+
+  const handleSort = (criteria: "title" | "date" | "note") => {
+    //console.log("wwwx criteria", criteria);
+    //console.log("wwwx activeTab", activeTab);
+
+    setSortState((prevState) => ({
+      ...prevState,
+      [booksStatus]: {
+        criteria,
+        order:
+          prevState[booksStatus].criteria === criteria
+            ? prevState[booksStatus].order === "asc"
+              ? "desc"
+              : "asc"
+            : "asc",
+      },
+    }));
+  };
+
   return (
     <div className="ml-2 flex max-w-md items-center justify-around rounded-md bg-secondary p-1">
       <Button
@@ -72,4 +93,4 @@ const SortBooksButtons = ({
   );
 };
 
-export default SortBooksButtons;
+export default BooksSortControls;
