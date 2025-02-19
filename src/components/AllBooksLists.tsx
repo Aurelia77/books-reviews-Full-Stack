@@ -1,4 +1,4 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getDocsByQueryFirebase } from "@/firebase/firestore";
 import {
   BookStatusEnum,
@@ -9,25 +9,19 @@ import {
   UserType,
   UserTypePlusBooksTitleAndNote,
 } from "@/types";
+import { sortBooks } from "@/utils";
 import { useEffect, useState } from "react";
-import BookInfos from "./BookInfos";
-import FeedbackMessage from "./FeedbackMessage";
-import SortBooksButtons from "./SortBooksButtons";
+import BooksTabContent from "./BooksTabContent";
 
 const DEFAULT_TAB = BookStatusEnum.booksReadList;
 
 type AllBooksListsProps = {
   userInfo: UserType;
-  userIdInUrl: string | undefined;
 };
 
-const AllBooksLists = ({
-  userInfo,
-  userIdInUrl,
-}: AllBooksListsProps): JSX.Element => {
+const AllBooksLists = ({ userInfo }: AllBooksListsProps): JSX.Element => {
   //
   const [activeTab, setActiveTab] = useState<BookStatusEnum>(DEFAULT_TAB);
-
   const [userInfoPlusTitleAndNote, setUserInfoPlusTitleAndNote] =
     useState<UserTypePlusBooksTitleAndNote>();
   const [displayedBooksUserInfo, setDisplayedBooksUserInfo] = useState<
@@ -49,53 +43,6 @@ const AllBooksLists = ({
     [BookStatusEnum.booksToReadList]: { criteria: "date", order: "asc" },
   });
   console.log("www sortState", sortState.booksRead);
-
-  const handleSort = (criteria: "title" | "date" | "note") => {
-    //console.log("wwwx criteria", criteria);
-    //console.log("wwwx activeTab", activeTab);
-
-    setSortState((prevState) => ({
-      ...prevState,
-      [activeTab]: {
-        criteria,
-        order:
-          prevState[activeTab].criteria === criteria
-            ? prevState[activeTab].order === "asc"
-              ? "desc"
-              : "asc"
-            : "asc",
-      },
-    }));
-  };
-
-  const sortBooks = (
-    books: MyInfoBookPlusTitleAndNote[]
-  ): MyInfoBookPlusTitleAndNote[] => {
-    const { criteria, order } = sortState[activeTab];
-
-    return books.sort((a, b) => {
-      let comparison = 0;
-      let yearComparison = 0;
-
-      switch (criteria) {
-        case "title":
-          comparison = a.bookTitle.localeCompare(b.bookTitle);
-          break;
-        case "date":
-          yearComparison = (a.year ?? 0) - (b.year ?? 0);
-          if (yearComparison !== 0) {
-            comparison = yearComparison;
-          } else {
-            comparison = (a.month ?? 0) - (b.month ?? 0);
-          }
-          break;
-        case "note":
-          comparison = (a.bookNote ?? 0) - (b.bookNote ?? 0);
-          break;
-      }
-      return order === "asc" ? comparison : -comparison;
-    });
-  };
 
   const addTitleAndNoteToBooksInfo = (booksInfo: MyInfoBookType[]) => {
     const booksInfoPlusTitle: MyInfoBookPlusTitleAndNote[] = [];
@@ -184,7 +131,7 @@ const AllBooksLists = ({
   // }, [userInfoPlusTitle[activeTab], activeTab]);
 
   useEffect(() => {
-    sortBooks(displayedBooksUserInfo);
+    sortBooks(displayedBooksUserInfo, activeTab, sortState);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortState, displayedBooksUserInfo]);
 
@@ -212,74 +159,30 @@ const AllBooksLists = ({
             À lire
           </TabsTrigger>
         </TabsList>
-        <TabsContent value={BookStatusEnum.booksReadList}>
-          <SortBooksButtons
-            booksStatus={activeTab}
-            sortState={sortState}
-            handleSort={handleSort}
-          />
-          {displayedBooksUserInfo && displayedBooksUserInfo.length > 0 ? (
-            displayedBooksUserInfo.map((book: MyInfoBookType) => (
-              <div className="mb-4">
-                <BookInfos
-                  key={book.id}
-                  bookId={book.id}
-                  userViewId={userInfo.id}
-                />
-              </div>
-            ))
-          ) : (
-            <FeedbackMessage
-              message="Aucun livre pour l'instant"
-              className="mt-8"
-            />
-          )}
-        </TabsContent>
-        <TabsContent value="booksInProgress">
-          <SortBooksButtons
-            booksStatus={activeTab}
-            sortState={sortState}
-            handleSort={handleSort}
-          />
-          {/*     {userInfo?.booksInProgress &&
-                  userInfo?.booksInProgress?.length > 0 ? (
-                    userInfo?.booksInProgress.map((book: MyInfoBookType) => ( */}
-          {displayedBooksUserInfo && displayedBooksUserInfo.length > 0 ? (
-            displayedBooksUserInfo.map((book: MyInfoBookType) => (
-              <BookInfos
-                key={book.id}
-                bookId={book.id}
-                userViewId={userInfo.id}
-              />
-            ))
-          ) : (
-            <FeedbackMessage
-              message="Aucun livre pour l'instant"
-              className="mt-8"
-            />
-          )}
-        </TabsContent>
-        <TabsContent value="booksToRead">
-          <SortBooksButtons
-            booksStatus={activeTab}
-            sortState={sortState}
-            handleSort={handleSort}
-          />
-          {displayedBooksUserInfo && displayedBooksUserInfo.length > 0 ? (
-            displayedBooksUserInfo.map((book: MyInfoBookType) => (
-              <BookInfos
-                key={book.id}
-                bookId={book.id}
-                userViewId={userIdInUrl}
-              />
-            ))
-          ) : (
-            <FeedbackMessage
-              message="Aucun livre pour l'instant"
-              className="mt-8"
-            />
-          )}
-        </TabsContent>
+        <BooksTabContent
+          value={BookStatusEnum.booksReadList}
+          activeTab={activeTab}
+          sortState={sortState}
+          setSortState={setSortState}
+          displayedBooksUserInfo={displayedBooksUserInfo}
+          userId={userInfo.id}
+        />
+        <BooksTabContent
+          value={BookStatusEnum.booksInProgressList}
+          activeTab={activeTab}
+          sortState={sortState}
+          setSortState={setSortState}
+          displayedBooksUserInfo={displayedBooksUserInfo}
+          userId={userInfo.id}
+        />
+        <BooksTabContent
+          value={BookStatusEnum.booksToReadList}
+          activeTab={activeTab}
+          sortState={sortState}
+          setSortState={setSortState}
+          displayedBooksUserInfo={displayedBooksUserInfo}
+          userId={userInfo.id}
+        />
       </Tabs>
     </div>
   );

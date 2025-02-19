@@ -32,9 +32,7 @@ const MyBooksPage = (): JSX.Element => {
   return (
     <div className="min-h-screen max-w-3xl md:m-auto md:mt-8">
       <Title level={2}>Mes Livres</Title>
-      {userInfo && (
-        <AllBooksLists userInfo={userInfo} userIdInUrl={undefined} />
-      )}
+      {userInfo && <AllBooksLists userInfo={userInfo} />}
       <CustomLinkButton className="bg-primary/80" linkTo="/searchbooks">
         Recherche de livre
       </CustomLinkButton>
