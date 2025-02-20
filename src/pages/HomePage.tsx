@@ -11,7 +11,7 @@ const HomePage = (): JSX.Element => {
           <CustomLinkButton className="bg-primary" linkTo="/mybooks">
             Mes livres
           </CustomLinkButton>
-          <CustomLinkButton className="bg-accent/60" linkTo="/friendsbooksread">
+          <CustomLinkButton className="bg-accent/60" linkTo="/usersbooksread">
             Livres lus par les membres
           </CustomLinkButton>
           <CustomLinkButton className="bg-primary/60" linkTo="/searchusers">

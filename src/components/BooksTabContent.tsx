@@ -1,18 +1,16 @@
+import { BookStatusEnum, SortStateType } from "@/types";
 import React from "react";
-import BooksSortControls from "./BooksSortControls";
 import BookInfos from "./BookInfos";
+import BooksSortControls from "./BooksSortControls";
 import FeedbackMessage from "./FeedbackMessage";
-import { MyInfoBookType, SortStateType, BookStatusEnum } from "@/types";
 import { TabsContent } from "./ui/tabs";
 
 type BooksTabContentProps = {
   value: BookStatusEnum | string;
   activeTab: BookStatusEnum;
-  sortState: { [key in BookStatusEnum]: SortStateType };
-  setSortState: React.Dispatch<
-    React.SetStateAction<{ [key in BookStatusEnum]: SortStateType }>
-  >;
-  displayedBooksUserInfo: MyInfoBookType[];
+  sortState: SortStateType;
+  setSortState: React.Dispatch<React.SetStateAction<SortStateType>>;
+  displayedBooksIds: string[];
   userId: string;
 };
 
@@ -21,7 +19,7 @@ const BooksTabContent = ({
   activeTab,
   sortState,
   setSortState,
-  displayedBooksUserInfo,
+  displayedBooksIds,
   userId,
 }: BooksTabContentProps) => (
   <TabsContent value={value}>
@@ -30,10 +28,10 @@ const BooksTabContent = ({
       sortState={sortState}
       setSortState={setSortState}
     />
-    {displayedBooksUserInfo && displayedBooksUserInfo.length > 0 ? (
-      displayedBooksUserInfo.map((book: MyInfoBookType) => (
-        <div className="mb-4" key={book.id}>
-          <BookInfos bookId={book.id} userViewId={userId} />
+    {displayedBooksIds.length > 0 ? (
+      displayedBooksIds.map((bookId: string) => (
+        <div className="mb-4" key={bookId}>
+          <BookInfos bookId={bookId} userViewId={userId} />
         </div>
       ))
     ) : (

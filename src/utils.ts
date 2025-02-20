@@ -1,4 +1,10 @@
-import { BookStatusEnum, MyInfoBookPlusTitleAndNote } from "./types";
+import {
+  BookStatusEnum,
+  BookType,
+  BookTypePlusUsersWhoRead,
+  MyInfoBookPlusTitleAndNote,
+  SortStateType,
+} from "./types";
 
 export const cleanDescription = (description: string) => {
   return (
@@ -42,3 +48,38 @@ export const sortBooks = (
     return order === "asc" ? comparison : -comparison;
   });
 };
+
+export const sortBookTypes = (
+  books: BookTypePlusUsersWhoRead[],
+  sortState: { [key in BookStatusEnum]: { criteria: string; order: string } }
+): BookType[] => {
+  console.log("sortBookTypes sortState", sortState);
+
+  //const { criteria, order } = sortState;
+  const { criteria, order } = sortState[BookStatusEnum.booksReadList];
+
+  console.log("sortBookTypes criteria", criteria);
+  console.log("sortBookTypes order", order);
+
+  return books.sort((a, b) => {
+    let comparison = 0;
+
+    switch (criteria) {
+      case "title":
+        comparison = a.title.localeCompare(b.title);
+        break;
+      case "note":
+        const ratingA = a.rating.count
+          ? a.rating.totalRating / a.rating.count
+          : 0;
+        const ratingB = b.rating.count
+          ? b.rating.totalRating / b.rating.count
+          : 0;
+        comparison = ratingA - ratingB;
+        break;
+    }
+    return order === "asc" ? comparison : -comparison;
+  });
+};
+
+// Ajout de la nouvelle fonction sortBookTypes pour trier les livres de type BookType

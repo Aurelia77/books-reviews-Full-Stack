@@ -25,7 +25,7 @@ import BookSkeleton from "./skeletons/BookSkeleton";
 // Soit à partir de BooksSearchPage => on passe un objet "book" en props car on a les info nécessaires
 // Soit à partir de MyBooksPage / UserAccountPage => on passe un bookId (et ensuite on va chercher les infos nécessaires dans la BDD avec useSWR)
 //// ou mettre avec hook perso.............
-// userViewId = id du user à ne pas compter dans les amis qui ont lu le livre (si on est sur UserAccountPage)
+// userViewId = id du user à ne pas compter dans les amis qui ont lu le livre (si on est sur UserAccountPage) + qd on est sur UserAccountPage => on voit ses info et non celles du user connecté
 type BookInfosProps =
   | { book: BookType; bookId?: never; userViewId?: string }
   | { book?: never; bookId: string; userViewId?: string };

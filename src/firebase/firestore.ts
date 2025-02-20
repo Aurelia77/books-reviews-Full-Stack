@@ -31,8 +31,8 @@ import {
   BookStatusEnum,
   BookType,
   MyInfoBookFormType,
-  MyInfoBookType,
   UserBookInfoType,
+  UserInfoBookType,
   UserType,
 } from "../types";
 import { firebaseConfig } from "./firebaseConfig";
@@ -431,7 +431,7 @@ export const getUserInfosBookFirebase = (
   userId: string | undefined,
   bookId: string,
   bookStatus: BookStatusEnum
-): Promise<MyInfoBookType | null> => {
+): Promise<UserInfoBookType | null> => {
   //console.log("56 ", userId, bookId, bookStatus);
   console.log("bookInMyBooks !!!!!!!!!!!!!!", bookId, bookStatus);
 
@@ -904,7 +904,7 @@ export const deleteBookFromMyBooksFirebase = (
 
           // we need to type the booksAccordingToStatus
           const booksAccordingToStatusTyped =
-            booksAccordingToStatus as MyInfoBookType[];
+            booksAccordingToStatus as UserInfoBookType[];
 
           // recupéré la note à supprimer
           const bookIndex = booksAccordingToStatusTyped.findIndex(
@@ -916,7 +916,7 @@ export const deleteBookFromMyBooksFirebase = (
           // //console.log("rest", rest);
           // //console.log("booksRead", booksAccordingToStatus);
           const booksReadFiltered = booksAccordingToStatusTyped.filter(
-            (book: MyInfoBookType) => book.id !== bookId
+            (book: UserInfoBookType) => book.id !== bookId
           );
           //console.log("booksReadFiltered", booksReadFiltered);
           return addOrUpdateUserFirebase(currentUserId, {

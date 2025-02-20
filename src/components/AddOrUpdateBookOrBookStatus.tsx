@@ -43,7 +43,7 @@ import {
   BookStatusEnum,
   BookType,
   MyInfoBookFormType,
-  MyInfoBookType,
+  UserInfoBookType,
 } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, Ellipsis, Smile, X } from "lucide-react";
@@ -89,7 +89,7 @@ const AddOrUpdateBookOrBookStatus = ({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [bookInMyBooks, setBookInMyBooks] = useState<BookStatusEnum | "">("");
   console.log("bookInMyBooks", bookInMyBooks);
-  const [userBookInfos, setUserBookInfos] = useState<MyInfoBookType | null>();
+  const [userBookInfos, setUserBookInfos] = useState<UserInfoBookType | null>();
 
   console.log("bookInMyBooks userBookInfos", userBookInfos);
   console.log("bookInMyBooks userBookInfos", userBookInfos?.userNote);

@@ -18,7 +18,7 @@ export type BookRatingType = {
   count: number;
 };
 
-export type MyInfoBookType = {
+export type UserInfoBookType = {
   id: string;
   year?: number | null;
   month?: number | null;
@@ -26,7 +26,7 @@ export type MyInfoBookType = {
   userComments: string;
 };
 
-export type MyInfoBookPlusTitleAndNote = MyInfoBookType & {
+export type MyInfoBookPlusTitleAndNote = UserInfoBookType & {
   bookTitle: string;
   bookNote?: number | null;
 };
@@ -45,9 +45,9 @@ export type UserType = {
   userName: string;
   imgURL: string;
   description: string;
-  booksRead: MyInfoBookType[];
-  booksInProgress: MyInfoBookType[];
-  booksToRead: MyInfoBookType[];
+  booksRead: UserInfoBookType[];
+  booksInProgress: UserInfoBookType[];
+  booksToRead: UserInfoBookType[];
   friends: string[];
   isMyFriend?: boolean;
 };
@@ -89,7 +89,7 @@ export type BookAPIType = {
   };
 };
 
-export type FriendsWhoReadBookType = {
+export type UsersWhoReadBookType = {
   userId: string;
   userInfoYear?: number | null;
   userInfoMonth?: number | null;
@@ -97,9 +97,13 @@ export type FriendsWhoReadBookType = {
   userInfoComments: string;
 };
 
-export type FriendsBooksReadType = {
+export type UsersBooksReadType = {
   bookId: string;
-  friendsWhoReadBook: FriendsWhoReadBookType[];
+  usersWhoReadBook: UsersWhoReadBookType[];
+};
+
+export type BookTypePlusUsersWhoRead = BookType & {
+  usersWhoRead: UsersWhoReadBookType[];
 };
 
 // export enum BookStatusEnum {
@@ -113,7 +117,13 @@ export enum BookStatusEnum {
   booksToReadList = "booksToRead",
 }
 
+// export type SortStateType = {
+//   criteria: "title" | "date" | "note";
+//   order: "asc" | "desc";
+// };
 export type SortStateType = {
-  criteria: "title" | "date" | "note";
-  order: "asc" | "desc";
+  [key in BookStatusEnum]: {
+    criteria: "title" | "date" | "note";
+    order: "asc" | "desc";
+  };
 };
