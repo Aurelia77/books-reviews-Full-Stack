@@ -13,7 +13,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useSWR from "swr";
 
-const MAX_RESULTS = 7; // jusqu'à 40
+const MAX_RESULTS = 20; // jusqu'à 40
 
 const shuffle2ArraysPreserveOrder = <T, U>(
   array1: T[],
@@ -78,7 +78,8 @@ const useDebounceEffect = (
 const BooksSearchPage = (): JSX.Element => {
   const urlParam = useParams<{ author: string }>();
 
-  const [dbBooks, setDbBooks] = useState<BookType[]>();
+  // const [dbBooks, setDbBooks] = useState<BookType[]>();
+  const [dbBooks, setDbBooks] = useState<BookType[] | null>(null); // Initialiser avec null
 
   console.log("%c 111+++++**books from BDD", "color: tomato", dbBooks);
   if (dbBooks) console.log("+++books[0] from BDD", dbBooks[0]?.title);
@@ -111,11 +112,6 @@ const BooksSearchPage = (): JSX.Element => {
 
   // DEBUT============================FAIRE HOOK PERSO !!!
   const fetchAPIBooks = (booksApiUrl: string): Promise<BookType[]> => {
-    /////////////////////// Pk n'affiche pas dbBooks !!!
-    ///////////////////////
-    ///////////////////////
-    ///////////////////////
-    ///////////////////////
     console.log("+++** FETCHER : dbBooks = ", dbBooks);
     // throw new Error(
     //   "Erreur simulée !"
@@ -196,7 +192,7 @@ const BooksSearchPage = (): JSX.Element => {
     data: apiBooks,
     error,
     isLoading,
-  } = useSWR<BookType[]>(dbBooks ? booksApiUrl : null, fetchAPIBooks);
+  } = useSWR<BookType[]>(dbBooks !== null ? booksApiUrl : null, fetchAPIBooks);
   // FIN============================FAIRE HOOK PERSO !!!
 
   console.log("222+++++** apiBooks", apiBooks);
