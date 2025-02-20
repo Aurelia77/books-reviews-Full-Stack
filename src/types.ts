@@ -1,7 +1,7 @@
 export type BookType = {
   id: string;
   title: string;
-  author: string;
+  authors: string[];
   description: string;
   categories: string[];
   pageCount: number;

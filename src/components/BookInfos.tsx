@@ -166,7 +166,9 @@ const BookInfos = ({
                     {bookInfos.title}
                   </CardTitle>
                   <CardDescription className="line-clamp-2 text-muted">
-                    {bookInfos.author}
+                    <CardDescription className="text-muted">
+                      {bookInfos.authors.join(", ")}
+                    </CardDescription>
                   </CardDescription>
                   <CardDescription className="overflow-hidden">
                     {bookInfos.categories &&

@@ -283,11 +283,13 @@ export const addBookFirebase = (
 ): Promise<void> => {
   ////console.log("ADD BOOK : ", book);
 
+  console.log("auteur", book.authors);
+
   if (currentUserId) {
     const bookInfoToAddToDB: BookType = {
       id: book.id,
       title: book.title ?? "",
-      author: book.author ?? "",
+      authors: book.authors ?? "",
       description: book.description ?? "",
       categories: book.categories ?? [],
       pageCount: book.pageCount ?? 0,
