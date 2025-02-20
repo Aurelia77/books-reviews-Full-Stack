@@ -4,16 +4,18 @@ import { Button } from "./ui/button";
 
 type BooksSortControls = {
   booksStatus: BookStatusEnum;
-  sortState: {
-    [key in BookStatusEnum]: SortStateType;
-  };
-  setSortState: React.Dispatch<
-    React.SetStateAction<{ [key in BookStatusEnum]: SortStateType }>
-  >;
+  sortState: any;
+  // {
+  //   [key in BookStatusEnum]: SortStateType;
+  // };
+  setSortState: any;
+  // React.Dispatch<
+  //   React.SetStateAction<{ [key in BookStatusEnum]: SortStateType }>
+  // >;
 };
 
 const BooksSortControls = ({
-  booksStatus,
+  booksStatus = BookStatusEnum.booksReadList,
   sortState,
   setSortState,
 }: BooksSortControls): JSX.Element => {
@@ -23,7 +25,10 @@ const BooksSortControls = ({
     //console.log("wwwx criteria", criteria);
     //console.log("wwwx activeTab", activeTab);
 
-    setSortState((prevState) => ({
+    console.log("*-*-sortState", sortState);
+    console.log("*-*-sortState", sortState[booksStatus]);
+
+    setSortState((prevState: SortStateType) => ({
       ...prevState,
       [booksStatus]: {
         criteria,
@@ -55,7 +60,12 @@ const BooksSortControls = ({
             <ChevronDown />
           ))}
       </Button>
-      {booksStatus === BookStatusEnum.booksReadList && (
+      {/* REMETTRE !!!!!!!!!!!!!!!!!!!!!!!! */}
+      {/* REMETTRE !!!!!!!!!!!!!!!!!!!!!!!! */}
+      {/* REMETTRE !!!!!!!!!!!!!!!!!!!!!!!! */}
+      {/* REMETTRE !!!!!!!!!!!!!!!!!!!!!!!! */}
+      {/* REMETTRE !!!!!!!!!!!!!!!!!!!!!!!! */}
+      {/* {booksStatus === BookStatusEnum.booksReadList && (
         <Button
           onClick={() => handleSort("date")}
           className={`flex w-24 gap-2 border border-foreground text-white ${
@@ -72,7 +82,7 @@ const BooksSortControls = ({
               <ChevronDown />
             ))}
         </Button>
-      )}
+      )} */}
       <Button
         onClick={() => handleSort("note")}
         className={`flex w-24 gap-2 border border-foreground text-white ${

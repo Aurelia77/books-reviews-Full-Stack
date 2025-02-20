@@ -4,7 +4,7 @@ import {
   getUserInfosBookFirebase,
 } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
-import { BookStatusEnum, MyInfoBookType, UserType } from "@/types";
+import { BookStatusEnum, UserInfoBookType, UserType } from "@/types";
 import { useEffect, useState } from "react";
 import StarRating from "./StarRating";
 
@@ -24,7 +24,7 @@ const BookUserInfo = ({
   //console.log("555 bookStatus", bookStatus);
   //console.log("555 friendBookStatus", friendBookStatus);
 
-  const [userBookInfos, setUserBookInfos] = useState<MyInfoBookType>();
+  const [userBookInfos, setUserBookInfos] = useState<UserInfoBookType>();
 
   //console.log("789", userBookInfos?.month);
 

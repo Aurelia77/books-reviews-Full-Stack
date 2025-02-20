@@ -4,8 +4,8 @@ import {
   BookStatusEnum,
   BookType,
   MyInfoBookPlusTitleAndNote,
-  MyInfoBookType,
   SortStateType,
+  UserInfoBookType,
   UserType,
   UserTypePlusBooksTitleAndNote,
 } from "@/types";
@@ -27,6 +27,9 @@ const AllBooksLists = ({ userInfo }: AllBooksListsProps): JSX.Element => {
   const [displayedBooksUserInfo, setDisplayedBooksUserInfo] = useState<
     MyInfoBookPlusTitleAndNote[]
   >([]);
+  const [displayedBooksIds, setDisplayedBooksIds] = useState<string[]>([]);
+
+  console.log("zzz123 displayedBooksIds", displayedBooksIds);
 
   // console.log("1 - xICI !!! userInfo", userInfo.booksRead[0]);
   // console.log(
@@ -35,16 +38,14 @@ const AllBooksLists = ({ userInfo }: AllBooksListsProps): JSX.Element => {
   // );
   // console.log("3 - xICI !!! displayedBooksUserInfo", displayedBooksUserInfo[0]);
 
-  const [sortState, setSortState] = useState<{
-    [key in BookStatusEnum]: SortStateType;
-  }>({
+  const [sortState, setSortState] = useState<SortStateType>({
     [BookStatusEnum.booksReadList]: { criteria: "date", order: "asc" },
     [BookStatusEnum.booksInProgressList]: { criteria: "date", order: "asc" },
     [BookStatusEnum.booksToReadList]: { criteria: "date", order: "asc" },
   });
   console.log("www sortState", sortState.booksRead);
 
-  const addTitleAndNoteToBooksInfo = (booksInfo: MyInfoBookType[]) => {
+  const addTitleAndNoteToBooksInfo = (booksInfo: UserInfoBookType[]) => {
     const booksInfoPlusTitle: MyInfoBookPlusTitleAndNote[] = [];
 
     const promises = booksInfo.map((bookInfo) => {
@@ -132,6 +133,7 @@ const AllBooksLists = ({ userInfo }: AllBooksListsProps): JSX.Element => {
 
   useEffect(() => {
     sortBooks(displayedBooksUserInfo, activeTab, sortState);
+    setDisplayedBooksIds(displayedBooksUserInfo.map((book) => book.id));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortState, displayedBooksUserInfo]);
 
@@ -164,7 +166,7 @@ const AllBooksLists = ({ userInfo }: AllBooksListsProps): JSX.Element => {
           activeTab={activeTab}
           sortState={sortState}
           setSortState={setSortState}
-          displayedBooksUserInfo={displayedBooksUserInfo}
+          displayedBooksIds={displayedBooksIds}
           userId={userInfo.id}
         />
         <BooksTabContent
@@ -172,7 +174,7 @@ const AllBooksLists = ({ userInfo }: AllBooksListsProps): JSX.Element => {
           activeTab={activeTab}
           sortState={sortState}
           setSortState={setSortState}
-          displayedBooksUserInfo={displayedBooksUserInfo}
+          displayedBooksIds={displayedBooksIds}
           userId={userInfo.id}
         />
         <BooksTabContent
@@ -180,7 +182,7 @@ const AllBooksLists = ({ userInfo }: AllBooksListsProps): JSX.Element => {
           activeTab={activeTab}
           sortState={sortState}
           setSortState={setSortState}
-          displayedBooksUserInfo={displayedBooksUserInfo}
+          displayedBooksIds={displayedBooksIds}
           userId={userInfo.id}
         />
       </Tabs>

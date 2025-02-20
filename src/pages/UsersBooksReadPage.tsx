@@ -1,4 +1,5 @@
 import BookInfos from "@/components/BookInfos";
+import BooksSortControls from "@/components/BooksSortControls";
 import BookUserInfo from "@/components/BookUserInfo";
 import CustomLinkButton from "@/components/CustomLinkButton";
 import FeedbackMessage from "@/components/FeedbackMessage";
@@ -14,10 +15,13 @@ import {
 import useUserStore from "@/hooks/useUserStore";
 import {
   BookStatusEnum,
-  FriendsBooksReadType,
-  FriendsWhoReadBookType,
+  BookType,
+  BookTypePlusUsersWhoRead,
+  UsersBooksReadType,
+  UsersWhoReadBookType,
   UserType,
 } from "@/types";
+import { sortBookTypes } from "@/utils";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 
@@ -25,6 +29,19 @@ const UsersBooksReadPage = (): JSX.Element => {
   const { currentUser } = useUserStore();
   const [isSearchOnFriendsBooks, setIsSearchOnFriendsBooks] = useState(false);
   const [nbFriends, setNbFriends] = useState<number>(0);
+  const [displayedBooks, setDisplayedBooks] = useState<
+    BookTypePlusUsersWhoRead[]
+  >([]);
+
+  console.log("*-*-displayedBooks", displayedBooks);
+  console.log("*-*-displayedBooks 0", displayedBooks[0]?.title);
+
+  // const [sortState, setSortState] = useState<{ [key in BookStatusEnum]: SortStateType }>({
+  const [sortState, setSortState] = useState<any>({
+    [BookStatusEnum.booksReadList]: { criteria: "title", order: "asc" },
+  });
+
+  console.log("*-*- sortState", sortState);
 
   useEffect(() => {
     getDocsByQueryFirebase<UserType>("users", "id", currentUser?.uid).then(
@@ -36,10 +53,10 @@ const UsersBooksReadPage = (): JSX.Element => {
     );
   }, [currentUser?.uid]);
 
-  const booksReadByFriendsFetcher = (
+  const booksReadByUsersFetcher = (
     currentUserId: string,
     isSearchOnFriendsBooks: boolean
-  ): Promise<FriendsBooksReadType[]> => {
+  ): Promise<UsersBooksReadType[]> => {
     console.log("8888 fetcher");
     console.log("8888 currentUserId", currentUserId);
     console.log("8888 isSearchOnFriendsBooks", isSearchOnFriendsBooks);
@@ -47,6 +64,11 @@ const UsersBooksReadPage = (): JSX.Element => {
       .then((usersReadBooksIds) => {
         console.log("555 friendsBooksReadIds", usersReadBooksIds);
         const promises = usersReadBooksIds.map((bookId) => {
+          ///////////////
+          ///////////////
+          ///////////////
+          ///////////////
+          ///////////////
           return getUsersWhoReadBookFirebase(bookId, currentUserId).then(
             (friendsWhoReadBook) => ({
               bookId,
@@ -78,7 +100,7 @@ const UsersBooksReadPage = (): JSX.Element => {
                     bookIdAndFriendsWhoReadBooksIds.bookId,
                     BookStatusEnum.booksReadList
                   ).then(
-                    (userInfo): FriendsWhoReadBookType => ({
+                    (userInfo): UsersWhoReadBookType => ({
                       //bookId: bookIdAndFriendsWhoReadBooksIds.bookId,
                       userId,
                       userInfoYear: userInfo?.year,
@@ -94,9 +116,9 @@ const UsersBooksReadPage = (): JSX.Element => {
               "555666 Promise.all(promises2)",
               Promise.all(promises2)
             );
-            return Promise.all(promises2).then((friendsWhoReadBook) => ({
+            return Promise.all(promises2).then((usersWhoReadBook) => ({
               bookId: bookIdAndFriendsWhoReadBooksIds.bookId,
-              friendsWhoReadBook,
+              usersWhoReadBook,
             }));
           }
         );
@@ -112,12 +134,12 @@ const UsersBooksReadPage = (): JSX.Element => {
     data: friendsOrUsersReadBooksWithInfo,
     error,
     isLoading,
-  } = useSWR<FriendsBooksReadType[]>(
+  } = useSWR<UsersBooksReadType[]>(
     //currentUser?.uid,
     //booksReadByFriendsFetcher
     [currentUser?.uid, isSearchOnFriendsBooks],
     ([currentUserId, isSearchOnFriendsBooks]: [string, boolean]) =>
-      booksReadByFriendsFetcher(currentUserId, isSearchOnFriendsBooks)
+      booksReadByUsersFetcher(currentUserId, isSearchOnFriendsBooks)
   );
 
   // ici on utilise une constante et pas un state car les message ne change pas et s'affiche seulement si useSWR renvoie une erreur
@@ -128,14 +150,34 @@ const UsersBooksReadPage = (): JSX.Element => {
     friendsOrUsersReadBooksWithInfo?.length
   );
 
-  // useEffect(() => {
-  //   const filteredUsers = otherUsers.filter((user) =>
-  //     user.userName.includes(userNameInput)
-  //   );
-  //   setOtherUsers(filteredUsers);
-  // }, [userNameInput]);
+  useEffect(() => {
+    if (friendsOrUsersReadBooksWithInfo) {
+      const promises = friendsOrUsersReadBooksWithInfo.map(
+        (bookUsersBooksReadType) => {
+          return getDocsByQueryFirebase<BookType>(
+            "books",
+            "id",
+            bookUsersBooksReadType.bookId
+          ).then((booksBookType) => {
+            console.log("books", booksBookType);
+            return {
+              ...booksBookType[0],
+              usersWhoRead: bookUsersBooksReadType.usersWhoReadBook,
+            };
+          });
+        }
+      );
+      Promise.all(promises).then((books) => {
+        setDisplayedBooks(books); // Mise à jour de l'état displayedBooks
+      });
+    }
+  }, [friendsOrUsersReadBooksWithInfo]);
 
-  //console.log("otherUsers", otherUsers);
+  useEffect(() => {
+    console.log("*-*- useEffect sortBookTypes sortState = ", sortState);
+    sortBookTypes(displayedBooks, sortState);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortState, displayedBooks]);
 
   return (
     <div className="h-full min-h-screen max-w-3xl sm:p-2 md:m-auto md:mt-8">
@@ -161,6 +203,11 @@ const UsersBooksReadPage = (): JSX.Element => {
         <p className="text-right mr-3">
           Nombre de résultats : {friendsOrUsersReadBooksWithInfo?.length}{" "}
         </p>
+        <BooksSortControls
+          booksStatus={BookStatusEnum.booksReadList}
+          sortState={sortState}
+          setSortState={setSortState}
+        />
         {isLoading ? (
           <div>
             <BookSkeleton />
@@ -169,36 +216,43 @@ const UsersBooksReadPage = (): JSX.Element => {
           </div>
         ) : error ? (
           <FeedbackMessage message={message} type="error" />
-        ) : friendsOrUsersReadBooksWithInfo &&
-          friendsOrUsersReadBooksWithInfo.length > 0 ? (
-          <ul>
-            {friendsOrUsersReadBooksWithInfo.map(
-              (book: FriendsBooksReadType) => (
-                <li
-                  key={book.bookId}
-                  className="border-4 border-foreground/75 mb-4 rounded-sm"
-                >
-                  {/* Ici on passe le book en props (et pas le bookId comme dans MyBooksPage) */}
-                  <BookInfos
-                    bookId={book.bookId}
-                    //friendsWhoReadBook={friendsWhoReadBook(book.bookId)}
-                  />
+        ) : // {displayedBooksUserInfo && displayedBooksUserInfo.length > 0 ? (
+        //   displayedBooksUserInfo.map((book: UserInfoBookType) => (
+        //     <div className="mb-4" key={book.id}>
+        //       <BookInfos bookId={book.id} userViewId={userId} />
+        //     </div>
+        //   ))
+        // ) : (
+        //   <FeedbackMessage message="Aucun livre pour l'instant" className="mt-8" />
+        // )}
 
-                  {book.friendsWhoReadBook.map((friendBookInfo) => (
-                    <div
-                      className="border-4 border-primary/20 p-2"
-                      key={friendBookInfo.userId}
-                    >
-                      <BookUserInfo
-                        userId={friendBookInfo.userId}
-                        bookInfosId={book.bookId}
-                        bookStatus={BookStatusEnum.booksReadList}
-                      />
-                    </div>
-                  ))}
-                </li>
-              )
-            )}
+        displayedBooks && displayedBooks.length > 0 ? (
+          <ul>
+            {displayedBooks.map((book: BookTypePlusUsersWhoRead) => (
+              <li
+                key={book.id}
+                className="border-4 border-foreground/75 mb-4 rounded-sm"
+              >
+                {/* Ici on passe le book en props (et pas le bookId comme dans MyBooksPage) */}
+                <BookInfos
+                  bookId={book.id}
+                  //friendsWhoReadBook={friendsWhoReadBook(book.bookId)}
+                />
+
+                {book.usersWhoRead.map((friendBookInfo) => (
+                  <div
+                    className="border-4 border-primary/20 p-2"
+                    key={friendBookInfo.userId}
+                  >
+                    <BookUserInfo
+                      userId={friendBookInfo.userId}
+                      bookInfosId={book.id}
+                      bookStatus={BookStatusEnum.booksReadList}
+                    />
+                  </div>
+                ))}
+              </li>
+            ))}
           </ul>
         ) : (
           <FeedbackMessage message="Aucun livre pour l'instant" type="info" />
