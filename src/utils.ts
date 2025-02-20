@@ -3,7 +3,6 @@ import {
   BookType,
   BookTypePlusUsersWhoRead,
   MyInfoBookPlusTitleAndNote,
-  SortStateType,
 } from "./types";
 
 export const cleanDescription = (description: string) => {
