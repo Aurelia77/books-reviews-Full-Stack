@@ -195,8 +195,7 @@ const BooksSearchPage = (): JSX.Element => {
             };
           });
         console.log("9+++++-uniqueApiBooks", uniqueApiBooks);
-        return [];
-        // return uniqueApiBooks;
+        return uniqueApiBooks;
       })
       .catch((error) => {
         console.error("Error fetching books:", error);
