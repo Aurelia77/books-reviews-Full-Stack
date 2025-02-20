@@ -49,7 +49,7 @@ export const sortBooks = (
 };
 
 export const sortBookTypes = (
-  books: BookTypePlusUsersWhoRead[],
+  books: BookTypePlusUsersWhoRead[] | BookType[],
   sortState: { [key in BookStatusEnum]: { criteria: string; order: string } }
 ): BookType[] => {
   console.log("sortBookTypes sortState", sortState);
@@ -77,7 +77,7 @@ export const sortBookTypes = (
         comparison = ratingA - ratingB;
         break;
     }
-    return order === "asc" ? comparison : -comparison;
+    return order === "desc" ? comparison : -comparison;
   });
 };
 
