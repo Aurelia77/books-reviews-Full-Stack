@@ -14,7 +14,44 @@ import { X } from "lucide-react";
 import { useRef, useState } from "react";
 import useSWR from "swr";
 
-// const MAX_RESULTS = 10; // jusqu'à 40
+const otherUsersFetcher = ([userNameInput, currentUserId]: string[]): Promise<
+UserType[]
+> => {
+console.log("otherUsersFetcher", [userNameInput, currentUserId]);
+
+return getDocsByQueryFirebase<UserType>("users")
+  .then((allUsers) => {
+    console.log("otherUsersFetcher allUsers", allUsers);
+    return allUsers.filter((user: UserType) => user.id !== currentUserId);
+  })
+  .then((otherUsers: UserType[]) => {
+    console.log("otherUsersFetcher otherUsers", otherUsers);
+    return otherUsers.filter((user) =>
+      user.userName.toLowerCase().includes(userNameInput.toLowerCase())
+    );
+  })
+  .then((filteredUsers: UserType[]) => {
+    console.log("otherUsersFetcher filteredUsers", filteredUsers);
+    const promises = filteredUsers.map((user: UserType) =>
+      isUserMyFriendFirebase(user.id, currentUserId).then(
+        (isFriend: boolean) => ({
+          ...user,
+          isMyFriend: isFriend,
+        })
+      )
+    );
+
+    return Promise.all(promises).then(
+      (otherUsersFriendType: UserType[]) => {
+        const sortedUsers = otherUsersFriendType.sort(
+          (a: UserType, b: UserType) => (a.userName > b.userName ? 1 : -1)
+        );
+        return sortedUsers;
+        //setOtherUsers(sortedUsers);
+      }
+    );
+  });
+};
 
 const UsersSearchPage = (): JSX.Element => {
   const { currentUser } = useUserStore();
@@ -31,44 +68,7 @@ const UsersSearchPage = (): JSX.Element => {
   // const [inFriendsLists, setInFriendsLists] = useState(true);
   // const [inApi, setInApi] = useState(true);
 
-  const otherUsersFetcher = ([userNameInput, currentUserId]: string[]): Promise<
-    UserType[]
-  > => {
-    console.log("otherUsersFetcher", [userNameInput, currentUserId]);
-
-    return getDocsByQueryFirebase<UserType>("users")
-      .then((allUsers) => {
-        console.log("otherUsersFetcher allUsers", allUsers);
-        return allUsers.filter((user: UserType) => user.id !== currentUserId);
-      })
-      .then((otherUsers: UserType[]) => {
-        console.log("otherUsersFetcher otherUsers", otherUsers);
-        return otherUsers.filter((user) =>
-          user.userName.toLowerCase().includes(userNameInput.toLowerCase())
-        );
-      })
-      .then((filteredUsers: UserType[]) => {
-        console.log("otherUsersFetcher filteredUsers", filteredUsers);
-        const promises = filteredUsers.map((user: UserType) =>
-          isUserMyFriendFirebase(user.id, currentUserId).then(
-            (isFriend: boolean) => ({
-              ...user,
-              isMyFriend: isFriend,
-            })
-          )
-        );
-
-        return Promise.all(promises).then(
-          (otherUsersFriendType: UserType[]) => {
-            const sortedUsers = otherUsersFriendType.sort(
-              (a: UserType, b: UserType) => (a.userName > b.userName ? 1 : -1)
-            );
-            return sortedUsers;
-            //setOtherUsers(sortedUsers);
-          }
-        );
-      });
-  };
+ 
 
   // useEffect(() => {
   //   const filteredUsers = otherUsers.filter((user) =>

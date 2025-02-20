@@ -25,6 +25,80 @@ import { sortBookTypes } from "@/utils";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 
+const booksReadByUsersFetcher = (
+  currentUserId: string,
+  isSearchOnFriendsBooks: boolean
+): Promise<UsersBooksReadType[]> => {
+  console.log("8888 fetcher");
+  console.log("8888 currentUserId", currentUserId);
+  console.log("8888 isSearchOnFriendsBooks", isSearchOnFriendsBooks);
+  return getUsersReadBooksIdsFirebase(currentUserId, isSearchOnFriendsBooks)
+    .then((usersReadBooksIds) => {
+      console.log("555 friendsBooksReadIds", usersReadBooksIds);
+      const promises = usersReadBooksIds.map((bookId) => {
+        ///////////////
+        ///////////////
+        ///////////////
+        ///////////////
+        ///////////////
+        return getUsersWhoReadBookFirebase(bookId, currentUserId).then(
+          (friendsWhoReadBook) => ({
+            bookId,
+            friendsWhoReadBookIds: friendsWhoReadBook.map(
+              (friend) => friend.id
+            ),
+          })
+        );
+      });
+      return Promise.all(promises);
+    })
+    .then((booksIdsAndFriendsWhoReadBooksIds) => {
+      console.log(
+        "555666 friendsWhoReadBook",
+        booksIdsAndFriendsWhoReadBooksIds
+      );
+      // promise2 contient une fonction async, donc on doit utiliser Promise.all(promises2) mais aussi Promise.all(promises1) car promises1 contient promises2.
+      const promises1 = booksIdsAndFriendsWhoReadBooksIds.map(
+        (bookIdAndFriendsWhoReadBooksIds) => {
+          console.log(
+            "56 bookIdAndFriendsWhoReadBooksIds",
+            bookIdAndFriendsWhoReadBooksIds
+          );
+          const promises2 =
+            bookIdAndFriendsWhoReadBooksIds.friendsWhoReadBookIds.map(
+              (userId) => {
+                return getUserInfosBookFirebase(
+                  userId,
+                  bookIdAndFriendsWhoReadBooksIds.bookId,
+                  BookStatusEnum.booksReadList
+                ).then(
+                  (userInfo): UsersWhoReadBookType => ({
+                    //bookId: bookIdAndFriendsWhoReadBooksIds.bookId,
+                    userId,
+                    userInfoYear: userInfo?.year,
+                    userInfoMonth: userInfo?.month,
+                    userInfoNote: userInfo?.userNote,
+                    userInfoComments: userInfo?.userComments || "",
+                  })
+                );
+              }
+            );
+
+          console.log("555666 Promise.all(promises2)", Promise.all(promises2));
+          return Promise.all(promises2).then((usersWhoReadBook) => ({
+            bookId: bookIdAndFriendsWhoReadBooksIds.bookId,
+            usersWhoReadBook,
+          }));
+        }
+      );
+      return Promise.all(promises1);
+    })
+    .catch((error) => {
+      console.error("Error fetching friends read books", error);
+      return [];
+    });
+};
+
 const UsersBooksReadPage = (): JSX.Element => {
   const { currentUser } = useUserStore();
   const [isSearchOnFriendsBooks, setIsSearchOnFriendsBooks] = useState(false);
@@ -52,83 +126,6 @@ const UsersBooksReadPage = (): JSX.Element => {
       }
     );
   }, [currentUser?.uid]);
-
-  const booksReadByUsersFetcher = (
-    currentUserId: string,
-    isSearchOnFriendsBooks: boolean
-  ): Promise<UsersBooksReadType[]> => {
-    console.log("8888 fetcher");
-    console.log("8888 currentUserId", currentUserId);
-    console.log("8888 isSearchOnFriendsBooks", isSearchOnFriendsBooks);
-    return getUsersReadBooksIdsFirebase(currentUserId, isSearchOnFriendsBooks)
-      .then((usersReadBooksIds) => {
-        console.log("555 friendsBooksReadIds", usersReadBooksIds);
-        const promises = usersReadBooksIds.map((bookId) => {
-          ///////////////
-          ///////////////
-          ///////////////
-          ///////////////
-          ///////////////
-          return getUsersWhoReadBookFirebase(bookId, currentUserId).then(
-            (friendsWhoReadBook) => ({
-              bookId,
-              friendsWhoReadBookIds: friendsWhoReadBook.map(
-                (friend) => friend.id
-              ),
-            })
-          );
-        });
-        return Promise.all(promises);
-      })
-      .then((booksIdsAndFriendsWhoReadBooksIds) => {
-        console.log(
-          "555666 friendsWhoReadBook",
-          booksIdsAndFriendsWhoReadBooksIds
-        );
-        // promise2 contient une fonction async, donc on doit utiliser Promise.all(promises2) mais aussi Promise.all(promises1) car promises1 contient promises2.
-        const promises1 = booksIdsAndFriendsWhoReadBooksIds.map(
-          (bookIdAndFriendsWhoReadBooksIds) => {
-            console.log(
-              "56 bookIdAndFriendsWhoReadBooksIds",
-              bookIdAndFriendsWhoReadBooksIds
-            );
-            const promises2 =
-              bookIdAndFriendsWhoReadBooksIds.friendsWhoReadBookIds.map(
-                (userId) => {
-                  return getUserInfosBookFirebase(
-                    userId,
-                    bookIdAndFriendsWhoReadBooksIds.bookId,
-                    BookStatusEnum.booksReadList
-                  ).then(
-                    (userInfo): UsersWhoReadBookType => ({
-                      //bookId: bookIdAndFriendsWhoReadBooksIds.bookId,
-                      userId,
-                      userInfoYear: userInfo?.year,
-                      userInfoMonth: userInfo?.month,
-                      userInfoNote: userInfo?.userNote,
-                      userInfoComments: userInfo?.userComments || "",
-                    })
-                  );
-                }
-              );
-
-            console.log(
-              "555666 Promise.all(promises2)",
-              Promise.all(promises2)
-            );
-            return Promise.all(promises2).then((usersWhoReadBook) => ({
-              bookId: bookIdAndFriendsWhoReadBooksIds.bookId,
-              usersWhoReadBook,
-            }));
-          }
-        );
-        return Promise.all(promises1);
-      })
-      .catch((error) => {
-        console.error("Error fetching friends read books", error);
-        return [];
-      });
-  };
 
   const {
     data: friendsOrUsersReadBooksWithInfo,
