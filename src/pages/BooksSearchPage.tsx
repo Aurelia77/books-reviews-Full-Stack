@@ -1,11 +1,13 @@
 import BookInfos from "@/components/BookInfos";
+import BooksSortControls from "@/components/BooksSortControls";
 import FeedbackMessage from "@/components/FeedbackMessage";
 import BookSkeleton from "@/components/skeletons/BookSkeleton";
 import Title from "@/components/Title";
 import { Input } from "@/components/ui/input";
 import { GOOGLE_BOOKS_API_URL } from "@/constants";
 import { getDocsByQueryFirebase } from "@/firebase/firestore";
-import { BookAPIType, BookType } from "@/types";
+import { BookAPIType, BookStatusEnum, BookType } from "@/types";
+import { sortBookTypes } from "@/utils";
 import { X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -102,6 +104,10 @@ const BooksSearchPage = (): JSX.Element => {
   console.log("authorInputRef", authorInputRef);
   // const [inFriendsLists, setInFriendsLists] = useState(true);
   // const [inApi, setInApi] = useState(true);
+
+  const [sortState, setSortState] = useState<any>({
+    [BookStatusEnum.booksReadList]: { criteria: "title", order: "asc" },
+  });
 
   // DEBUT============================FAIRE HOOK PERSO !!!
   const fetchAPIBooks = (booksApiUrl: string): Promise<BookType[]> => {
@@ -404,6 +410,12 @@ const BooksSearchPage = (): JSX.Element => {
     }
   };
 
+  useEffect(() => {
+    console.log("*-*- useEffect sortBookTypes sortState = ", sortState);
+    sortBookTypes(bdAndApiBooks, sortState);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortState, bdAndApiBooks]);
+
   return (
     <div className="h-full min-h-screen max-w-3xl sm:p-2 md:m-auto md:mt-8">
       <p>Nombre de résultats : {bdAndApiBooks.length} </p>
@@ -489,6 +501,11 @@ const BooksSearchPage = (): JSX.Element => {
         </div>
         {/* <Button type="submit">Ajouter</Button> */}
         {/* <Search className="text-primary/60 drop-shadow-lg" size={40} /> */}
+        <BooksSortControls
+          booksStatus={BookStatusEnum.booksReadList}
+          sortState={sortState}
+          setSortState={setSortState}
+        />
         {isLoading ? (
           <div>
             <BookSkeleton />
