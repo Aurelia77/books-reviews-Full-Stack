@@ -15,7 +15,7 @@ const AverageBookRating = ({
       <StarRating
         value={bookInfos.rating?.totalRating / bookInfos.rating?.count}
       />
-      <p>({bookInfos.rating?.count} avis)</p>
+      <p>({bookInfos.rating?.count} notation(s))</p>
     </div>
   );
 };

@@ -12,16 +12,18 @@ type BooksSortControls = {
   // React.Dispatch<
   //   React.SetStateAction<{ [key in BookStatusEnum]: SortStateType }>
   // >;
+  withDateOption?: boolean;
 };
 
 const BooksSortControls = ({
   booksStatus = BookStatusEnum.booksReadList,
   sortState,
   setSortState,
+  withDateOption = false,
 }: BooksSortControls): JSX.Element => {
   console.log("booksStatus", booksStatus);
 
-  const handleSort = (criteria: "title" | "date" | "note") => {
+  const handleSort = (criteria: "title" | "date" | "note" | "reviews") => {
     //console.log("wwwx criteria", criteria);
     //console.log("wwwx activeTab", activeTab);
 
@@ -60,12 +62,7 @@ const BooksSortControls = ({
             <ChevronDown />
           ))}
       </Button>
-      {/* REMETTRE !!!!!!!!!!!!!!!!!!!!!!!! */}
-      {/* REMETTRE !!!!!!!!!!!!!!!!!!!!!!!! */}
-      {/* REMETTRE !!!!!!!!!!!!!!!!!!!!!!!! */}
-      {/* REMETTRE !!!!!!!!!!!!!!!!!!!!!!!! */}
-      {/* REMETTRE !!!!!!!!!!!!!!!!!!!!!!!! */}
-      {/* {booksStatus === BookStatusEnum.booksReadList && (
+      {booksStatus === BookStatusEnum.booksReadList && withDateOption && (
         <Button
           onClick={() => handleSort("date")}
           className={`flex w-24 gap-2 border border-foreground text-white ${
@@ -82,7 +79,7 @@ const BooksSortControls = ({
               <ChevronDown />
             ))}
         </Button>
-      )} */}
+      )}
       <Button
         onClick={() => handleSort("note")}
         className={`flex w-24 gap-2 border border-foreground text-white ${
@@ -93,6 +90,22 @@ const BooksSortControls = ({
       >
         Note
         {sortState[booksStatus].criteria === "note" &&
+          (sortState[booksStatus].order === "asc" ? (
+            <ChevronUp />
+          ) : (
+            <ChevronDown />
+          ))}
+      </Button>
+      <Button
+        onClick={() => handleSort("reviews")}
+        className={`flex w-24 gap-2 border border-foreground text-white ${
+          sortState[booksStatus].criteria === "reviews"
+            ? "bg-background/90 hover:bg-background/80"
+            : "bg-muted-foreground/50"
+        }`}
+      >
+        Avis
+        {sortState[booksStatus].criteria === "reviews" &&
           (sortState[booksStatus].order === "asc" ? (
             <ChevronUp />
           ) : (

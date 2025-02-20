@@ -27,6 +27,7 @@ const BooksTabContent = ({
       booksStatus={activeTab}
       sortState={sortState}
       setSortState={setSortState}
+      withDateOption={true}
     />
     {displayedBooksIds.length > 0 ? (
       displayedBooksIds.map((bookId: string) => (
