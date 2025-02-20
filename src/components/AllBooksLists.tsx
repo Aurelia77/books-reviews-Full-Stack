@@ -56,9 +56,10 @@ const AllBooksLists = ({ userInfo }: AllBooksListsProps): JSX.Element => {
             return {
               ...bookInfo,
               bookTitle: books[0].title,
-              bookNote: books[0].rating?.count
-                ? books[0].rating?.totalRating / books[0].rating?.count
-                : null,
+              bookNote: books[0].rating,
+              // bookNote: books[0].rating?.count
+              //   ? books[0].rating?.totalRating / books[0].rating?.count
+              //   : null,
             };
           })
           .then((bookInfoPlusTitle) => {
@@ -88,31 +89,31 @@ const AllBooksLists = ({ userInfo }: AllBooksListsProps): JSX.Element => {
   useEffect(() => {
     console.log("ICI !!! USEEFFECT 11111");
 
-    let booksReadInfoPlusTitle: MyInfoBookPlusTitleAndNote[] = [];
-    let booksInProgressInfoPlusTitle: MyInfoBookPlusTitleAndNote[] = [];
-    let booksToReadInfoPlusTitle: MyInfoBookPlusTitleAndNote[] = [];
+    let booksReadInfoPlusTitleAndNote: MyInfoBookPlusTitleAndNote[] = [];
+    let booksInProgressInfoPlusTitleAndNote: MyInfoBookPlusTitleAndNote[] = [];
+    let booksToReadInfoPlusTitleAndNote: MyInfoBookPlusTitleAndNote[] = [];
 
     addTitleAndNoteToBooksInfo(userInfo.booksRead)
       .then((resultBooksRead) => {
         console.log("www booksInfoPlusTitle", resultBooksRead);
-        booksReadInfoPlusTitle = resultBooksRead;
+        booksReadInfoPlusTitleAndNote = resultBooksRead;
         return addTitleAndNoteToBooksInfo(userInfo.booksInProgress); // Retourner la promesse suivante
       })
       .then((resultBooksInProgress) => {
         console.log("www booksInProgressInfoPlusTitle", resultBooksInProgress);
-        booksInProgressInfoPlusTitle = resultBooksInProgress;
+        booksInProgressInfoPlusTitleAndNote = resultBooksInProgress;
         return addTitleAndNoteToBooksInfo(userInfo.booksToRead); // Retourner la promesse suivante
       })
       .then((resultBooksToRead) => {
         console.log("www booksToReadInfoPlusTitle", resultBooksToRead);
-        booksToReadInfoPlusTitle = resultBooksToRead;
+        booksToReadInfoPlusTitleAndNote = resultBooksToRead;
 
         // Mettre à jour l'état une fois que toutes les promesses sont résolues
         setUserInfoPlusTitleAndNote({
           ...userInfo,
-          booksRead: booksReadInfoPlusTitle,
-          booksInProgress: booksInProgressInfoPlusTitle,
-          booksToRead: booksToReadInfoPlusTitle,
+          booksRead: booksReadInfoPlusTitleAndNote,
+          booksInProgress: booksInProgressInfoPlusTitleAndNote,
+          booksToRead: booksToReadInfoPlusTitleAndNote,
         });
       })
       .catch((error) => {

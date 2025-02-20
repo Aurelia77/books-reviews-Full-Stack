@@ -24,9 +24,14 @@ export const sortBooks = (
 ): MyInfoBookPlusTitleAndNote[] => {
   const { criteria, order } = sortState[bookStatus];
 
+  console.log("sortBooks criteria", criteria);
+  console.log("sortBooks order", order);
+
   return books.sort((a, b) => {
     let comparison = 0;
     let yearComparison = 0;
+    const ratingA = a.bookNote ? a.bookNote.totalRating / a.bookNote.count : 0;
+    const ratingB = b.bookNote ? b.bookNote.totalRating / b.bookNote.count : 0;
 
     switch (criteria) {
       case "title":
@@ -41,7 +46,11 @@ export const sortBooks = (
         }
         break;
       case "note":
-        comparison = (a.bookNote ?? 0) - (b.bookNote ?? 0);
+        comparison = ratingA - ratingB;
+        break;
+      case "reviews":
+        console.log("REVIEW", a.bookNote?.count, b.bookNote?.count);
+        comparison = (a.bookNote?.count ?? 0) - (b.bookNote?.count ?? 0);
         break;
     }
     return order === "asc" ? comparison : -comparison;
@@ -75,6 +84,10 @@ export const sortBookTypes = (
           ? b.rating.totalRating / b.rating.count
           : 0;
         comparison = ratingA - ratingB;
+        break;
+      case "reviews":
+        console.log("REVIEW", a.rating?.count, b.rating?.count);
+        comparison = (a.rating?.count ?? 0) - (b.rating?.count ?? 0);
         break;
     }
     return order === "desc" ? comparison : -comparison;

@@ -28,7 +28,7 @@ export type UserInfoBookType = {
 
 export type MyInfoBookPlusTitleAndNote = UserInfoBookType & {
   bookTitle: string;
-  bookNote?: number | null;
+  bookNote?: BookRatingType;
 };
 
 export type MyInfoBookFormType = {
