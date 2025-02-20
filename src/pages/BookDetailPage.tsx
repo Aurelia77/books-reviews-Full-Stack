@@ -50,6 +50,32 @@ import useSWR, { useSWRConfig } from "swr";
 //   commentaires: z.string(),
 // });
 
+const fetchBookInfoDB = async (bookId: string): Promise<BookType | null> => {
+  // throw new Error(
+  //   "Erreur simulée !"
+  // );
+
+  console.log("zzz FETCHING-1 BookInfos", bookId);
+
+  return getDocsByQueryFirebase<BookType>("books", "id", bookId)
+    .then((books: BookType[]) => {
+      console.log(
+        "zzz FETCHING-1 books (après getDocsByQueryFirebase (.then))",
+        bookId,
+        books[0]
+      );
+      if (books.length > 0) {
+        return books[0];
+      } else {
+        return null;
+      }
+    })
+    .catch((error) => {
+      console.error(`Error fetching book with bookId: ${bookId}`, error);
+      return null;
+    });
+};
+
 const BookDetailPage = (): JSX.Element => {
   const { mutate } = useSWRConfig();
 
@@ -86,31 +112,7 @@ const BookDetailPage = (): JSX.Element => {
 
   // 1-DEBUT==================================FAIRE HOOK PERSO !!!
   // 1 - Fonction appelée en 1er : va chercher les info du livre en fonction de son id (si dans notre BDD)
-  const fetchBookInfoDB = async (bookId: string): Promise<BookType | null> => {
-    // throw new Error(
-    //   "Erreur simulée !"
-    // );
-
-    console.log("zzz FETCHING-1 BookInfos", bookId);
-
-    return getDocsByQueryFirebase<BookType>("books", "id", bookId)
-      .then((books: BookType[]) => {
-        console.log(
-          "zzz FETCHING-1 books (après getDocsByQueryFirebase (.then))",
-          bookId,
-          books[0]
-        );
-        if (books.length > 0) {
-          return books[0];
-        } else {
-          return null;
-        }
-      })
-      .catch((error) => {
-        console.error(`Error fetching book with bookId: ${bookId}`, error);
-        return null;
-      });
-  };
+  //  FETCHER mis en dehors
 
   const {
     data: fetchedBookFromId,
@@ -185,7 +187,7 @@ const BookDetailPage = (): JSX.Element => {
           const bookFromAPI: BookType = {
             id: data.id,
             title: data.volumeInfo.title,
-            author: data.volumeInfo?.authors?.[0] ?? "Auteur inconnu",
+            authors: data.volumeInfo.authors, // ?? "Auteur inconnu",
             description: data.volumeInfo.description,
             categories: data.volumeInfo.categories,
             pageCount: data.volumeInfo.pageCount,
@@ -277,24 +279,30 @@ const BookDetailPage = (): JSX.Element => {
               {bookInfos.language}
             </CardDescription>
 
-            <div className="flex gap-5 p-5 py-10 shadow-xl shadow-primary/30">
+            <div className="flex items-start gap-5 p-5 py-10 shadow-xl shadow-primary/30">
               <img
                 src={bookInfos.imageLink || DEFAULT_BOOK_IMAGE}
                 onError={(e) => (e.currentTarget.src = DEFAULT_BOOK_IMAGE)}
-                className="w-32 rounded-sm border border-border object-contain shadow-md shadow-foreground/70"
+                className="w-32 rounded-sm border border-border  object-contain shadow-md shadow-foreground/70"
                 alt={`Image de couverture du livre ${bookInfos?.title}`}
               />
               <CardHeader className="flex flex-col justify-between overflow-hidden">
                 <CardTitle>{bookInfos?.title}</CardTitle>
-                <Link
-                  // path="/mybooks/searchbooks/authors/:author"
-                  to={`/mybooks/searchbooks/authors/${bookInfos?.author}`}
-                  className="text-foreground underline"
-                >
-                  <CardDescription className="text-muted">
-                    {bookInfos?.author}
-                  </CardDescription>
-                </Link>
+                <div className="flex gap-2 flex-wrap">
+                  {bookInfos?.authors &&
+                    bookInfos.authors.map((author, index) => (
+                      <Link
+                        // path="/mybooks/searchbooks/authors/:author"
+                        to={`/mybooks/searchbooks/authors/${author}`}
+                        className="text-foreground underline"
+                        key={index}
+                      >
+                        <CardDescription className="text-muted">
+                          {author}
+                        </CardDescription>
+                      </Link>
+                    ))}
+                </div>
                 <div className="grid grid-cols-2 gap-x-8">
                   {bookInfos?.categories?.map((cat: string, index: number) => (
                     <CardDescription key={index}>{cat}</CardDescription>

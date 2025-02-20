@@ -179,7 +179,7 @@ const BooksSearchPage = (): JSX.Element => {
             return {
               id: book.id,
               title: book.volumeInfo.title,
-              author: book.volumeInfo?.authors?.[0] ?? "Auteur inconnu",
+              authors: book.volumeInfo?.authors, //?.[0] ?? "Auteur inconnu",
               description: book.volumeInfo.description,
               categories: book.volumeInfo.categories,
               pageCount: book.volumeInfo.pageCount,
@@ -366,7 +366,9 @@ const BooksSearchPage = (): JSX.Element => {
               if (authorInput) {
                 shouldIncludeBook =
                   shouldIncludeBook &&
-                  book.author.toLowerCase().includes(authorInput.toLowerCase());
+                  book.authors.some((author) =>
+                    author.toLowerCase().includes(authorInput.toLowerCase())
+                  );
               }
               if (langInput) {
                 console.log(
