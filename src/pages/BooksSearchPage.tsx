@@ -4,6 +4,13 @@ import FeedbackMessage from "@/components/FeedbackMessage";
 import BookSkeleton from "@/components/skeletons/BookSkeleton";
 import Title from "@/components/Title";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { GOOGLE_BOOKS_API_URL } from "@/constants";
 import { getDocsByQueryFirebase } from "@/firebase/firestore";
 import { BookAPIType, BookStatusEnum, BookType } from "@/types";
@@ -87,7 +94,7 @@ const BooksSearchPage = (): JSX.Element => {
   const [booksApiUrl, setBooksApiUrl] = useState(
     `${GOOGLE_BOOKS_API_URL}?q=subject:general&maxResults=${MAX_RESULTS}`
   );
-  console.log("+++**booksApiUrl", booksApiUrl);
+  console.log("fff booksApiUrl", booksApiUrl);
 
   const [bdAndApiBooks, setDbAndApiBooks] = useState<BookType[]>([]);
   console.log("333+++++**bdAndApiBooks", bdAndApiBooks);
@@ -99,9 +106,17 @@ const BooksSearchPage = (): JSX.Element => {
   const [authorInput, setAuthorInput] = useState<string>(
     urlParam.author || localStorage.getItem("authorInput") || ""
   );
-  //console.log("titleInput", titleInput);
+  const [langInput, setLangInput] = useState<string>(
+    urlParam.author ? "" : localStorage.getItem("langInput") || ""
+  );
+
+  console.log("langInput", langInput);
+
+  console.log("Inputs", titleInput, authorInput, langInput);
+
   const titleInputRef = useRef<HTMLInputElement>(null);
   const authorInputRef = useRef<HTMLInputElement>(null);
+
   console.log("authorInputRef", authorInputRef);
   // const [inFriendsLists, setInFriendsLists] = useState(true);
   // const [inApi, setInApi] = useState(true);
@@ -180,7 +195,8 @@ const BooksSearchPage = (): JSX.Element => {
             };
           });
         console.log("9+++++-uniqueApiBooks", uniqueApiBooks);
-        return uniqueApiBooks;
+        return [];
+        // return uniqueApiBooks;
       })
       .catch((error) => {
         console.error("Error fetching books:", error);
@@ -195,7 +211,7 @@ const BooksSearchPage = (): JSX.Element => {
   } = useSWR<BookType[]>(dbBooks !== null ? booksApiUrl : null, fetchAPIBooks);
   // FIN============================FAIRE HOOK PERSO !!!
 
-  console.log("222+++++** apiBooks", apiBooks);
+  console.log("fff apiBooks", apiBooks);
   if (apiBooks && apiBooks.length > 0)
     console.log("212121+++++ apiBooks", apiBooks[0].title);
 
@@ -315,38 +331,57 @@ const BooksSearchPage = (): JSX.Element => {
 
       let queryApi = "";
 
+      // impossible de mettre ensemble ces 2 blocs meme si on se répète (DRY) car sinon queryApi s'incrémente 12 fois à chaque modif du titre par ex !!!
+      if (!titleInput && !authorInput && !langInput) {
+        queryApi = getRandomChar(); // résultats aléatoires si pas de recherche
+      } else {
+        if (titleInput) {
+          if (queryApi)
+            queryApi += `+intitle:${encodeURIComponent(titleInput)}`;
+          else queryApi = `intitle:${encodeURIComponent(titleInput)}`;
+        }
+        if (authorInput) {
+          if (queryApi)
+            queryApi += `+inauthor:${encodeURIComponent(authorInput)}`;
+          else queryApi = `inauthor:${encodeURIComponent(authorInput)}`;
+        }
+        if (langInput) {
+          if (queryApi) queryApi += `&langRestrict=${langInput}`;
+          else queryApi = `books&langRestrict=${langInput}`;
+        }
+      }
+
       getDocsByQueryFirebase<BookType>("books")
         .then((books) => {
-          // if (!titleInput && !authorInput) {
-          //   return books;
-          // }
-          // je vx filtrer les livres de le BDD et mettre à jour l'URL de l'API => selon inputTitle et inputAuthor (s'ils ne sont pas vides)
           return books.filter((book: BookType) => {
-            let shouldIncludeBook = false;
+            let shouldIncludeBook = true;
 
-            if (!titleInput && !authorInput) {
-              queryApi = getRandomChar(); // résultats alléatoires si pas de recherche
-
+            if (!titleInput && !authorInput && !langInput) {
               shouldIncludeBook = true;
             } else {
               if (titleInput) {
-                console.log("queryApi titleInput", titleInput);
-                queryApi += `+intitle:${encodeURIComponent(titleInput)}`;
-                shouldIncludeBook = book.title
-                  .toLowerCase()
-                  .includes(titleInput.toLowerCase());
+                shouldIncludeBook =
+                  shouldIncludeBook &&
+                  book.title.toLowerCase().includes(titleInput.toLowerCase());
               }
               if (authorInput) {
-                queryApi += `+inauthor:${encodeURIComponent(authorInput)}`;
-                shouldIncludeBook = book.author
-                  .toLowerCase()
-                  .includes(authorInput.toLowerCase());
+                shouldIncludeBook =
+                  shouldIncludeBook &&
+                  book.author.toLowerCase().includes(authorInput.toLowerCase());
+              }
+              if (langInput) {
+                console.log(
+                  "%c qqq",
+                  "color: tomato",
+                  langInput,
+                  book.language,
+                  book.title
+                );
+                shouldIncludeBook =
+                  shouldIncludeBook && book.language === langInput;
+                console.log("qqq shouldIncludeBook", shouldIncludeBook);
               }
             }
-
-            setBooksApiUrl(
-              `${GOOGLE_BOOKS_API_URL}?q=${queryApi}&maxResults=${MAX_RESULTS}`
-            );
 
             return shouldIncludeBook;
           });
@@ -356,27 +391,38 @@ const BooksSearchPage = (): JSX.Element => {
           setDbBooks(books);
         })
         .catch((error: Error) => {
-          console.error("Error fetching books: ", error);
+          console.error("Error fetching books:", error);
         });
+
+      setBooksApiUrl(
+        `${GOOGLE_BOOKS_API_URL}?q=${queryApi}&maxResults=${MAX_RESULTS}`
+      );
 
       console.log("useDebounceEffect Titre", titleInput);
       console.log("useDebounceEffect Auteur", authorInput);
       console.log("useDebounceEffect queryApi", queryApi);
     },
-    [titleInput, authorInput],
+    [titleInput, authorInput, langInput],
     500
   );
 
+  ////////////////////////////////////////////
+  ////////////////////////////////////////////
+  ////////////////////////////////////////////
+  ////////////////////////////////////////////
+  ////////////////////////////////////////////voir erreur plus bas : (e)
+  // et voir pk si on choisi anglais on part et reviens => pas anglais ?????
   // utiliser un useCallback ???
   const handleChangeInput = (
-    key: "titleInput" | "authorInput",
-    e: React.ChangeEvent<HTMLInputElement>
+    key: "titleInput" | "authorInput" | "langInput",
+    value: string
   ) => {
-    const value = e.target.value;
     if (key === "titleInput") {
       setTitleInput(value);
     } else if (key === "authorInput") {
       setAuthorInput(value);
+    } else if (key === "langInput") {
+      setLangInput(value);
     }
     localStorage.setItem(key, value);
   };
@@ -385,8 +431,11 @@ const BooksSearchPage = (): JSX.Element => {
 
   useEffect(() => {
     if (urlParam.author) {
+      console.log("************************************");
       localStorage.setItem("titleInput", "");
       localStorage.setItem("authorInput", urlParam.author);
+      localStorage.setItem("langInput", "");
+      // localStorage.setItem("langInput", urlParam.langue);
     }
   }, [urlParam.author]);
 
@@ -412,6 +461,27 @@ const BooksSearchPage = (): JSX.Element => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortState, bdAndApiBooks]);
 
+  // mettre dans fic constantes !
+  // ...existing code...
+  const LANGUAGES = [
+    { name: "Allemand", code: "de" },
+    { name: "Anglais", code: "en" },
+    //{ name: "Arabe", code: "ar" },
+    //{ name: "Coréen", code: "ko" },
+    { name: "Espagnol", code: "es" },
+    { name: "Français", code: "fr" },
+    //{ name: "Grec", code: "el" },
+    //{ name: "Hindi", code: "hi" },
+    { name: "Italien", code: "it" },
+    //{ name: "Japonais", code: "ja" },
+    { name: "Néerlandais", code: "nl" },
+    { name: "Portugais", code: "pt" },
+    //{ name: "Roumain", code: "ro" },
+    //{ name: "Russe", code: "ru" },
+    //{ name: "Turc", code: "tr" },
+  ];
+  // ...existing code...
+
   return (
     <div className="h-full min-h-screen max-w-3xl sm:p-2 md:m-auto md:mt-8">
       <p>Nombre de résultats : {bdAndApiBooks.length} </p>
@@ -427,73 +497,53 @@ const BooksSearchPage = (): JSX.Element => {
           className="sticky top-10 z-10 flex flex-col gap-3 bg-background/70 duration-500"
         >
           <Title>Recherche de livre</Title>
-          {/* <div className="flex justify-around">
-            <div className="flex items-center gap-3">
-              <Switch
-                checked={inFriendsLists}
-                onCheckedChange={(e) => setInFriendsLists(e)}
-                id="inFriendsLists"
-              />
-              <Label htmlFor="inFriendsLists">Listes de mes amis</Label>
-            </div>
-            <div className="flex items-center gap-3">
-              <Switch
-                checked={inApi}
-                onCheckedChange={(e) => setInApi(e)}
-                id="inFriendsLists"
-              />
-              <Label htmlFor="inFriendsLists">En ligne</Label>
-            </div>
-          </div> */}
-          {/* <FormField
-              control={form.control}
-              name="bookTitle"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl> */}
           <div className="relative">
             <Input
               value={titleInput}
               ref={titleInputRef}
               placeholder="Titre"
               // onChange={(e) => setTitleInput(e.target.value)}
-              onChange={(e) => handleChangeInput("titleInput", e)}
+              onChange={(e) => handleChangeInput("titleInput", e.target.value)}
             />
             <X
               onClick={() => handleClearInput("titleInput", setTitleInput)}
               className="absolute right-2 top-2 cursor-pointer"
             />
           </div>
-          {/* <Input placeholder="Titre" {...field} /> */}
-          {/* </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            /> */}
-          {/* <FormField
-              control={form.control}
-              name="bookAuthors"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl> */}
+
           <div className="relative">
             <Input
               value={authorInput}
               ref={authorInputRef}
               placeholder="Auteur(e)"
-              onChange={(e) => handleChangeInput("authorInput", e)}
+              onChange={(e) => handleChangeInput("authorInput", e.target.value)}
             />
             <X
               onClick={() => handleClearInput("authorInput", setAuthorInput)}
               className="absolute right-2 top-2 cursor-pointer"
             />
           </div>
-          {/* <Input placeholder="Auteur(e)" {...field} /> */}
-          {/* </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            /> */}
+          <div className="relative">
+            <Select
+              value={langInput}
+              onValueChange={(e) => handleChangeInput("langInput", e)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Langue" />
+              </SelectTrigger>
+              <SelectContent>
+                {LANGUAGES.map((lang) => (
+                  <SelectItem key={lang.code} value={lang.code}>
+                    {lang.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <X
+              onClick={() => handleClearInput("langInput", setLangInput)}
+              className="absolute right-2 top-2 cursor-pointer"
+            />
+          </div>
         </div>
         {/* <Button type="submit">Ajouter</Button> */}
         {/* <Search className="text-primary/60 drop-shadow-lg" size={40} /> */}
