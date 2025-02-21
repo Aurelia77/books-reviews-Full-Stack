@@ -115,7 +115,7 @@ export const updateBookAverageRatingFirebase = (
   userNote: number | undefined,
   previousNote?: number | null
 ): void => {
-  console.log("userNote", userNote);
+  console.log("999userNote", userNote);
   console.log("previousNote", previousNote);
 
   getDocsByQueryFirebase<BookType>("books", "id", bookId).then((books) => {
@@ -129,12 +129,12 @@ export const updateBookAverageRatingFirebase = (
     // pas besoin if newratting car tjs rempli maintenant !!!
     if (action === "add") {
       if (userNote) {
-        console.log("qqq 1");
+        console.log("999 1");
         if (previousNote) {
-          console.log("qqq 2");
+          console.log("999 2");
           newRating.totalRating += userNote - previousNote;
         } else {
-          console.log("qqq 3");
+          console.log("999 3");
           newRating.count += 1;
           newRating.totalRating += userNote;
         }
@@ -147,7 +147,7 @@ export const updateBookAverageRatingFirebase = (
       }
     }
 
-    console.log("qqq newRating", newRating);
+    console.log("999 newRating", newRating);
 
     setDoc(
       doc(db, "books", bookId),
@@ -169,7 +169,7 @@ export const addOrUpdateBookInfoToMyBooksFirebase = (
     .then((users) => {
       const user = users[0];
 
-      //console.log("999formdata", formData);
+      console.log("999formdata", formData);
 
       if (!user) {
         console.error("User not found");
@@ -285,11 +285,42 @@ export const addBookFirebase = (
 
   console.log("auteur", book.authors);
 
+  //on vérifie d'abord si le livre est déjà dans la base de données
+  return getDocsByQueryFirebase<BookType>("books", "id", book.id)
+    .then((books) => {
+      console.log("books", books);
+
+      if (books.length === 0) {
+        const bookInfoToAddToDB: BookType = {
+          id: book.id,
+          title: book.title ?? "",
+          authors: book.authors ?? [],
+          description: book.description ?? "",
+          categories: book.categories ?? [],
+          pageCount: book.pageCount ?? 0,
+          publishedDate: book.publishedDate ?? "",
+          publisher: book.publisher ?? "",
+          imageLink: book.imageLink ?? "",
+          language: book.language ?? "",
+          isFromAPI: book.isFromAPI ?? false,
+          rating: { totalRating: 0, count: 0 },
+        };
+        return setDoc(doc(db, "books", book.id), bookInfoToAddToDB);
+      }
+    })
+    .then(() =>
+      addOrUpdateBookInfoToMyBooksFirebase(currentUserId, book.id, formData)
+    )
+    .catch((error) => {
+      console.error("Error adding book: ", error);
+      throw error;
+    });
+
   if (currentUserId) {
     const bookInfoToAddToDB: BookType = {
       id: book.id,
       title: book.title ?? "",
-      authors: book.authors ?? "",
+      authors: book.authors ?? [],
       description: book.description ?? "",
       categories: book.categories ?? [],
       pageCount: book.pageCount ?? 0,
