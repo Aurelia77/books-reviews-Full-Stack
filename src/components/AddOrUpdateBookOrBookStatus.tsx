@@ -126,20 +126,9 @@ const AddOrUpdateBookOrBookStatus = ({
     defaultValues: defaultValues,
   });
 
-  ////////////// Voir les 2 fonctions ci dessous getUserInfosBookFirebase => retourne un user avec booksRead = [] !!!!
-  ////////////// Voir les 2 fonctions ci dessous getUserInfosBookFirebase => retourne un user avec booksRead = [] !!!!
-  ////////////// Voir les 2 fonctions ci dessous getUserInfosBookFirebase => retourne un user avec booksRead = [] !!!!
-  ////////////// Voir les 2 fonctions ci dessous getUserInfosBookFirebase => retourne un user avec booksRead = [] !!!!
-  ////////////// Voir les 2 fonctions ci dessous getUserInfosBookFirebase => retourne un user avec booksRead = [] !!!!
-  ////////////// Voir les 2 fonctions ci dessous getUserInfosBookFirebase => retourne un user avec booksRead = [] !!!!
   const updateUserBookInfos = () => {
     console.log("updateUserBookInfos");
     if (bookInMyBooks && bookInfos) {
-      //console.log("UserBookInfos ")
-      //console.log("UserBookInfos ")
-      //console.log("UserBookInfos ")
-      //console.log("UserBookInfos ")
-      //console.log("UserBookInfos ")
       getUserInfosBookFirebase(userId, bookInfos.id, bookInMyBooks).then(
         (myBook) => {
           console.log("updateUserBookInfos !!!!!!!!!!! myBook", myBook);
