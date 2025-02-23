@@ -53,9 +53,9 @@ const UserAccountPage = (): JSX.Element => {
       className="min-h-screen max-w-3xl sm:p-2 md:m-auto md:mt-8"
       //key={userInUrl.userId}
     >
-      <Card>
-        <Title>{userInfo?.userName ?? ""}</Title>
-        <div className="mr-2 flex items-center justify-start gap-10 pl-2">
+      <Card className="mb-6">
+        <div className="mr-2 flex items-center justify-between gap-10 pl-2 max-w-md">
+          <Title>{userInfo?.userName ?? ""}</Title>
           <CardDescription>
             {isFriend ? (
               <div className="flex gap-2">
@@ -76,13 +76,14 @@ const UserAccountPage = (): JSX.Element => {
           {userInfo?.imgURL && (
             <img
               src={userInfo?.imgURL}
-              alt="Image sélectionnée"
+              alt={`Image de profil de ${userInfo?.userName}`}
               width="150"
               height="150"
+              className="rounded-xl"
             />
           )}
           <CardDescription className="m-2 whitespace-pre-wrap">
-            {userInfo?.description}
+            {userInfo?.description || "Aucune description"}
           </CardDescription>
         </div>
       </Card>

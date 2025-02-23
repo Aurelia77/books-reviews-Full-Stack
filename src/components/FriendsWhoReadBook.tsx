@@ -40,16 +40,7 @@ const FriendsWhoReadBook = ({
 
   return friendsWhoReadBook.length > 0 ? (
     <CardFooter className="flex gap-2 bg-gray-500/40">
-      {/* <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild> */}
       <Stars />
-      {/* </TooltipTrigger>
-            <TooltipContent className="-mt-12 ml-8 rounded-md bg-foreground/50 px-2 py-1 text-secondary">
-              <p>Livre lu par un ou plusieurs de mes amis</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider> */}
       <div className="flex flex-row gap-2 ">
         {friendsWhoReadBook.length > 1 ? (
           <p className="font-semibold">Amis qui ont lu ce livre :</p>
