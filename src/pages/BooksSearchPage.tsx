@@ -14,7 +14,7 @@ import {
 import { GOOGLE_BOOKS_API_URL } from "@/constants";
 import { getDocsByQueryFirebase } from "@/firebase/firestore";
 import { BookAPIType, BookStatusEnum, BookType } from "@/types";
-import { sortBookTypes } from "@/utils";
+import { sortBook } from "@/utils";
 import { X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -458,7 +458,7 @@ const BooksSearchPage = (): JSX.Element => {
 
   useEffect(() => {
     console.log("*-*- useEffect sortBookTypes sortState = ", sortState);
-    sortBookTypes(bdAndApiBooks, sortState);
+    sortBook(bdAndApiBooks, sortState);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortState, bdAndApiBooks]);
 

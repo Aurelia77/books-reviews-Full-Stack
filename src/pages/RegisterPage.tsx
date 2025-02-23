@@ -10,12 +10,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { EMPTY_USER } from "@/constants";
 import {
   addOrUpdateUserFirebase,
   registerFirebase,
 } from "@/firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
-import { UserType } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -52,18 +52,6 @@ const registerFormSchema = z
     path: ["verifyPassword"],
   });
 
-const emptyUser: UserType = {
-  id: "",
-  email: "",
-  userName: "",
-  imgURL: "",
-  description: "",
-  booksRead: [],
-  booksInProgress: [],
-  booksToRead: [],
-  friends: [],
-};
-
 const RegisterPage = (): JSX.Element => {
   const navigate = useNavigate();
   const [firebaseError, setFirebaseError] = useState<string | null>(null);
@@ -84,10 +72,10 @@ const RegisterPage = (): JSX.Element => {
     registerFirebase(data.email, data.password)
       .then((newUser) => {
         addOrUpdateUserFirebase(newUser.uid, {
-          ...emptyUser,
+          ...EMPTY_USER,
+          id: newUser.uid,
           email: data.email,
           userName: data.userName,
-          id: newUser.uid,
         });
         navigate("/");
       })

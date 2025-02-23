@@ -10,6 +10,7 @@ import {
 } from "firebase/auth";
 import {
   collection,
+  deleteDoc,
   doc,
   getDocs,
   getFirestore,
@@ -160,12 +161,17 @@ export const updateBookAverageRatingFirebase = (
 };
 
 export const addOrUpdateBookInfoToMyBooksFirebase = (
-  currentUserId: string | undefined,
+  userId: string | undefined,
   bookId: string,
   formData: MyInfoBookFormType,
   previousNote?: number | null
 ): Promise<void> => {
-  return getDocsByQueryFirebase<UserType>("users", "id", currentUserId)
+  console.log("** ADD INFO USER");
+  console.log("**userId", userId);
+  console.log("**bookId", bookId);
+  console.log("**formData", formData);
+
+  return getDocsByQueryFirebase<UserType>("users", "id", userId)
     .then((users) => {
       const user = users[0];
 
@@ -260,7 +266,7 @@ export const addOrUpdateBookInfoToMyBooksFirebase = (
 
       //console.log("99user", user);
 
-      return addOrUpdateUserFirebase(currentUserId, user);
+      return addOrUpdateUserFirebase(userId, user);
     })
     .then(() => {
       updateBookAverageRatingFirebase(
@@ -277,71 +283,49 @@ export const addOrUpdateBookInfoToMyBooksFirebase = (
 };
 
 export const addBookFirebase = (
-  currentUserId: string | undefined,
+  userId: string | undefined,
   book: BookType,
   formData: MyInfoBookFormType
 ): Promise<void> => {
-  ////console.log("ADD BOOK : ", book);
+  console.log("**ADD BOOK : ", book);
 
-  console.log("auteur", book.authors);
+  console.log("currentUserId", userId);
+  console.log("book", book);
+  console.log("formData", formData);
 
   //on vérifie d'abord si le livre est déjà dans la base de données
-  return getDocsByQueryFirebase<BookType>("books", "id", book.id)
-    .then((books) => {
-      console.log("books", books);
+  return (
+    getDocsByQueryFirebase<BookType>("books", "id", book.id)
+      .then((books) => {
+        console.log("books", books);
 
-      if (books.length === 0) {
-        const bookInfoToAddToDB: BookType = {
-          id: book.id,
-          title: book.title ?? "",
-          authors: book.authors ?? [],
-          description: book.description ?? "",
-          categories: book.categories ?? [],
-          pageCount: book.pageCount ?? 0,
-          publishedDate: book.publishedDate ?? "",
-          publisher: book.publisher ?? "",
-          imageLink: book.imageLink ?? "",
-          language: book.language ?? "",
-          isFromAPI: book.isFromAPI ?? false,
-          rating: { totalRating: 0, count: 0 },
-        };
-        return setDoc(doc(db, "books", book.id), bookInfoToAddToDB);
-      }
-    })
-    .then(() =>
-      addOrUpdateBookInfoToMyBooksFirebase(currentUserId, book.id, formData)
-    )
-    .catch((error) => {
-      console.error("Error adding book: ", error);
-      throw error;
-    });
-
-  if (currentUserId) {
-    const bookInfoToAddToDB: BookType = {
-      id: book.id,
-      title: book.title ?? "",
-      authors: book.authors ?? [],
-      description: book.description ?? "",
-      categories: book.categories ?? [],
-      pageCount: book.pageCount ?? 0,
-      publishedDate: book.publishedDate ?? "",
-      publisher: book.publisher ?? "",
-      imageLink: book.imageLink ?? "",
-      language: book.language ?? "",
-      isFromAPI: book.isFromAPI ?? false,
-      rating: { totalRating: 0, count: 0 },
-    };
-    return setDoc(doc(db, "books", book.id), bookInfoToAddToDB)
+        if (books.length === 0) {
+          const bookInfoToAddToDB: BookType = {
+            id: book.id,
+            title: book.title ?? "",
+            authors: book.authors ?? [],
+            description: book.description ?? "",
+            categories: book.categories ?? [],
+            pageCount: book.pageCount ?? 0,
+            publishedDate: book.publishedDate ?? "",
+            publisher: book.publisher ?? "",
+            imageLink: book.imageLink ?? "",
+            language: book.language ?? "",
+            isFromAPI: book.isFromAPI ?? false,
+            rating: { totalRating: 0, count: 0 },
+          };
+          return setDoc(doc(db, "books", book.id), bookInfoToAddToDB);
+        }
+      })
+      // puis on ajoute les infos données par l'utilisateur
       .then(() =>
-        addOrUpdateBookInfoToMyBooksFirebase(currentUserId, book.id, formData)
+        addOrUpdateBookInfoToMyBooksFirebase(userId, book.id, formData)
       )
       .catch((error) => {
-        console.error("Error adding book to Firestore: ", error);
+        console.error("Error adding book: ", error);
         throw error;
-      });
-  } else {
-    return Promise.resolve();
-  }
+      })
+  );
 };
 
 export const addOrUpdateUserFirebase = (
@@ -430,12 +414,12 @@ export const getDocsByQueryFirebase = <T extends BookType | UserType>(
   fieldToQuery?: string,
   valueToQuery?: string | boolean | number
 ): Promise<T[]> => {
-  console.log(
-    "**********FIREBASE zzz FETCHING-1 getDocsByQueryFirebase",
-    collectionName,
-    fieldToQuery,
-    valueToQuery
-  );
+  // console.log(
+  //   "**********FIREBASE zzz FETCHING-1 getDocsByQueryFirebase",
+  //   collectionName,
+  //   fieldToQuery,
+  //   valueToQuery
+  // );
   const q = query(
     collection(db, collectionName),
     ...(fieldToQuery && valueToQuery
@@ -445,19 +429,25 @@ export const getDocsByQueryFirebase = <T extends BookType | UserType>(
 
   //console.log("456", collectionName, fieldToQuery, valueToQuery);
 
-  return getDocs(q)
-    .then((querySnapshot) => {
-      const docs: T[] = [];
-      querySnapshot.forEach((doc) => {
-        docs.push(doc.data() as T);
+  const currentUser = useUserStore.getState().currentUser;
+
+  if (currentUser) {
+    return getDocs(q)
+      .then((querySnapshot) => {
+        const docs: T[] = [];
+        querySnapshot.forEach((doc) => {
+          docs.push(doc.data() as T);
+        });
+        ////console.log("DOCS", docs);
+        return docs;
+      })
+      .catch((error) => {
+        console.error("Error getting documents: ", error);
+        throw error;
       });
-      ////console.log("DOCS", docs);
-      return docs;
-    })
-    .catch((error) => {
-      console.error("Error getting documents: ", error);
-      throw error;
-    });
+  } else {
+    return Promise.resolve([]);
+  }
 };
 
 export const getUserInfosBookFirebase = (
@@ -910,6 +900,27 @@ export const deleteUserIdToMyFriendsFirebase = (
 //       throw error;
 //     });
 // };
+
+export const deleteAllDatas = (): void => {
+  const usersCollection = collection(db, "users");
+  const booksCollection = collection(db, "books");
+
+  const deleteUsers = getDocs(usersCollection).then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+      deleteDoc(doc.ref);
+    });
+  });
+
+  const deleteBooks = getDocs(booksCollection).then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+      deleteDoc(doc.ref);
+    });
+  });
+
+  Promise.all([deleteUsers, deleteBooks]).then(() => {
+    console.log("All datas deleted");
+  });
+};
 
 export const deleteBookFromMyBooksFirebase = (
   currentUserId: string | undefined,

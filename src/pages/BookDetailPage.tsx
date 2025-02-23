@@ -278,7 +278,6 @@ const BookDetailPage = (): JSX.Element => {
             <CardDescription className="absolute right-2 top-2 rounded-full bg-secondary/60 px-3 py-1 text-secondary-foreground shadow-sm shadow-foreground">
               {bookInfos.language}
             </CardDescription>
-
             <div className="flex items-start gap-5 p-5 py-10 shadow-xl shadow-primary/30">
               <img
                 src={bookInfos.imageLink || DEFAULT_BOOK_IMAGE}
@@ -286,7 +285,7 @@ const BookDetailPage = (): JSX.Element => {
                 className="w-32 rounded-sm border border-border  object-contain shadow-md shadow-foreground/70"
                 alt={`Image de couverture du livre ${bookInfos?.title}`}
               />
-              <CardHeader className="flex flex-col justify-between overflow-hidden">
+              <CardHeader className="flex flex-col justify-between overflow-hidden gap-4">
                 <CardTitle>{bookInfos?.title}</CardTitle>
                 <div className="flex gap-2 flex-wrap">
                   {bookInfos?.authors &&

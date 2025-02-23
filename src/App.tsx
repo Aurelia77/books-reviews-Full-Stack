@@ -14,6 +14,7 @@ import ResetPasswordPage from "./pages/ResetPasswordPage";
 import UserAccountPage from "./pages/UserAccountPage";
 import UsersBooksReadPage from "./pages/UsersBooksReadPage";
 import UsersSearchPage from "./pages/UsersSearchPage";
+import AdminPage from "./pages/AdminPage";
 
 const App = (): JSX.Element => {
   return (
@@ -43,6 +44,7 @@ const App = (): JSX.Element => {
               />
               <Route path="/resetpassword" element={<ResetPasswordPage />} />
               <Route path="*" element={<NotFound404Page />} />
+              <Route path="/admin" element={<AdminPage />} />
             </Routes>
           </div>
           <Footer />
