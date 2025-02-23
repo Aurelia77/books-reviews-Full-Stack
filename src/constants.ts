@@ -45,3 +45,21 @@ export const MONTHS = [
   "Novembre",
   "Décembre",
 ];
+
+export const LANGUAGES = [
+  { name: "Allemand", code: "de" },
+  { name: "Anglais", code: "en" },
+  //{ name: "Arabe", code: "ar" },
+  //{ name: "Coréen", code: "ko" },
+  { name: "Espagnol", code: "es" },
+  { name: "Français", code: "fr" },
+  //{ name: "Grec", code: "el" },
+  //{ name: "Hindi", code: "hi" },
+  { name: "Italien", code: "it" },
+  //{ name: "Japonais", code: "ja" },
+  { name: "Néerlandais", code: "nl" },
+  { name: "Portugais", code: "pt" },
+  //{ name: "Roumain", code: "ro" },
+  //{ name: "Russe", code: "ru" },
+  //{ name: "Turc", code: "tr" },
+];

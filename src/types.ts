@@ -61,6 +61,7 @@ export type UserTypePlusBooksTitleAndNote = UserType & {
 
 export type UserBookInfoType = {
   userName: string;
+  imgURL: string;
   userId: string;
   userComments: string;
   userNote?: number;

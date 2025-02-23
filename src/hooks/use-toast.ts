@@ -155,7 +155,7 @@ function toast({ ...props }: Toast) {
       ...props,
       id,
       open: true,
-      className: "bg-primary/90 mt-8",
+      className: "bg-red-400/75",
       onOpenChange: (open) => {
         if (!open) dismiss();
       },

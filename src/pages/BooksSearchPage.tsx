@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { GOOGLE_BOOKS_API_URL } from "@/constants";
+import { GOOGLE_BOOKS_API_URL, LANGUAGES } from "@/constants";
 import { getDocsByQueryFirebase } from "@/firebase/firestore";
 import { BookAPIType, BookStatusEnum, BookType } from "@/types";
 import { sortBook } from "@/utils";
@@ -223,53 +223,6 @@ const BooksSearchPage = (): JSX.Element => {
     if (titleInputRef.current) {
       titleInputRef.current.focus();
     }
-
-    // getDocsByQueryFirebase<BookType>("books")
-    //   .then((books) => {
-    //     return filterBooks(books, titleInput, authorInput);
-    //   })
-    //   .then((books: BookType[]) => {
-    //     console.log("++++** books from BDD dans USEEFFECT-1", books);
-    //     setDbBooks(books);
-    //   })
-    //   .catch((error: Error) => {
-    //     console.error("Error fetching books: ", error);
-    //   });
-    //////////////
-    //////////////
-    //////////////
-    //////////////
-    // getDocsByQueryFirebase<BookType>("books")
-    //   .then((books) => {
-    //     // if (!titleInput && !authorInput) {
-    //     //   return books;
-    //     // }
-    //     // je vx filtrer les livres selon inputTitle et inputAuthor s'ils ne sont pas vides
-    //     return books.filter((book: BookType) => {
-    //       if (titleInput && authorInput) {
-    //         return (
-    //           book.title.toLowerCase().includes(titleInput.toLowerCase()) &&
-    //           book.author.toLowerCase().includes(authorInput.toLowerCase())
-    //         );
-    //       } else if (titleInput) {
-    //         return book.title.toLowerCase().includes(titleInput.toLowerCase());
-    //       } else if (authorInput) {
-    //         return book.author
-    //           .toLowerCase()
-    //           .includes(authorInput.toLowerCase());
-    //       } else {
-    //         return book;
-    //       }
-    //     });
-    //   })
-    //   .then((books: BookType[]) => {
-    //     console.log("++++** books from BDD dans USEEFFECT-1", books);
-    //     setDbBooks(books);
-    //   })
-    //   .catch((error: Error) => {
-    //     console.error("Error fetching books: ", error);
-    //   });
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -462,30 +415,8 @@ const BooksSearchPage = (): JSX.Element => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortState, bdAndApiBooks]);
 
-  // mettre dans fic constantes !
-  // ...existing code...
-  const LANGUAGES = [
-    { name: "Allemand", code: "de" },
-    { name: "Anglais", code: "en" },
-    //{ name: "Arabe", code: "ar" },
-    //{ name: "Coréen", code: "ko" },
-    { name: "Espagnol", code: "es" },
-    { name: "Français", code: "fr" },
-    //{ name: "Grec", code: "el" },
-    //{ name: "Hindi", code: "hi" },
-    { name: "Italien", code: "it" },
-    //{ name: "Japonais", code: "ja" },
-    { name: "Néerlandais", code: "nl" },
-    { name: "Portugais", code: "pt" },
-    //{ name: "Roumain", code: "ro" },
-    //{ name: "Russe", code: "ru" },
-    //{ name: "Turc", code: "tr" },
-  ];
-  // ...existing code...
-
   return (
     <div className="h-full min-h-screen max-w-3xl sm:p-2 md:m-auto md:mt-8">
-      <p>Nombre de résultats : {bdAndApiBooks.length} </p>
       <div className="flex h-full flex-col gap-6">
         {/* <Form {...form}>
           <form
@@ -497,7 +428,7 @@ const BooksSearchPage = (): JSX.Element => {
           ref={formRef}
           className="sticky top-10 z-10 flex flex-col gap-3 bg-background/70 duration-500"
         >
-          <Title>Recherche de livre</Title>
+          <Title>Recherche de livres</Title>
           <div className="relative">
             <Input
               value={titleInput}
@@ -546,13 +477,7 @@ const BooksSearchPage = (): JSX.Element => {
             />
           </div>
         </div>
-        {/* <Button type="submit">Ajouter</Button> */}
-        {/* <Search className="text-primary/60 drop-shadow-lg" size={40} /> */}
-        <BooksSortControls
-          booksStatus={BookStatusEnum.booksReadList}
-          sortState={sortState}
-          setSortState={setSortState}
-        />
+
         {isLoading ? (
           <div>
             <BookSkeleton />
@@ -562,17 +487,26 @@ const BooksSearchPage = (): JSX.Element => {
         ) : error ? (
           <FeedbackMessage message={message} type="error" />
         ) : bdAndApiBooks?.length > 0 ? (
-          <ul>
-            {bdAndApiBooks.map((book: BookType) => (
-              <li key={book.id} className="mb-4">
-                {/* Ici on passe le book en props (et pas le bookId comme dans MyBooksPage) */}
-                <BookInfos
-                  book={book}
-                  //friendsWhoReadBook={friendsWhoReadBook(book.bookId)}
-                />
-              </li>
-            ))}
-          </ul>
+          <div className="flex flex-col gap-4 items-center">
+            <BooksSortControls
+              booksStatus={BookStatusEnum.booksReadList}
+              sortState={sortState}
+              setSortState={setSortState}
+            />
+            <p>{bdAndApiBooks.length} livres trouvés</p>
+
+            <ul>
+              {bdAndApiBooks.map((book: BookType) => (
+                <li key={book.id} className="mb-4">
+                  {/* Ici on passe le book en props (et pas le bookId comme dans MyBooksPage) */}
+                  <BookInfos
+                    book={book}
+                    //friendsWhoReadBook={friendsWhoReadBook(book.bookId)}
+                  />
+                </li>
+              ))}
+            </ul>
+          </div>
         ) : (
           <FeedbackMessage message="Aucun livre trouvé" type="info" />
         )}

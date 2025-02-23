@@ -207,11 +207,7 @@ const UsersBooksReadPage = (): JSX.Element => {
         <p className="text-right mr-3">
           Nombre de résultats : {friendsOrUsersReadBooksWithInfo?.length}{" "}
         </p>
-        <BooksSortControls
-          booksStatus={BookStatusEnum.booksReadList}
-          sortState={sortState}
-          setSortState={setSortState}
-        />
+
         {isLoading ? (
           <div>
             <BookSkeleton />
@@ -231,33 +227,40 @@ const UsersBooksReadPage = (): JSX.Element => {
         // )}
 
         displayedSortedBooks && displayedSortedBooks.length > 0 ? (
-          <ul>
-            {displayedSortedBooks.map((book: BookTypePlusUsersWhoRead) => (
-              <li
-                key={book.id}
-                className="border-4 border-foreground/75 mb-4 rounded-sm"
-              >
-                {/* Ici on passe le book en props (et pas le bookId comme dans MyBooksPage) */}
-                <BookInfos
-                  bookId={book.id}
-                  //friendsWhoReadBook={friendsWhoReadBook(book.bookId)}
-                />
+          <div>
+            <BooksSortControls
+              booksStatus={BookStatusEnum.booksReadList}
+              sortState={sortState}
+              setSortState={setSortState}
+            />
+            <ul>
+              {displayedSortedBooks.map((book: BookTypePlusUsersWhoRead) => (
+                <li
+                  key={book.id}
+                  className="border-4 border-foreground/75 mb-4 rounded-sm"
+                >
+                  {/* Ici on passe le book en props (et pas le bookId comme dans MyBooksPage) */}
+                  <BookInfos
+                    bookId={book.id}
+                    //friendsWhoReadBook={friendsWhoReadBook(book.bookId)}
+                  />
 
-                {book.usersWhoRead.map((friendBookInfo) => (
-                  <div
-                    className="border-4 border-primary/20 p-2"
-                    key={friendBookInfo.userId}
-                  >
-                    <BookUserInfo
-                      userId={friendBookInfo.userId}
-                      bookInfosId={book.id}
-                      bookStatus={BookStatusEnum.booksReadList}
-                    />
-                  </div>
-                ))}
-              </li>
-            ))}
-          </ul>
+                  {book.usersWhoRead.map((friendBookInfo) => (
+                    <div
+                      className="border-4 border-primary/20 p-2"
+                      key={friendBookInfo.userId}
+                    >
+                      <BookUserInfo
+                        userId={friendBookInfo.userId}
+                        bookInfosId={book.id}
+                        bookStatus={BookStatusEnum.booksReadList}
+                      />
+                    </div>
+                  ))}
+                </li>
+              ))}
+            </ul>
+          </div>
         ) : (
           <FeedbackMessage message="Aucun livre pour l'instant" type="info" />
         )}

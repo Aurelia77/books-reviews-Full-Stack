@@ -88,7 +88,7 @@ const NavBar = (): JSX.Element => {
                 </Link>
               </NavigationMenuItem>
               {/* MON COMPTE */}
-              <NavigationMenuItem className="mt-1">
+              <NavigationMenuItem className={cn(profileImage && "mt-1")}>
                 <Link to={`/account`}>
                   <NavigationMenuLink asChild>
                     <span
@@ -99,8 +99,11 @@ const NavBar = (): JSX.Element => {
                       )}
                     >
                       {profileImage ? (
-                        <Avatar className="border border-foreground/30">
-                          <AvatarImage src={profileImage} />
+                        <Avatar className="flex items-center justify-center">
+                          <AvatarImage
+                            src={profileImage}
+                            className="w-8 h-8 object-cover rounded-full"
+                          />
                         </Avatar>
                       ) : (
                         // {userImgURL !== "" ? (

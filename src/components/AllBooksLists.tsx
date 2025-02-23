@@ -142,10 +142,10 @@ const AllBooksLists = ({ userInfo }: AllBooksListsProps): JSX.Element => {
     <div>
       <Tabs
         defaultValue={DEFAULT_TAB}
-        className="mb-16 mt-4"
+        className="mb-16 mt-4 flex flex-col gap-4"
         onValueChange={(value) => setActiveTab(value as BookStatusEnum)}
       >
-        <TabsList className="w-full max-w-xl">
+        <TabsList className="w-full">
           <TabsTrigger value={BookStatusEnum.booksReadList} className="w-full">
             Lus
           </TabsTrigger>

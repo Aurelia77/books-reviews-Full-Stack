@@ -388,6 +388,7 @@ export const getUsersWhoReadBookCommentsAndNotesFirebase = (
           const book = user.booksRead.find((book) => book.id === bookId);
           return {
             userName: user.userName,
+            imgURL: user.imgURL,
             userId: user.id,
             userComments: book?.userComments ?? "",
             userNote: book?.userNote ?? 0,

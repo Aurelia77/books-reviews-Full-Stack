@@ -39,7 +39,9 @@ const BookInfos = ({
   ////console.log("bookId", bookId);
 
   const [bookInfos, setBookInfos] = useState<BookType | null>(book || null);
-  //console.log("bookInfos", bookInfos);
+  console.log("bookInfos", bookInfos);
+  console.log("bookInfos description", bookInfos?.description);
+
   const [bookInMyList, setBookInMyList] = useState<BookStatusEnum | "">("");
   const [bookInFriendList, setBookInFriendList] = useState<BookStatusEnum | "">(
     ""
@@ -112,30 +114,6 @@ const BookInfos = ({
       );
   }, [bookInfos?.id, currentUser, userViewId]);
 
-  // useEffect(() => {
-  //   // ou gérer le undefined dans fonction bookInMyBooksFirebase ??????????
-  //   findBookCatInUserLibraryFirebase(bookInfos?.id, currentUser?.uid).then(
-  //     (bookInMyList) => {
-  //       //console.log("5552 bookInMyList", bookInMyList);
-  //       setBookInMyList(bookInMyList);
-  //     }
-  //   );
-
-  //   if (userViewId !== currentUser?.uid)
-  //     findBookCatInUserLibraryFirebase(bookInfos?.id, userViewId).then(
-  //       (bookInFriendList) => {
-  //         //console.log("5552 bookInFriendList", bookInFriendList);
-  //         setBookInFriendList(bookInFriendList);
-  //       }
-  //     );
-  // }, [bookInfos?.id, currentUser]);
-
-  // ou ?????????
-  // ou ?????????
-  // ou ?????????
-  // ou ?????????
-  // const { toast } = useToast();
-
   const handleLinkClick = () => {
     if (!currentUser?.uid) {
       toast({
@@ -168,18 +146,6 @@ const BookInfos = ({
                   className="w-32 rounded-sm border border-border object-contain shadow-md shadow-foreground/70"
                   alt={`Image de couverture du livre ${bookInfos?.title}`}
                 />
-                {/* {bookInfos.imageLink ? (
-                  <img
-                    src={bookInfos.imageLink}
-                    onError={(e) => (e.currentTarget.style.display = "none")}
-                    className="w-32 rounded-sm border border-border object-contain shadow-md shadow-foreground/70"
-                    alt={`Image de couverture du livre ${bookInfos?.title}`}
-                  />
-                ) : (
-                  <div className="flex h-48 w-32 items-center justify-center rounded-sm border border-border bg-gray-200 shadow-md shadow-foreground/70">
-                    <span className="text-gray-500">Image non disponible</span>
-                  </div>
-                )} */}
                 <CardHeader className="gap-3 overflow-hidden">
                   <CardTitle className="line-clamp-4">
                     {bookInfos.title}
