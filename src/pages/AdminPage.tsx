@@ -95,7 +95,7 @@ const DATA_BOOKS_INFO_AH: MyInfoBookFormType[] = [
     bookStatus: BookStatusEnum.booksReadList,
     year: 2023,
     month: 5,
-    userNote: 4,
+    userNote: 5,
 
     userComments: "AH Odeur LU !!!",
   },
@@ -185,10 +185,7 @@ const AdminPage = (): JSX.Element => {
       <Title>Admin Page</Title>
       <Title level={2}>AJOUT</Title>
 
-      <ol
-        style={{ listStyleType: "decimal" }}
-        className="flex flex-col gap-4 mb-8"
-      >
+      <ol className="flex flex-col gap-4 m-2">
         <li>Créer compte AAA</li>
         <li>Créer compte AH</li>
         <li>AJOUTER l'id de AAA dans fonction addBooksAndUsersInfos</li>
@@ -218,7 +215,7 @@ const AdminPage = (): JSX.Element => {
             ////////////////////////////////////////////////////////////////////////////
             onClick={() =>
               addBooksAndUsersInfos(
-                "n4sDMU6mjcSSYQQislQYMkkUZlq2", //////////// ID AAA ICI
+                "RVpdJRqRuOYPQAIsyswmJ7aOV0p2", //////////// ID AAA ICI
                 DATA_BOOKS_INFO_AAA
               )
             }
@@ -232,10 +229,7 @@ const AdminPage = (): JSX.Element => {
             Supprimer toutes les données
           </Button>
           <Title level={2}>SUPPRESSION</Title>
-          <ol
-            style={{ listStyleType: "decimal" }}
-            className="flex flex-col gap-4 mb-8"
-          >
+          <ol className="flex flex-col gap-4 m-2">
             <li>Clic sur BOUTON Supprimer toutes les données</li>
             <li>SUPPRIMER les utilisateurs enregistrés, à la main</li>
           </ol>

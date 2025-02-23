@@ -129,7 +129,7 @@ export const updateBookAverageRatingFirebase = (
     // pas besoin if newratting car tjs rempli maintenant !!!
     // pas besoin if newratting car tjs rempli maintenant !!!
     if (action === "add") {
-      if (userNote) {
+      if (userNote !== undefined) {
         console.log("999 1");
         if (previousNote) {
           console.log("999 2");
@@ -140,6 +140,8 @@ export const updateBookAverageRatingFirebase = (
           newRating.totalRating += userNote;
         }
       }
+      // si plus de notation on enlève 1 au count
+      if (userNote === 0) newRating.count -= 1;
     } else if (action === "remove") {
       if (userNote) {
         console.log("qqq 4");
@@ -170,6 +172,7 @@ export const addOrUpdateBookInfoToMyBooksFirebase = (
   console.log("**userId", userId);
   console.log("**bookId", bookId);
   console.log("**formData", formData);
+  console.log("**previousNote", previousNote);
 
   return getDocsByQueryFirebase<UserType>("users", "id", userId)
     .then((users) => {

@@ -11,7 +11,7 @@ type UserReviewProps = {
 
 const UserReview = ({ userCommentsAndNote }: UserReviewProps): JSX.Element => {
   return (
-    <div className="p-4">
+    <div className="p-4 flex flex-col gap-2">
       <div className="flex justify-between">
         <Link to={`/account/${userCommentsAndNote.userId}`}>
           <div className="flex gap-2">
@@ -35,10 +35,7 @@ const UserReview = ({ userCommentsAndNote }: UserReviewProps): JSX.Element => {
           <p>Aucune note</p>
         )}
       </div>
-
-      <DialogDescription>
-        {userCommentsAndNote.userComments || " Aucun commentaire"}
-      </DialogDescription>
+      <p>{userCommentsAndNote.userComments || " Aucun commentaire"}</p>
     </div>
   );
 };
