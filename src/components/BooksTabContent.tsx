@@ -23,18 +23,22 @@ const BooksTabContent = ({
   userId,
 }: BooksTabContentProps) => (
   <TabsContent value={value}>
-    <BooksSortControls
-      booksStatus={activeTab}
-      sortState={sortState}
-      setSortState={setSortState}
-      withDateOption={true}
-    />
     {displayedBooksIds.length > 0 ? (
-      displayedBooksIds.map((bookId: string) => (
-        <div className="mb-4" key={bookId}>
-          <BookInfos bookId={bookId} userViewId={userId} />
-        </div>
-      ))
+      <div className="flex flex-col items-center gap-4">
+        <BooksSortControls
+          booksStatus={activeTab}
+          sortState={sortState}
+          setSortState={setSortState}
+          withDateOption={true}
+        />
+        <ul>
+          {displayedBooksIds.map((bookId: string) => (
+            <li className="mb-4" key={bookId}>
+              <BookInfos bookId={bookId} userViewId={userId} />
+            </li>
+          ))}
+        </ul>
+      </div>
     ) : (
       <FeedbackMessage message="Aucun livre pour l'instant" className="mt-8" />
     )}

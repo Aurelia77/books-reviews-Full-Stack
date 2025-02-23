@@ -14,11 +14,11 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import UserReview from "@/components/UserReview";
 import {
   DEFAULT_BOOK_IMAGE,
   GOOGLE_BOOKS_API_URL,
@@ -88,6 +88,7 @@ const BookDetailPage = (): JSX.Element => {
 
   const [bookInfos, setBookInfos] = useState<BookType>();
   console.log("zzz bookInfos", bookInfos);
+  console.log("zzz bookInfos description", bookInfos?.description);
   //console.log("zzz bookInfos rating", bookInfos?.rating);
 
   //const [bookInMyBooks, setBookInMyBooks] = useState<BookStatusEnum | "">(""); //////////////////////////////////////////////////
@@ -291,7 +292,6 @@ const BookDetailPage = (): JSX.Element => {
                   {bookInfos?.authors &&
                     bookInfos.authors.map((author, index) => (
                       <Link
-                        // path="/mybooks/searchbooks/authors/:author"
                         to={`/mybooks/searchbooks/authors/${author}`}
                         className="text-foreground underline"
                         key={index}
@@ -308,76 +308,37 @@ const BookDetailPage = (): JSX.Element => {
                   ))}
                 </div>
                 {bookInfos.rating?.count > 0 ? (
-                  <div>
+                  <div className="flex gap-2 flex-col">
                     <AverageBookRating bookInfos={bookInfos} />
-                    <Dialog
-                    // open={isDialogOpen} onOpenChange={setIsDialogOpen}
-                    >
-                      {/* <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}> */}
-                      {/* {bookInMyBooks === "" ? ( */}
-
+                    <Dialog>
                       <DialogTrigger asChild className="flex justify-center">
                         <Button onClick={fillUserCommentsTab}>
-                          Commentaires et notes des membres
+                          Avis des membres
                         </Button>
-                        {/* absolute -top-1 left-1/4  */}
-                        {/* <Button
-                        onClick={() =>
-                          form.reset({
-                            bookStatus: BookStatusEnum.booksReadList,
-                            year: currentYear,
-                            month: 0,
-                            userNote: 0,
-                            userComments: "",
-                          })
-                        }
-                        className="m-auto mb-6 h-12 w-1/2 border border-border bg-secondary/60 shadow-md shadow-foreground/70"
-                      > */}
-                        {/* </Button> */}
                       </DialogTrigger>
                       <DialogContent className="sm:max-w-[425px]">
-                        {/* {userId ? ( */}
                         <>
                           <DialogHeader>
-                            {/* {bookInMyBooks === "" ? ( */}
                             <DialogTitle>{bookInfos?.title}</DialogTitle>
-                            {/* ) : (
-                            <DialogTitle>MODIFIER MES INFOS</DialogTitle>
-                          )} */}
                           </DialogHeader>
-                          <DialogDescription></DialogDescription>
-                          {usersWhoReadBookCommentsAndNotes.map(
-                            (userCommentsAndNote) => {
-                              return (
-                                <div
-                                  key={userCommentsAndNote.userId}
-                                  className="m-1 rounded-md bg-primary/50 p-1"
-                                >
-                                  <Link
-                                    to={`/account/${userCommentsAndNote.userId}`}
+                          <ul>
+                            {usersWhoReadBookCommentsAndNotes.map(
+                              (userCommentsAndNote) => {
+                                return (
+                                  <li
+                                    key={userCommentsAndNote.userId}
+                                    className="m-1 rounded-md bg-primary/50 p-1"
                                   >
-                                    <DialogDescription className="flex">
-                                      Membre :
-                                      <p className="underline">
-                                        &nbsp;{userCommentsAndNote.userName}
-                                      </p>
-                                    </DialogDescription>
-                                  </Link>
-                                  <DialogDescription>
-                                    Commentaires :{" "}
-                                    {userCommentsAndNote.userComments ||
-                                      " Aucun commentaire"}
-                                  </DialogDescription>
-                                  <DialogDescription>
-                                    Note :{" "}
-                                    {userCommentsAndNote.userNote ||
-                                      " Aucune note"}
-                                  </DialogDescription>
-                                </div>
-                              );
-                              <p>{userCommentsAndNote.userNote} </p>;
-                            }
-                          )}
+                                    <UserReview
+                                      userCommentsAndNote={userCommentsAndNote}
+                                    />
+                                  </li>
+                                );
+                                <p>{userCommentsAndNote.userNote} </p>;
+                              }
+                            )}
+                          </ul>
+
                           <div className="grid gap-4 py-4"></div>
                         </>
                       </DialogContent>
@@ -401,13 +362,6 @@ const BookDetailPage = (): JSX.Element => {
                 />
               )}
               {bookInfos.description ? (
-                //   <CardDescription className="flex gap-2">
-                //   <Quote />
-                //   <p className="line-clamp-3 text-foreground max-w-[90%]">
-                //
-                //     {removeOrRemplaceHtmlTags(bookInfos.description)}
-                //   </p>
-                // </CardDescription>
                 <div className="relative flex gap-3">
                   <Quote className="absolute -top-1" />
                   <p
