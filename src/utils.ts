@@ -17,15 +17,21 @@ export const cleanDescription = (description: string) => {
   );
 };
 
-export const sortBooks = (
+export const sortBooksByStatus = (
   books: MyInfoBookPlusTitleAndNote[],
   bookStatus: BookStatusEnum,
   sortState: { [key in BookStatusEnum]: { criteria: string; order: string } }
 ): MyInfoBookPlusTitleAndNote[] => {
+  console.log("sortBooksByStatus");
+
+  if (books.length <= 1) {
+    return books;
+  }
+
   const { criteria, order } = sortState[bookStatus];
 
-  console.log("sortBooks criteria", criteria);
-  console.log("sortBooks order", order);
+  console.log("*-*-sortBooksByStatus criteria", criteria);
+  console.log("*-*-sortBooksByStatus order", order);
 
   return books.sort((a, b) => {
     let comparison = 0;
@@ -35,7 +41,7 @@ export const sortBooks = (
 
     switch (criteria) {
       case "title":
-        comparison = a.bookTitle.localeCompare(b.bookTitle);
+        comparison = b.bookTitle.localeCompare(a.bookTitle);
         break;
       case "date":
         yearComparison = (a.year ?? 0) - (b.year ?? 0);
@@ -57,19 +63,26 @@ export const sortBooks = (
   });
 };
 
-export const sortBookTypes = (
-  books: BookTypePlusUsersWhoRead[] | BookType[],
+// export const sortBook = (
+//   books: BookTypePlusUsersWhoRead[] | BookType[],
+//   sortState: { [key in BookStatusEnum]: { criteria: string; order: string } }
+// ): BookType[] => {
+export const sortBook = <T extends BookTypePlusUsersWhoRead | BookType>(
+  books: T[],
   sortState: { [key in BookStatusEnum]: { criteria: string; order: string } }
-): BookType[] => {
+): T[] => {
+  if (books.length <= 1) {
+    return books;
+  }
+
   console.log("sortBookTypes sortState", sortState);
 
   //const { criteria, order } = sortState;
   const { criteria, order } = sortState[BookStatusEnum.booksReadList];
 
-  console.log("sortBookTypes criteria", criteria);
-  console.log("sortBookTypes order", order);
+  console.log("*-*-sortBook", books, criteria, order);
 
-  return books.sort((a, b) => {
+  const sortedBooks = books.sort((a, b) => {
     let comparison = 0;
 
     switch (criteria) {
@@ -90,8 +103,9 @@ export const sortBookTypes = (
         comparison = (a.rating?.count ?? 0) - (b.rating?.count ?? 0);
         break;
     }
-    return order === "desc" ? comparison : -comparison;
-  });
-};
 
-// Ajout de la nouvelle fonction sortBookTypes pour trier les livres de type BookType
+    return order === "asc" ? comparison : -comparison;
+  });
+  console.log("*-*- RETURN", sortedBooks);
+  return sortedBooks;
+};

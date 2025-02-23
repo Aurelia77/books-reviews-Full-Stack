@@ -50,6 +50,7 @@ export type UserType = {
   booksToRead: UserInfoBookType[];
   friends: string[];
   isMyFriend?: boolean;
+  isAdmin: boolean;
 };
 
 export type UserTypePlusBooksTitleAndNote = UserType & {

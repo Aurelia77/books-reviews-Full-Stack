@@ -1,4 +1,19 @@
+import { UserType } from "./types";
+
 export const APP_NAME = "Book Reviews";
+
+export const EMPTY_USER: UserType = {
+  id: "",
+  email: "",
+  userName: "",
+  imgURL: "",
+  description: "",
+  booksRead: [],
+  booksInProgress: [],
+  booksToRead: [],
+  friends: [],
+  isAdmin: false,
+};
 
 export const DEFAULT_BOOK_IMAGE =
   "https://placehold.co/150x200?text=Image%0ANon%0ADisponible";

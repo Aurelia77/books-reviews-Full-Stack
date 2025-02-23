@@ -21,7 +21,7 @@ import {
   UsersWhoReadBookType,
   UserType,
 } from "@/types";
-import { sortBookTypes } from "@/utils";
+import { sortBook } from "@/utils";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 
@@ -103,16 +103,21 @@ const UsersBooksReadPage = (): JSX.Element => {
   const { currentUser } = useUserStore();
   const [isSearchOnFriendsBooks, setIsSearchOnFriendsBooks] = useState(false);
   const [nbFriends, setNbFriends] = useState<number>(0);
-  const [displayedBooks, setDisplayedBooks] = useState<
+  const [booksWithAllInfos, setBooksWithAllInfos] = useState<
+    BookTypePlusUsersWhoRead[]
+  >([]);
+  const [displayedSortedBooks, setDisplayedSortedBooks] = useState<
     BookTypePlusUsersWhoRead[]
   >([]);
 
-  console.log("*-*-displayedBooks", displayedBooks);
-  console.log("*-*-displayedBooks 0", displayedBooks[0]?.title);
+  console.log("*-*-displayedSortedBooks", displayedSortedBooks);
+
+  console.log("*-*-displayedBooks", booksWithAllInfos);
+  console.log("*-*-displayedBooks 0", booksWithAllInfos[0]?.title);
 
   // const [sortState, setSortState] = useState<{ [key in BookStatusEnum]: SortStateType }>({
   const [sortState, setSortState] = useState<any>({
-    [BookStatusEnum.booksReadList]: { criteria: "title", order: "asc" },
+    [BookStatusEnum.booksReadList]: { criteria: "title", order: "desc" },
   });
 
   console.log("*-*- sortState", sortState);
@@ -165,16 +170,18 @@ const UsersBooksReadPage = (): JSX.Element => {
         }
       );
       Promise.all(promises).then((books) => {
-        setDisplayedBooks(books); // Mise à jour de l'état displayedBooks
+        setBooksWithAllInfos(books); // Mise à jour de l'état displayedBooks
       });
     }
   }, [friendsOrUsersReadBooksWithInfo]);
 
   useEffect(() => {
     console.log("*-*- useEffect sortBookTypes sortState = ", sortState);
-    sortBookTypes(displayedBooks, sortState);
+    const sortedBooks = sortBook(booksWithAllInfos, sortState);
+    console.log("*-*- useEffect sortBookTypes sortedBooks = ", sortedBooks);
+    setDisplayedSortedBooks(sortedBooks);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortState, displayedBooks]);
+  }, [sortState, booksWithAllInfos]);
 
   return (
     <div className="h-full min-h-screen max-w-3xl sm:p-2 md:m-auto md:mt-8">
@@ -223,9 +230,9 @@ const UsersBooksReadPage = (): JSX.Element => {
         //   <FeedbackMessage message="Aucun livre pour l'instant" className="mt-8" />
         // )}
 
-        displayedBooks && displayedBooks.length > 0 ? (
+        displayedSortedBooks && displayedSortedBooks.length > 0 ? (
           <ul>
-            {displayedBooks.map((book: BookTypePlusUsersWhoRead) => (
+            {displayedSortedBooks.map((book: BookTypePlusUsersWhoRead) => (
               <li
                 key={book.id}
                 className="border-4 border-foreground/75 mb-4 rounded-sm"

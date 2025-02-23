@@ -21,6 +21,7 @@ import BookUserInfo from "./BookUserInfo";
 import FeedbackMessage from "./FeedbackMessage";
 import FriendsWhoReadBook from "./FriendsWhoReadBook";
 import BookSkeleton from "./skeletons/BookSkeleton";
+import { toast } from "@/hooks/use-toast";
 
 // Soit à partir de BooksSearchPage => on passe un objet "book" en props car on a les info nécessaires
 // Soit à partir de MyBooksPage / UserAccountPage => on passe un bookId (et ensuite on va chercher les infos nécessaires dans la BDD avec useSWR)
@@ -129,6 +130,20 @@ const BookInfos = ({
   //     );
   // }, [bookInfos?.id, currentUser]);
 
+  // ou ?????????
+  // ou ?????????
+  // ou ?????????
+  // ou ?????????
+  // const { toast } = useToast();
+
+  const handleLinkClick = () => {
+    if (!currentUser?.uid) {
+      toast({
+        title: "Veuillez vous connecter pour accéder à cette page.",
+      });
+    }
+  };
+
   return (
     <div>
       {isLoading ? (
@@ -138,7 +153,11 @@ const BookInfos = ({
       ) : (
         bookInfos && (
           <Card className="relative">
-            <Link to={`/books/${bookInfos.id}`} className="relative">
+            <Link
+              to={currentUser?.uid ? `/books/${bookInfos.id}` : "/login"}
+              className="relative"
+              onClick={handleLinkClick}
+            >
               <CardDescription className="absolute right-2 top-2 rounded-full bg-secondary/60 px-3 py-1 text-secondary-foreground shadow-sm shadow-foreground">
                 {bookInfos.language}
               </CardDescription>

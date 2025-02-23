@@ -9,7 +9,7 @@ import {
   UserType,
   UserTypePlusBooksTitleAndNote,
 } from "@/types";
-import { sortBooks } from "@/utils";
+import { sortBooksByStatus } from "@/utils";
 import { useEffect, useState } from "react";
 import BooksTabContent from "./BooksTabContent";
 
@@ -133,7 +133,7 @@ const AllBooksLists = ({ userInfo }: AllBooksListsProps): JSX.Element => {
   // }, [userInfoPlusTitle[activeTab], activeTab]);
 
   useEffect(() => {
-    sortBooks(displayedBooksUserInfo, activeTab, sortState);
+    sortBooksByStatus(displayedBooksUserInfo, activeTab, sortState);
     setDisplayedBooksIds(displayedBooksUserInfo.map((book) => book.id));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortState, displayedBooksUserInfo]);

@@ -23,12 +23,12 @@ const BooksSortControls = ({
 }: BooksSortControls): JSX.Element => {
   console.log("booksStatus", booksStatus);
 
+  console.log("*-*-sortState", sortState);
+  console.log("*-*-sortState", sortState[booksStatus]);
+
   const handleSort = (criteria: "title" | "date" | "note" | "reviews") => {
     //console.log("wwwx criteria", criteria);
     //console.log("wwwx activeTab", activeTab);
-
-    console.log("*-*-sortState", sortState);
-    console.log("*-*-sortState", sortState[booksStatus]);
 
     setSortState((prevState: SortStateType) => ({
       ...prevState,
@@ -56,7 +56,7 @@ const BooksSortControls = ({
       >
         Titre
         {sortState[booksStatus].criteria === "title" &&
-          (sortState[booksStatus].order === "asc" ? (
+          (sortState[booksStatus].order === "desc" ? (
             <ChevronUp />
           ) : (
             <ChevronDown />
