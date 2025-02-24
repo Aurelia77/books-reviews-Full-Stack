@@ -42,6 +42,7 @@ h1.form-sticky-active {
     --input: 192.9 22.7% 83.9%;
     --ring: 197.9 87.4% 7.7%;
     --radius: 0.5rem;
+    --friend: 54 100% 45%;
 
     /*  
       --intermediate-color-1: hsl(249.58 49.54% 73%);
@@ -62,13 +63,16 @@ h1.form-sticky-active {
     --muted: hsl(270 94% 28%);    
     --muted-foreground: hsl(192.9, 59.1%, 14.6%);
     --accent: hsl(270, 100%, 95%);
+    
     --accent-foreground: hsl(16.9, 71.8%, 0.3%);
     --destructive: hsl(187.9, 47.7%, 65.1%);    
     --destructive-foreground: hsl(hsl(357, 100%, 31%)%);
     --border: hsl(192.9, 22.7%, 83.9%);
     --input: hsl(192.9, 22.7%, 83.9%);
     --ring: hsl(197.9, 87.4%, 7.7%);
-    --radius: 0.5rem; */
+    --radius: 0.5rem;
+    --friend: hsl(54, 100%, 45%);
+     */
   }
 
   .dark {
@@ -92,6 +96,7 @@ h1.form-sticky-active {
     --border: 279 71% 42%;
     --input: 279 71% 42%;
     --ring: 279.2 74.7% 69.8%;
+    --friend: 54 100% 50%;
     /* --background: hsl(216, 94%, 19%);
     --foreground: hsl(272.3, 16.2%, 92.3%);
     --card: hsl(216, 94%, 19%);
@@ -111,6 +116,8 @@ h1.form-sticky-active {
     
     --border: hsl(268, 60%, 45%);
     --input: hsl(268, 60%, 45%);
-    --ring: hsl(279.2, 74.7%, 69.8%); */
+    --ring: hsl(279.2, 74.7%, 69.8%);
+    --friend: hsl(54, 100%, 50%);
+     */
   }
 }

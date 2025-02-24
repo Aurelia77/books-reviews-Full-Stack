@@ -39,7 +39,7 @@ const FriendsWhoReadBook = ({
   }, [bookId, userViewId, currentUser?.uid]);
 
   return friendsWhoReadBook.length > 0 ? (
-    <CardFooter className="flex gap-2 bg-gray-500/40">
+    <CardFooter className="flex gap-2 bg-gray-500/40 border-4 border-friend">
       <Stars />
       <div className="flex flex-row gap-2 ">
         {friendsWhoReadBook.length > 1 ? (

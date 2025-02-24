@@ -189,8 +189,8 @@ const UsersBooksReadPage = (): JSX.Element => {
         <div className="sticky top-10 z-10 flex flex-col gap-3 bg-background/70 duration-500">
           <Title>Livres lus par les membres</Title>
         </div>
-        <div className="flex gap-4 ml-3 mb-4">
-          <p className={isSearchOnFriendsBooks ? "text-gray-500" : ""}>
+        <div className="flex gap-4 mb-4 items-center justify-center">
+          <p className={isSearchOnFriendsBooks ? "text-gray-500 p-1" : "p-1"}>
             Tous les membres
           </p>
           <Switch
@@ -198,9 +198,15 @@ const UsersBooksReadPage = (): JSX.Element => {
             onCheckedChange={() =>
               setIsSearchOnFriendsBooks(!isSearchOnFriendsBooks)
             }
-            //className="border-2 border-foreground/20"
+            className="border-2 border-foreground/20"
           />
-          <p className={isSearchOnFriendsBooks ? "" : "text-gray-500"}>
+          <p
+            className={
+              isSearchOnFriendsBooks
+                ? "bg-friend p-1 px-2 md:px-3 rounded-full text-black"
+                : "text-gray-500 p-1"
+            }
+          >
             Seulement mes amis
           </p>
         </div>
@@ -216,17 +222,7 @@ const UsersBooksReadPage = (): JSX.Element => {
           </div>
         ) : error ? (
           <FeedbackMessage message={message} type="error" />
-        ) : // {displayedBooksUserInfo && displayedBooksUserInfo.length > 0 ? (
-        //   displayedBooksUserInfo.map((book: UserInfoBookType) => (
-        //     <div className="mb-4" key={book.id}>
-        //       <BookInfos bookId={book.id} userViewId={userId} />
-        //     </div>
-        //   ))
-        // ) : (
-        //   <FeedbackMessage message="Aucun livre pour l'instant" className="mt-8" />
-        // )}
-
-        displayedSortedBooks && displayedSortedBooks.length > 0 ? (
+        ) : displayedSortedBooks && displayedSortedBooks.length > 0 ? (
           <div>
             <BooksSortControls
               booksStatus={BookStatusEnum.booksReadList}
@@ -267,7 +263,7 @@ const UsersBooksReadPage = (): JSX.Element => {
       </div>
       {isSearchOnFriendsBooks && (
         <div>
-          <div className="mb-2 bg-primary/20 p-2">
+          <div className="mb-2 bg-friend/35 p-2">
             <p>Vous avez {nbFriends} amis, vous pouvez en ajouter ici :</p>
           </div>
           <CustomLinkButton className="bg-secondary/60" linkTo="/searchusers">
