@@ -67,7 +67,7 @@ const BookUserInfo = ({
         {/* Pour les livres lus on a des info en plus :
                      - Livre lu par moi => on affiche mes info données sur ce livre,
                      - Livre lu par le user visité => on affiche ses info */}
-        <div className="flex flex-col md:flex-row gap-3 md:justify-between rounded-sm bg-background/50 p-2 pr-6">
+        <div className="flex flex-col gap-3 rounded-sm bg-background/50 p-2 md:p-3 pr-6">
           <h2 className="font-semibold text-muted">
             {currentUser?.uid !== userId
               ? "Infos ajoutées par " + userName + "\u00A0:"

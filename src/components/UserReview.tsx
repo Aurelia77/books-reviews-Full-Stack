@@ -1,4 +1,3 @@
-import { DEFAULT_USER_IMAGE } from "@/constants";
 import { UserBookInfoType } from "@/types";
 import { Link } from "react-router-dom";
 import StarRating from "./StarRating";
@@ -15,15 +14,18 @@ const UserReview = ({ userCommentsAndNote }: UserReviewProps): JSX.Element => {
       <div className="flex justify-between">
         <Link to={`/account/${userCommentsAndNote.userId}`}>
           <div className="flex gap-2">
-            <Avatar>
-              <AvatarImage
-                src={
-                  userCommentsAndNote.imgURL !== ""
-                    ? userCommentsAndNote.imgURL
-                    : DEFAULT_USER_IMAGE
-                }
-              />
-            </Avatar>
+            {userCommentsAndNote.imgURL !== "" ? (
+              <Avatar>
+                <AvatarImage
+                  src={userCommentsAndNote.imgURL}
+                  className="object-cover"
+                />
+              </Avatar>
+            ) : (
+              <Avatar className="flex items-center justify-center bg-secondary">
+                {userCommentsAndNote.userName.charAt(0).toUpperCase()}
+              </Avatar>
+            )}
             <DialogDescription className="flex underline">
               {userCommentsAndNote.userName}
             </DialogDescription>
@@ -35,7 +37,7 @@ const UserReview = ({ userCommentsAndNote }: UserReviewProps): JSX.Element => {
           <p>Aucune note</p>
         )}
       </div>
-      <p>{userCommentsAndNote.userComments || " Aucun commentaire"}</p>
+      <p>{userCommentsAndNote.userComments || "Aucun commentaire"}</p>
     </div>
   );
 };

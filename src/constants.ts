@@ -17,6 +17,7 @@ export const EMPTY_USER: UserType = {
 
 export const DEFAULT_BOOK_IMAGE =
   "https://placehold.co/150x200?text=Image%0ANon%0ADisponible";
+
 export const DEFAULT_USER_IMAGE = "https://placehold.co/150x150?text=X";
 
 export const GOOGLE_BOOKS_API_URL =
