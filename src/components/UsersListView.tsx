@@ -1,7 +1,7 @@
 import { UserType } from "@/types";
-import { Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import FeedbackMessage from "./FeedbackMessage";
+import FriendSparkles from "./FriendSparkles";
 import { Avatar, AvatarImage } from "./ui/avatar";
 
 const UsersListView = ({
@@ -13,9 +13,9 @@ const UsersListView = ({
     // <ul className="flex items-center gap-4 p-5">
 
     userInfoList.length > 0 ? (
-      <ul>
+      <ul className="flex flex-col gap-8">
         {userInfoList.map((friend: UserType) => (
-          <li key={friend.id} className="flex items-center gap-8">
+          <li key={friend.id} className="flex items-center gap-6">
             <Link
               to={`/account/${friend.id}`}
               className="relative flex items-center gap-3 p-3"
@@ -32,20 +32,10 @@ const UsersListView = ({
               <p className="font-semibold text-muted">{friend.userName}</p>
             </Link>
 
-            {friend.isMyFriend && (
-              <div>
-                {friend.isMyFriend ? (
-                  <div className="flex gap-3">
-                    <Sparkles
-                      className="bg-friend rounded-full p-1 "
-                      size={28}
-                      color="black"
-                    />
-                    <p>Ami</p>
-                  </div>
-                ) : (
-                  <p>NON Ami</p>
-                )}
+            {friend.isMyFriend && friend.isMyFriend && (
+              <div className="flex gap-4 items-center">
+                <FriendSparkles />
+                <p>Ami</p>
               </div>
             )}
           </li>

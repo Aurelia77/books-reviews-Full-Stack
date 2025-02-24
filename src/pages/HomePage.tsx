@@ -1,5 +1,14 @@
 import CustomLinkButton from "@/components/CustomLinkButton";
 import useUserStore from "@/hooks/useUserStore";
+import {
+  ArrowDownToLine,
+  BookOpen,
+  CircleUser,
+  LibraryBig,
+  LogIn,
+  Search,
+  Users,
+} from "lucide-react";
 
 const HomePage = (): JSX.Element => {
   const { currentUser: user } = useUserStore();
@@ -9,28 +18,51 @@ const HomePage = (): JSX.Element => {
       {user ? (
         <div className="flex flex-col gap-4">
           <CustomLinkButton className="bg-primary" linkTo="/mybooks">
-            Mes livres
+            Mes Livres
+            <LibraryBig
+              size={40}
+              className="bg-foreground/10 rounded-full p-2"
+            />
           </CustomLinkButton>
-          <CustomLinkButton className="bg-accent/60" linkTo="/usersbooksread">
-            Livres lus par les membres
+          <CustomLinkButton
+            className="bg-accent/60 flex gap-2"
+            linkTo="/usersbooksread"
+          >
+            Lus par les membres
+            <BookOpen size={40} className="bg-foreground/10 rounded-full p-2" />
+            <Users size={40} className="bg-foreground/10 rounded-full p-2" />
           </CustomLinkButton>
           <CustomLinkButton className="bg-primary/60" linkTo="/searchusers">
-            Voir les Membres
+            Les Membres
+            <Users size={40} className="bg-foreground/10 rounded-full p-2" />
+          </CustomLinkButton>
+          <CustomLinkButton className="bg-secondary/60" linkTo="/searchusers">
+            Mon compte
+            <CircleUser
+              size={40}
+              className="bg-foreground/10 rounded-full p-2"
+            />
           </CustomLinkButton>
         </div>
       ) : (
         <div className="flex flex-col gap-4">
-          <CustomLinkButton className="bg-secondary/80" linkTo="/login">
+          <CustomLinkButton className="bg-primary/80" linkTo="/login">
             Se connecter
+            <LogIn size={40} className="bg-foreground/10 rounded-full p-2" />
           </CustomLinkButton>
-          <CustomLinkButton className="bg-primary/80" linkTo="/register">
+          <CustomLinkButton className="bg-secondary/80" linkTo="/register">
             S'inscrire
+            <ArrowDownToLine
+              size={40}
+              className="bg-foreground/10 rounded-full p-2"
+            />
           </CustomLinkButton>
         </div>
       )}
       {/* <CustomLinkButton className="bg-primary/50">Suggestions</CustomLinkButton> */}
-      <CustomLinkButton className="bg-secondary/50" linkTo="/searchbooks">
+      <CustomLinkButton className="bg-primary/50" linkTo="/searchbooks">
         Recherche de livre
+        <Search size={40} className="bg-foreground/10 rounded-full p-2" />
       </CustomLinkButton>
     </div>
   );

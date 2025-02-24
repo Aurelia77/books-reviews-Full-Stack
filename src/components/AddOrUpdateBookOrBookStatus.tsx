@@ -240,36 +240,49 @@ const AddOrUpdateBookOrBookStatus = ({
           </Button>
         </DialogTrigger>
       ) : (
-        <div className="relative flex flex-col gap-2">
-          <div className="flex items-center justify-around">
-            <div className="mb-2 border border-border bg-secondary/60 p-2 shadow-md shadow-foreground/70">
+        <div className="relative flex flex-col">
+          <div className="flex items-center justify-around mb-2">
+            <div className="border border-border bg-secondary/60 p-2 shadow-md rounded-md shadow-foreground/70">
               {bookInMyBooks === BookStatusEnum.booksReadList && (
                 <div className="flex justify-center gap-2">
-                  <p>J'ai lu ce livre</p>
+                  <p>Je l'ai lu !</p>
                   <Check className="rounded-full bg-primary/50 p-1  shadow-sm shadow-foreground" />
                 </div>
               )}
               {bookInMyBooks === BookStatusEnum.booksInProgressList && (
-                <div className="flex justify-center gap-2">
-                  <p>Je suis en train de lire ce livre</p>
+                <div className="flex justify-center gap-2 items-center">
+                  <p>Je suis en train de le lire</p>
                   <Ellipsis className="rounded-full bg-primary/50 p-1  shadow-sm shadow-foreground" />
                 </div>
               )}
               {bookInMyBooks === BookStatusEnum.booksToReadList && (
                 <div className="flex justify-center gap-2">
-                  <p>J'aimerais lire ce livre</p>
+                  <p>J'aimerais le lire</p>
                   <Smile className="rounded-full bg-primary/50 p-1  shadow-sm shadow-foreground" />
                 </div>
               )}
             </div>
             <AlertDialog>
               <AlertDialogTrigger>
-                <X className="bottom-8 mr-0 text-destructive-foreground" />
+                <Button className="bg-red-600/70 flex items-center gap-1">
+                  Supprimer
+                  <X className="bottom-8 mr-0 text-destructive-foreground" />
+                </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle className="text-foreground">
-                    Etes-vous sûr de vouloir supprimer le livre de votre liste ?
+                    Etes-vous sûrs de vouloir supprimer le livre de votre liste
+                    de{" "}
+                    <span className="font-bold text-muted">
+                      {bookInMyBooks === BookStatusEnum.booksReadList &&
+                        "livres lus"}
+                      {bookInMyBooks === BookStatusEnum.booksInProgressList &&
+                        "livres en cours"}
+                      {bookInMyBooks === BookStatusEnum.booksToReadList &&
+                        "livres à lire"}
+                    </span>{" "}
+                    ?
                   </AlertDialogTitle>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -278,7 +291,7 @@ const AddOrUpdateBookOrBookStatus = ({
                   </AlertDialogCancel>
                   <AlertDialogAction
                     onClick={() => handleDeleteBook(bookInfos.id)}
-                    className="bg-destructive-foreground text-card"
+                    className="bg-red-600/70"
                   >
                     Oui !
                   </AlertDialogAction>
@@ -295,7 +308,7 @@ const AddOrUpdateBookOrBookStatus = ({
           <DialogTrigger asChild className="flex justify-center">
             {/* absolute -top-1 left-1/4  */}
             <Button
-              className="m-auto mb-6 h-12 w-1/2 border border-border bg-secondary/60 shadow-md shadow-foreground/70"
+              className="m-auto md:mt-2 mb-6 h-10 w-full md:w-1/2 border border-border bg-primary/60 shadow-md shadow-foreground/70"
               onClick={() => form.reset(defaultValues)}
             >
               Modifier mes infos

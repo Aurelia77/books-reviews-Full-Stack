@@ -102,15 +102,6 @@ const BookDetailPage = (): JSX.Element => {
     mutate(bookId);
   };
 
-  // useEffect(() => {
-  //   const fetchUpdatedBookInfo = async () => {
-  //     const updatedBookInfos = await fetchBookInfoDB(bookId!);
-  //     setBookInfos(updatedBookInfos);
-  //   };
-
-  //   fetchUpdatedBookInfo();
-  // }, [refreshKey]);
-
   // 1-DEBUT==================================FAIRE HOOK PERSO !!!
   // 1 - Fonction appelée en 1er : va chercher les info du livre en fonction de son id (si dans notre BDD)
   //  FETCHER mis en dehors
@@ -264,11 +255,6 @@ const BookDetailPage = (): JSX.Element => {
 
   return (
     <div className="relative min-h-screen max-w-4xl md:m-auto md:mt-8">
-      {isBookInDB ? (
-        <p className="bg-cyan-200 p-4">BDD</p>
-      ) : (
-        <p className="bg-pink-300 p-4">API</p>
-      )}
       {isLoading || apiBooksIsLoading ? (
         <BookSkeleton />
       ) : error || apiBooksError ? (

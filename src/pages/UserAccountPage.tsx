@@ -1,4 +1,5 @@
 import AllBooksLists from "@/components/AllBooksLists";
+import FriendSparkles from "@/components/FriendSparkles";
 import Title from "@/components/Title";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription } from "@/components/ui/card";
@@ -11,7 +12,6 @@ import {
 import useUserStore from "@/hooks/useUserStore";
 import { cn } from "@/lib/utils";
 import { UserType } from "@/types";
-import { Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -62,11 +62,7 @@ const UserAccountPage = (): JSX.Element => {
           <CardDescription>
             {isFriend ? (
               <div className="flex gap-4 items-center">
-                <Sparkles
-                  className="bg-friend rounded-full p-1 "
-                  size={28}
-                  color="black"
-                />
+                <FriendSparkles />
                 <p>Ami</p>
                 <Button onClick={deleteFriendHandler}>Supprimer</Button>
               </div>
