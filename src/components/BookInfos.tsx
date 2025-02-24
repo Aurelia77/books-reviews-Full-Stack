@@ -9,6 +9,7 @@ import {
   findBookCatInUserLibraryFirebase,
   getDocsByQueryFirebase,
 } from "@/firebase/firestore";
+import { toast } from "@/hooks/use-toast";
 import useUserStore from "@/hooks/useUserStore";
 import { BookStatusEnum, BookType } from "@/types";
 import { cleanDescription } from "@/utils";
@@ -21,7 +22,6 @@ import BookUserInfo from "./BookUserInfo";
 import FeedbackMessage from "./FeedbackMessage";
 import FriendsWhoReadBook from "./FriendsWhoReadBook";
 import BookSkeleton from "./skeletons/BookSkeleton";
-import { toast } from "@/hooks/use-toast";
 
 // Soit à partir de BooksSearchPage => on passe un objet "book" en props car on a les info nécessaires
 // Soit à partir de MyBooksPage / UserAccountPage => on passe un bookId (et ensuite on va chercher les infos nécessaires dans la BDD avec useSWR)
@@ -139,72 +139,75 @@ const BookInfos = ({
               <CardDescription className="absolute right-2 top-2 rounded-full bg-secondary/60 px-3 py-1 text-secondary-foreground shadow-sm shadow-foreground">
                 {bookInfos.language}
               </CardDescription>
-              <div className="flex items-start gap-5 p-5 pt-10 shadow-md shadow-secondary/60">
-                <img
-                  src={bookInfos.imageLink || DEFAULT_BOOK_IMAGE}
-                  onError={(e) => (e.currentTarget.src = DEFAULT_BOOK_IMAGE)}
-                  className="w-32 rounded-sm border border-border object-contain shadow-md shadow-foreground/70"
-                  alt={`Image de couverture du livre ${bookInfos?.title}`}
-                />
-                <CardHeader className="gap-3 overflow-hidden">
-                  <CardTitle className="line-clamp-4">
-                    {bookInfos.title}
-                  </CardTitle>
-                  <CardDescription className="line-clamp-2 text-muted">
-                    {bookInfos?.authors?.join(", ")}
-                  </CardDescription>
-                  <CardDescription className="overflow-hidden">
-                    {bookInfos.categories &&
-                      bookInfos.categories.map((cat: string, index: number) => (
-                        <span key={index}>{index > 0 ? ` / ${cat}` : cat}</span>
-                      ))}
-                  </CardDescription>
-                  {bookInfos.description ? (
-                    <CardDescription className="relative flex gap-2">
-                      <Quote className="absolute -top-1" />
-                      <span className="line-clamp-3 max-w-[90%] text-foreground">
-                        &ensp;&ensp;&ensp;&ensp;
-                        {cleanDescription(bookInfos.description)}
-                      </span>
+              <div>
+                <div className="flex items-start gap-5 p-5 pt-10 shadow-md shadow-secondary/60">
+                  <img
+                    src={bookInfos.imageLink || DEFAULT_BOOK_IMAGE}
+                    onError={(e) => (e.currentTarget.src = DEFAULT_BOOK_IMAGE)}
+                    className="w-32 rounded-sm border border-border object-contain shadow-md shadow-foreground/70"
+                    alt={`Image de couverture du livre ${bookInfos?.title}`}
+                  />
+                  <CardHeader className="gap-3 overflow-hidden">
+                    <CardTitle className="line-clamp-4">
+                      {bookInfos.title}
+                    </CardTitle>
+                    <CardDescription className="line-clamp-2 text-muted">
+                      {bookInfos?.authors?.join(", ")}
                     </CardDescription>
-                  ) : (
-                    <p className="italic">{NO_DESCRIPTION} </p>
-                  )}
-                  <AverageBookRating bookInfos={bookInfos} />
+                    <CardDescription className="overflow-hidden">
+                      {bookInfos.categories &&
+                        bookInfos.categories.map(
+                          (cat: string, index: number) => (
+                            <span key={index}>
+                              {index > 0 ? ` / ${cat}` : cat}
+                            </span>
+                          )
+                        )}
+                    </CardDescription>
+                    {bookInfos.description ? (
+                      <CardDescription className="relative flex gap-2">
+                        <Quote className="absolute -top-1" />
+                        <span className="line-clamp-3 max-w-[90%] text-foreground">
+                          &ensp;&ensp;&ensp;&ensp;
+                          {cleanDescription(bookInfos.description)}
+                        </span>
+                      </CardDescription>
+                    ) : (
+                      <p className="italic">{NO_DESCRIPTION} </p>
+                    )}
+                    <AverageBookRating bookInfos={bookInfos} />
+                  </CardHeader>
 
-                  {(bookInMyList !== "" || bookInFriendList !== "") && (
-                    <BookUserInfo
-                      userId={userViewId || currentUser?.uid}
-                      bookInfosId={bookInfos.id}
-                      bookStatus={bookInMyList}
-                      friendBookStatus={bookInFriendList}
-                    />
+                  {bookInMyList && (
+                    <div className="absolute bottom-10 right-2 rounded-full bg-primary/50 p-1  shadow-sm shadow-foreground">
+                      {bookInMyList === BookStatusEnum.booksReadList && (
+                        <div className="flex flex-col items-center p-1 text-xs">
+                          lu
+                          <Check />
+                        </div>
+                      )}
+                      {bookInMyList === BookStatusEnum.booksInProgressList && (
+                        <div className="flex flex-col items-center p-1 text-xs">
+                          en cours
+                          <Ellipsis />
+                        </div>
+                      )}
+                      {bookInMyList === BookStatusEnum.booksToReadList && (
+                        <div className="flex flex-col items-center p-1 text-xs">
+                          à lire
+                          <Smile />
+                        </div>
+                      )}
+                    </div>
                   )}
-                </CardHeader>
-                {bookInMyList && (
-                  <div
-                    className="absolute bottom-10 right-2 rounded-full bg-primary/50 p-1  shadow-sm shadow-foreground"
-                    // className="absolute bottom-2 right-2 rounded-full bg-secondary/60 px-3 py-1 text-secondary-foreground shadow-sm shadow-foreground"
-                  >
-                    {bookInMyList === BookStatusEnum.booksReadList && (
-                      <div className="flex flex-col items-center p-1 text-xs">
-                        lu
-                        <Check />
-                      </div>
-                    )}
-                    {bookInMyList === BookStatusEnum.booksInProgressList && (
-                      <div className="flex flex-col items-center p-1 text-xs">
-                        en cours
-                        <Ellipsis />
-                      </div>
-                    )}
-                    {bookInMyList === BookStatusEnum.booksToReadList && (
-                      <div className="flex flex-col items-center p-1 text-xs">
-                        à lire
-                        <Smile />
-                      </div>
-                    )}
-                  </div>
+                </div>
+                {(bookInMyList !== "" || bookInFriendList !== "") && (
+                  <BookUserInfo
+                    userId={userViewId || currentUser?.uid}
+                    bookInfosId={bookInfos.id}
+                    bookStatus={bookInMyList}
+                    friendBookStatus={bookInFriendList}
+                  />
                 )}
               </div>
             </Link>

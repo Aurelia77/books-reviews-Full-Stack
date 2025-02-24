@@ -59,7 +59,11 @@ const UserAccountPage = (): JSX.Element => {
           <CardDescription>
             {isFriend ? (
               <div className="flex gap-2">
-                <Sparkles />
+                <Sparkles
+                  className="bg-friend rounded-full p-1 "
+                  size={28}
+                  color="black"
+                />
                 <p>Ami</p>
               </div>
             ) : (
