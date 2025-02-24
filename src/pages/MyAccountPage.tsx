@@ -211,8 +211,8 @@ const MyAccountPage = (): JSX.Element => {
       <div className="flex items-center gap-2">
         <Title level={2}>Mes amis</Title>
         <Sparkles
-          className="bg-friend rounded-full p-1 "
-          size={28}
+          className="bg-friend rounded-full p-2"
+          size={40}
           color="black"
         />
       </div>

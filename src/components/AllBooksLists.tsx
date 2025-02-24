@@ -10,6 +10,7 @@ import {
   UserTypePlusBooksTitleAndNote,
 } from "@/types";
 import { sortBooksByStatus } from "@/utils";
+import { BookOpenCheck, Ellipsis, Smile } from "lucide-react";
 import { useEffect, useState } from "react";
 import BooksTabContent from "./BooksTabContent";
 
@@ -146,20 +147,26 @@ const AllBooksLists = ({ userInfo }: AllBooksListsProps): JSX.Element => {
         onValueChange={(value) => setActiveTab(value as BookStatusEnum)}
       >
         <TabsList className="w-full">
-          <TabsTrigger value={BookStatusEnum.booksReadList} className="w-full">
+          <TabsTrigger
+            value={BookStatusEnum.booksReadList}
+            className="w-full flex gap-2"
+          >
             Lus
+            <BookOpenCheck className="rounded-full bg-primary/50 p-1 shadow-sm shadow-foreground" />
           </TabsTrigger>
           <TabsTrigger
             value={BookStatusEnum.booksInProgressList}
-            className="w-full"
+            className="w-full flex gap-2"
           >
             En cours
+            <Ellipsis className="rounded-full bg-primary/50 p-1 shadow-sm shadow-foreground" />
           </TabsTrigger>
           <TabsTrigger
             value={BookStatusEnum.booksToReadList}
-            className="w-full"
+            className="w-full flex gap-2"
           >
             À lire
+            <Smile className="rounded-full bg-primary/50 p-1 shadow-sm shadow-foreground" />
           </TabsTrigger>
         </TabsList>
         <BooksTabContent

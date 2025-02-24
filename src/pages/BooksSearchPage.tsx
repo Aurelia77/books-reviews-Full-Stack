@@ -20,7 +20,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useSWR from "swr";
 
-const MAX_RESULTS = 20; // jusqu'à 40
+const MAX_RESULTS = 40; // jusqu'à 40
 
 const shuffle2ArraysPreserveOrder = <T, U>(
   array1: T[],
@@ -493,11 +493,15 @@ const BooksSearchPage = (): JSX.Element => {
               sortState={sortState}
               setSortState={setSortState}
             />
-            <p>{bdAndApiBooks.length} livres trouvés</p>
-
+            {(titleInput || authorInput || langInput) && (
+              <p>{bdAndApiBooks.length} livres trouvés</p>
+            )}
             <ul>
               {bdAndApiBooks.map((book: BookType) => (
-                <li key={book.id} className="mb-4">
+                <li
+                  key={book.id}
+                  className="mb-4 border-muted border-4 rounded-xl"
+                >
                   {/* Ici on passe le book en props (et pas le bookId comme dans MyBooksPage) */}
                   <BookInfos
                     book={book}

@@ -223,7 +223,7 @@ const UsersBooksReadPage = (): JSX.Element => {
         ) : error ? (
           <FeedbackMessage message={message} type="error" />
         ) : displayedSortedBooks && displayedSortedBooks.length > 0 ? (
-          <div>
+          <div className="flex flex-col gap-4 items-center">
             <BooksSortControls
               booksStatus={BookStatusEnum.booksReadList}
               sortState={sortState}
@@ -233,7 +233,7 @@ const UsersBooksReadPage = (): JSX.Element => {
               {displayedSortedBooks.map((book: BookTypePlusUsersWhoRead) => (
                 <li
                   key={book.id}
-                  className="border-4 border-foreground/75 mb-4 rounded-sm"
+                  className="border-4 border-foreground/60 mb-4 rounded-xl"
                 >
                   {/* Ici on passe le book en props (et pas le bookId comme dans MyBooksPage) */}
                   <BookInfos

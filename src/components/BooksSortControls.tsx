@@ -51,7 +51,7 @@ const BooksSortControls = ({
         className={`flex w-[25%] gap-1 sm:gap-2 border border-foreground text-foreground ${
           sortState[booksStatus].criteria === "title"
             ? "bg-background/90 hover:bg-background/80"
-            : "bg-muted-foreground/50"
+            : "bg-muted-foreground/20"
         }`}
       >
         Titre
@@ -68,7 +68,7 @@ const BooksSortControls = ({
           className={`flex w-[25%] gap-1 sm:gap-2 border border-foreground text-foreground ${
             sortState[booksStatus].criteria === "date"
               ? "bg-background/90 hover:bg-background/80"
-              : "bg-muted-foreground/50"
+              : "bg-muted-foreground/20"
           }`}
         >
           Date
@@ -85,7 +85,7 @@ const BooksSortControls = ({
         className={`flex w-[25%] gap-1 sm:gap-2 border border-foreground text-foreground ${
           sortState[booksStatus].criteria === "note"
             ? "bg-background/90 hover:bg-background/80"
-            : "bg-muted-foreground/50"
+            : "bg-muted-foreground/20"
         }`}
       >
         Favoris
@@ -101,7 +101,7 @@ const BooksSortControls = ({
         className={`flex w-[25%] gap-2 border border-foreground text-foreground ${
           sortState[booksStatus].criteria === "reviews"
             ? "bg-background/90 hover:bg-background/80"
-            : "bg-muted-foreground/50"
+            : "bg-muted-foreground/20"
         }`}
       >
         Notés

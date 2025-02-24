@@ -1,9 +1,10 @@
 import { cn } from "@/lib/utils";
+import { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
 
 type CustomLinkButtonProps = React.HTMLAttributes<HTMLButtonElement> & {
-  children: string;
+  children: ReactNode;
   //opacity?: number;
   linkTo?: string;
   className?: string;
@@ -19,7 +20,7 @@ const CustomLinkButton = ({
       <Button
         size="xxl"
         className={cn(
-          "w-full text-3xl rounded-none sm:rounded-md border border-border shadow-md shadow-foreground/30",
+          "w-full text-3xl rounded-none flex-wrap flex gap-2 sm:rounded-md border border-border shadow-md shadow-foreground/30",
           className
         )}
       >

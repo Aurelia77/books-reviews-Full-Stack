@@ -2,7 +2,7 @@ import { getUsersWhoReadBookFirebase } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Stars from "./Stars";
+import FriendSparkles from "./FriendSparkles";
 import { CardFooter } from "./ui/card";
 
 type FriendsWhoReadBookType = {
@@ -39,8 +39,8 @@ const FriendsWhoReadBook = ({
   }, [bookId, userViewId, currentUser?.uid]);
 
   return friendsWhoReadBook.length > 0 ? (
-    <CardFooter className="flex gap-2 bg-gray-500/40 border-4 border-friend">
-      <Stars />
+    <CardFooter className="flex gap-2 bg-gray-500/40 border border-friend">
+      <FriendSparkles />
       <div className="flex flex-row gap-2 ">
         {friendsWhoReadBook.length > 1 ? (
           <p className="font-semibold">Amis qui ont lu ce livre :</p>

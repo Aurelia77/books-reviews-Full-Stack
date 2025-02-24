@@ -70,19 +70,20 @@ const BookUserInfo = ({
         <div className="flex flex-col gap-3 rounded-sm bg-background/50 p-2 md:p-3 pr-6">
           <h2 className="font-semibold text-muted">
             {currentUser?.uid !== userId
-              ? "Infos ajoutées par " + userName + "\u00A0:"
-              : "Mes infos :"}
+              ? "Info et Avis de " + userName + "\u00A0:"
+              : "Mes Infos et Avis :"}
           </h2>
 
           {status === BookStatusEnum.booksReadList && (
             <div className="flex items-center gap-3">
-              {userBookInfos &&
-                userBookInfos.month !== undefined &&
-                userBookInfos.month !== null &&
-                userBookInfos.month !== 0 && (
-                  <p>{MONTHS[userBookInfos?.month]}</p>
-                )}
-              <p>{userBookInfos?.year}</p>
+              <p>
+                {userBookInfos &&
+                  userBookInfos.month !== undefined &&
+                  userBookInfos.month !== null &&
+                  userBookInfos.month !== 0 &&
+                  `   ${MONTHS[userBookInfos?.month]} / `}
+                {userBookInfos?.year}
+              </p>
               {userBookInfos.userNote ? (
                 <StarRating value={userBookInfos.userNote} />
               ) : (
