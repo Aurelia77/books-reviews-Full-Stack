@@ -25,12 +25,14 @@ const BooksTabContent = ({
   <TabsContent value={value}>
     {displayedBooksIds.length > 0 ? (
       <div className="flex flex-col items-center gap-4">
-        <BooksSortControls
-          booksStatus={activeTab}
-          sortState={sortState}
-          setSortState={setSortState}
-          withDateOption={true}
-        />
+        {displayedBooksIds.length > 1 && (
+          <BooksSortControls
+            booksStatus={activeTab}
+            sortState={sortState}
+            setSortState={setSortState}
+            withDateOption={true}
+          />
+        )}
         <ul>
           {displayedBooksIds.map((bookId: string) => (
             <li className="mb-4" key={bookId}>

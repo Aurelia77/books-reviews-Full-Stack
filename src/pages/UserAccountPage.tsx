@@ -9,6 +9,7 @@ import {
   isUserMyFriendFirebase,
 } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
+import { cn } from "@/lib/utils";
 import { UserType } from "@/types";
 import { Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -50,7 +51,9 @@ const UserAccountPage = (): JSX.Element => {
 
   return (
     <div
-      className="min-h-screen max-w-3xl sm:p-2 md:m-auto md:mt-8"
+      className={cn("min-h-screen max-w-3xl sm:p-2 md:m-auto md:mt-8", {
+        //"bg-friend/20": isFriend,
+      })}
       //key={userInUrl.userId}
     >
       <Card className="mb-6">
@@ -58,23 +61,22 @@ const UserAccountPage = (): JSX.Element => {
           <Title>{userInfo?.userName ?? ""}</Title>
           <CardDescription>
             {isFriend ? (
-              <div className="flex gap-2">
+              <div className="flex gap-4 items-center">
                 <Sparkles
                   className="bg-friend rounded-full p-1 "
                   size={28}
                   color="black"
                 />
                 <p>Ami</p>
+                <Button onClick={deleteFriendHandler}>Supprimer</Button>
               </div>
             ) : (
-              "Non ami"
+              <div className="flex gap-4 items-center">
+                <p>Non ami</p>
+                <Button onClick={addFriendHandler}>Ajouter</Button>
+              </div>
             )}
           </CardDescription>
-          {isFriend ? (
-            <Button onClick={deleteFriendHandler}>Supprimer de mes amis</Button>
-          ) : (
-            <Button onClick={addFriendHandler}>Ajouter à mes amis</Button>
-          )}
         </div>
         <div className="m-4 flex gap-4">
           {userInfo?.imgURL && (

@@ -8,15 +8,7 @@ import {
 import { signoutFirebase } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
 import { cn } from "@/lib/utils";
-import {
-  ArrowLeft,
-  BookOpen,
-  CircleUserRound,
-  House,
-  LogIn,
-  Search,
-  X,
-} from "lucide-react";
+import { ArrowLeft, BookOpen, House, LogIn, Search, X } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { DarkModeToggle } from "./DarkModeToggle";
 import { Avatar, AvatarImage } from "./ui/avatar";
@@ -106,12 +98,12 @@ const NavBar = (): JSX.Element => {
                           />
                         </Avatar>
                       ) : (
-                        // {userImgURL !== "" ? (
-                        //   <Avatar className="border border-foreground">
-                        //     <AvatarImage src={userImgURL} />
-                        //   </Avatar>
-                        // ) : (
-                        <CircleUserRound />
+                        <Avatar className="flex items-center justify-center bg-secondary rounded-full w-8 h-8">
+                          {currentUser?.email
+                            ? currentUser.email.charAt(0).toUpperCase()
+                            : ""}
+                        </Avatar>
+                        // <CircleUserRound />
                       )}
                     </span>
                   </NavigationMenuLink>

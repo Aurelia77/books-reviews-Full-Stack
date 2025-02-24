@@ -182,19 +182,19 @@ const BookInfos = ({
                     <div className="absolute bottom-10 right-2 rounded-full bg-primary/50 p-1  shadow-sm shadow-foreground">
                       {bookInMyList === BookStatusEnum.booksReadList && (
                         <div className="flex flex-col items-center p-1 text-xs">
-                          lu
+                          J'ai lu
                           <Check />
                         </div>
                       )}
                       {bookInMyList === BookStatusEnum.booksInProgressList && (
                         <div className="flex flex-col items-center p-1 text-xs">
-                          en cours
+                          Je lis...
                           <Ellipsis />
                         </div>
                       )}
                       {bookInMyList === BookStatusEnum.booksToReadList && (
                         <div className="flex flex-col items-center p-1 text-xs">
-                          à lire
+                          Je veux lire !
                           <Smile />
                         </div>
                       )}
