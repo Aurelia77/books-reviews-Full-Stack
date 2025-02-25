@@ -1,5 +1,6 @@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getDocsByQueryFirebase } from "@/firebase/firestore";
+import { cn } from "@/lib/utils";
 import {
   BookStatusEnum,
   BookType,
@@ -48,6 +49,8 @@ const AllBooksLists = ({ userInfo }: AllBooksListsProps): JSX.Element => {
 
   const addTitleAndNoteToBooksInfo = (booksInfo: UserInfoBookType[]) => {
     const booksInfoPlusTitle: MyInfoBookPlusTitleAndNote[] = [];
+
+    console.log("booksInfo", booksInfo);
 
     const promises = booksInfo.map((bookInfo) => {
       return (
@@ -146,27 +149,43 @@ const AllBooksLists = ({ userInfo }: AllBooksListsProps): JSX.Element => {
         className="mb-16 mt-4 flex flex-col gap-4"
         onValueChange={(value) => setActiveTab(value as BookStatusEnum)}
       >
-        <TabsList className="w-full">
+        {/* className={cn(
+                                "absolute bottom-10 right-2 rounded-full bg-primary/50 p-1 shadow-sm shadow-foreground",
+                                bookInMyList === BookStatusEnum.booksReadList &&
+                                  "bg-green-500/50",
+                                bookInMyList === BookStatusEnum.booksInProgressList &&
+                                  "bg-blue-500/50",
+                                bookInMyList === BookStatusEnum.booksToReadList &&
+                                  "bg-pink-500/50" */}
+        <TabsList
+          className={cn(
+            "w-full",
+            activeTab === BookStatusEnum.booksReadList && "bg-green-500/40",
+            activeTab === BookStatusEnum.booksInProgressList &&
+              "bg-blue-500/40",
+            activeTab === BookStatusEnum.booksToReadList && "bg-pink-500/40"
+          )}
+        >
           <TabsTrigger
             value={BookStatusEnum.booksReadList}
             className="w-full flex gap-2"
           >
             Lus
-            <BookOpenCheck className="rounded-full bg-primary/50 p-1 shadow-sm shadow-foreground" />
+            <BookOpenCheck className="rounded-full bg-green-500/40 p-1 shadow-sm shadow-foreground" />
           </TabsTrigger>
           <TabsTrigger
             value={BookStatusEnum.booksInProgressList}
             className="w-full flex gap-2"
           >
             En cours
-            <Ellipsis className="rounded-full bg-primary/50 p-1 shadow-sm shadow-foreground" />
+            <Ellipsis className="rounded-full bg-blue-500/40 p-1 shadow-sm shadow-foreground" />
           </TabsTrigger>
           <TabsTrigger
             value={BookStatusEnum.booksToReadList}
             className="w-full flex gap-2"
           >
             À lire
-            <Smile className="rounded-full bg-primary/50 p-1 shadow-sm shadow-foreground" />
+            <Smile className="rounded-full bg-pink-500/40 p-1 shadow-sm shadow-foreground" />
           </TabsTrigger>
         </TabsList>
         <BooksTabContent

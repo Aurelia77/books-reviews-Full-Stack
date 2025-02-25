@@ -91,7 +91,7 @@ export const sortBook = <T extends BookTypePlusUsersWhoRead | BookType>(
       case "title":
         comparison = a.title.localeCompare(b.title);
         break;
-      case "note":
+      case "note": {
         const ratingA = a.rating.count
           ? a.rating.totalRating / a.rating.count
           : 0;
@@ -100,6 +100,7 @@ export const sortBook = <T extends BookTypePlusUsersWhoRead | BookType>(
           : 0;
         comparison = ratingA - ratingB;
         break;
+      }
       case "reviews":
         console.log("REVIEW", a.rating?.count, b.rating?.count);
         comparison = (a.rating?.count ?? 0) - (b.rating?.count ?? 0);

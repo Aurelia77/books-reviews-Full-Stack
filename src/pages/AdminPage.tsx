@@ -141,12 +141,12 @@ const DATA_BOOKS_INFO_AAA: MyInfoBookFormType[] = [
     userComments: "AAA Aliénor T2 à lire !!!",
   },
   // The Chocolate Touch
-  //   {
-  //     bookStatus: BookStatusEnum.booksToReadList,
-  //     //year: 2023,
-  //     //month: 3,
-  //     userComments: "AAA Chocolate Touch à lire !!!",
-  //   },
+  {
+    bookStatus: BookStatusEnum.booksToReadList,
+    //year: 2023,
+    //month: 3,
+    userComments: "AAA Chocolate Touch à lire !!!",
+  },
 ];
 
 const AdminPage = (): JSX.Element => {
@@ -215,7 +215,7 @@ const AdminPage = (): JSX.Element => {
             ////////////////////////////////////////////////////////////////////////////
             onClick={() =>
               addBooksAndUsersInfos(
-                "RVpdJRqRuOYPQAIsyswmJ7aOV0p2", //////////// ID AAA ICI
+                "uABJLs0rDthvyluoQj6mBVjbhqt2", //////////////////////////// ID AAA ICI
                 DATA_BOOKS_INFO_AAA
               )
             }

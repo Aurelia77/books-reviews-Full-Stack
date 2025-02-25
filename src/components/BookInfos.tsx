@@ -11,6 +11,7 @@ import {
 } from "@/firebase/firestore";
 import { toast } from "@/hooks/use-toast";
 import useUserStore from "@/hooks/useUserStore";
+import { cn } from "@/lib/utils";
 import { BookStatusEnum, BookType } from "@/types";
 import { cleanDescription } from "@/utils";
 import { Check, Ellipsis, Quote, Smile } from "lucide-react";
@@ -179,7 +180,17 @@ const BookInfos = ({
                   </CardHeader>
 
                   {bookInMyList && (
-                    <div className="absolute bottom-10 right-2 rounded-full bg-primary/50 p-1  shadow-sm shadow-foreground">
+                    <div
+                      className={cn(
+                        "absolute bottom-10 right-2 rounded-full bg-primary/50 p-1 shadow-sm shadow-foreground",
+                        bookInMyList === BookStatusEnum.booksReadList &&
+                          "bg-green-500/40",
+                        bookInMyList === BookStatusEnum.booksInProgressList &&
+                          "bg-blue-500/40",
+                        bookInMyList === BookStatusEnum.booksToReadList &&
+                          "bg-pink-500/40"
+                      )}
+                    >
                       {bookInMyList === BookStatusEnum.booksReadList && (
                         <div className="flex flex-col items-center p-1 text-xs">
                           J'ai lu
@@ -194,7 +205,7 @@ const BookInfos = ({
                       )}
                       {bookInMyList === BookStatusEnum.booksToReadList && (
                         <div className="flex flex-col items-center p-1 text-xs">
-                          Je veux lire !
+                          A lire !
                           <Smile />
                         </div>
                       )}

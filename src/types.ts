@@ -125,7 +125,7 @@ export enum BookStatusEnum {
 // };
 export type SortStateType = {
   [key in BookStatusEnum]: {
-    criteria: "title" | "date" | "note";
+    criteria: "title" | "date" | "note" | "reviews";
     order: "asc" | "desc";
   };
 };

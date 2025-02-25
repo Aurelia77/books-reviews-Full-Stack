@@ -4,14 +4,11 @@ import { Button } from "./ui/button";
 
 type BooksSortControlsType = {
   booksStatus: BookStatusEnum;
-  sortState: any;
+  sortState: SortStateType;
   // {
   //   [key in BookStatusEnum]: SortStateType;
   // };
-  setSortState: any;
-  // React.Dispatch<
-  //   React.SetStateAction<{ [key in BookStatusEnum]: SortStateType }>
-  // >;
+  setSortState: React.Dispatch<React.SetStateAction<SortStateType>>;
   withDateOption?: boolean;
 };
 

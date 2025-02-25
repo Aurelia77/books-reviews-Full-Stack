@@ -172,7 +172,7 @@ export const addOrUpdateBookInfoToMyBooksFirebase = (
   console.log("**userId", userId);
   console.log("**bookId", bookId);
   console.log("**formData", formData);
-  console.log("**previousNote", previousNote);
+  console.log("/*-/*-**previousNote", previousNote);
 
   return getDocsByQueryFirebase<UserType>("users", "id", userId)
     .then((users) => {
@@ -275,7 +275,9 @@ export const addOrUpdateBookInfoToMyBooksFirebase = (
       updateBookAverageRatingFirebase(
         "add",
         bookId,
-        formData.userNote,
+        formData.bookStatus === BookStatusEnum.booksReadList
+          ? formData.userNote
+          : 0,
         previousNote
       );
     })
