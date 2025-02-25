@@ -91,13 +91,13 @@ const AddOrUpdateBookOrBookStatus = ({
   console.log("bookInMyBooks", bookInMyBooks);
   const [userBookInfos, setUserBookInfos] = useState<UserInfoBookType | null>();
 
-  console.log("bookInMyBooks userBookInfos", userBookInfos);
-  console.log("bookInMyBooks userBookInfos", userBookInfos?.userNote);
+  console.log("/*-/*-bookInMyBooks userBookInfos", userBookInfos);
+  console.log("/*-/*-bookInMyBooks userBookInfos", userBookInfos?.userNote);
 
   console.log("123456", bookInfos.rating);
   // console.log("789 bookInMyBooks", bookInMyBooks);
 
-  const [refreshKey, setRefreshKey] = useState(0); // to force MyInfosBook re-render when userBookInfos changed
+  const [refreshKey, setRefreshKey] = useState(0); // to force MyInfosBook re-render when userBookInfos changes
 
   console.log("refreshKey", refreshKey);
 

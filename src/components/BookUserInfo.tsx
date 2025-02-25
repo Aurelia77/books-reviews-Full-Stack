@@ -75,19 +75,19 @@ const BookUserInfo = ({
           </h2>
 
           {status === BookStatusEnum.booksReadList && (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center justify-around">
               <p>
                 {userBookInfos &&
                   userBookInfos.month !== undefined &&
                   userBookInfos.month !== null &&
                   userBookInfos.month !== 0 &&
-                  `   ${MONTHS[userBookInfos?.month]} / `}
+                  `   ${MONTHS[userBookInfos?.month]} `}
                 {userBookInfos?.year}
               </p>
               {userBookInfos.userNote ? (
                 <StarRating value={userBookInfos.userNote} />
               ) : (
-                <p className="italic">Aucune note attribuée</p>
+                <p className="italic">Aucune note</p>
               )}
             </div>
           )}

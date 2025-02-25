@@ -3,16 +3,25 @@ import { Link } from "react-router-dom";
 import StarRating from "./StarRating";
 import { Avatar, AvatarImage } from "./ui/avatar";
 import { DialogDescription } from "./ui/dialog";
+import useUserStore from "@/hooks/useUserStore";
 
 type UserReviewProps = {
   userCommentsAndNote: UserBookInfoType;
 };
 
 const UserReview = ({ userCommentsAndNote }: UserReviewProps): JSX.Element => {
+  const { currentUser } = useUserStore();
+
   return (
     <div className="p-4 flex flex-col gap-2">
       <div className="flex justify-between">
-        <Link to={`/account/${userCommentsAndNote.userId}`}>
+        <Link
+          to={
+            currentUser?.uid === userCommentsAndNote.userId
+              ? "/account"
+              : `/account/${userCommentsAndNote.userId}`
+          }
+        >
           <div className="flex gap-2">
             {userCommentsAndNote.imgURL !== "" ? (
               <Avatar>
