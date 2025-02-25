@@ -3,9 +3,14 @@ import { Star, StarHalf } from "lucide-react"; // Ajout de StarHalf
 type StarRatingProps = {
   value: number;
   onChange?: (value: string) => void;
+  forReadBook?: boolean;
 };
 
-const StarRating = ({ value, onChange }: StarRatingProps): JSX.Element => {
+const StarRating = ({
+  value,
+  onChange,
+  forReadBook = false,
+}: StarRatingProps): JSX.Element => {
   const handleClick = (index: number) => {
     if (onChange) onChange((index + 1).toString());
   };
@@ -39,7 +44,7 @@ const StarRating = ({ value, onChange }: StarRatingProps): JSX.Element => {
               <Star
                 color="#878787"
                 strokeWidth={0.5}
-                className={`size-6 ${index < Math.round(value) ? "text-secondary" : "text-gray-300"}`}
+                className={`size-6 ${index < Math.round(value) ? (forReadBook ? "text-green-500" : "text-secondary") : "text-gray-300"}`}
                 fill="currentColor"
               />
             )}

@@ -1,4 +1,4 @@
-import { UserType } from "./types";
+import { BookType, UserType } from "./types";
 
 export const APP_NAME = "Book Reviews";
 
@@ -13,6 +13,21 @@ export const EMPTY_USER: UserType = {
   booksToRead: [],
   friends: [],
   isAdmin: false,
+};
+
+export const EMPTY_BOOK: BookType = {
+  id: "",
+  title: "",
+  authors: [],
+  description: "",
+  categories: [],
+  pageCount: 0,
+  publishedDate: "",
+  publisher: "",
+  imageLink: "",
+  language: "",
+  isFromAPI: true,
+  rating: { totalRating: 0, count: 0 },
 };
 
 export const DEFAULT_BOOK_IMAGE =

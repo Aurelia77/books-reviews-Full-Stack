@@ -85,7 +85,7 @@ const BookUserInfo = ({
                 {userBookInfos?.year}
               </p>
               {userBookInfos.userNote ? (
-                <StarRating value={userBookInfos.userNote} />
+                <StarRating value={userBookInfos.userNote} forReadBook />
               ) : (
                 <p className="italic">Aucune note</p>
               )}

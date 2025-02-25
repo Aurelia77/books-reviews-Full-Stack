@@ -134,14 +134,14 @@ const BookInfos = ({
           <Card className="relative">
             <Link
               to={currentUser?.uid ? `/books/${bookInfos.id}` : "/login"}
-              className="relative"
+              className=""
               onClick={handleLinkClick}
             >
               <CardDescription className="absolute right-2 top-2 rounded-full bg-secondary/60 px-3 py-1 text-secondary-foreground shadow-sm shadow-foreground">
                 {bookInfos.language}
               </CardDescription>
               <div>
-                <div className="flex items-start gap-5 p-5 pt-10 shadow-md shadow-secondary/60">
+                <div className="relative flex items-start gap-5 p-5 pt-10 shadow-md shadow-secondary/60">
                   <img
                     src={bookInfos.imageLink || DEFAULT_BOOK_IMAGE}
                     onError={(e) => (e.currentTarget.src = DEFAULT_BOOK_IMAGE)}
@@ -182,7 +182,7 @@ const BookInfos = ({
                   {bookInMyList && (
                     <div
                       className={cn(
-                        "absolute bottom-10 right-2 rounded-full bg-primary/50 p-1 shadow-sm shadow-foreground",
+                        "absolute -bottom-16 right-2 rounded-full bg-primary/50 p-1 shadow-sm shadow-foreground",
                         bookInMyList === BookStatusEnum.booksReadList &&
                           "bg-green-500/40",
                         bookInMyList === BookStatusEnum.booksInProgressList &&
