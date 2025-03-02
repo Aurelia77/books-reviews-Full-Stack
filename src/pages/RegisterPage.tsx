@@ -76,6 +76,7 @@ const RegisterPage = (): JSX.Element => {
           id: newUser.uid,
           email: data.email,
           userName: data.userName,
+          isAdmin: data.email === "aurelia.h@hotmail.fr",
         });
         navigate("/");
       })
@@ -137,7 +138,7 @@ const RegisterPage = (): JSX.Element => {
                   <Input
                     placeholder="Mot de passe"
                     {...field}
-                    //type="password"
+                    type="password"
                   />
                 </FormControl>
                 <FormMessage />
@@ -153,7 +154,7 @@ const RegisterPage = (): JSX.Element => {
                   <Input
                     placeholder="Vérification du mot de passe"
                     {...field}
-                    //type="password"
+                    type="password"
                   />
                 </FormControl>
                 <FormMessage />

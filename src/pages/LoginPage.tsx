@@ -87,7 +87,7 @@ const LoginPage = (): JSX.Element => {
                   <Input
                     placeholder="Mot de passe"
                     {...field}
-                    //type="password"
+                    type="password"
                   />
                 </FormControl>
                 <FormMessage />

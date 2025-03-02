@@ -13,6 +13,7 @@ import {
   getUsersWhoReadBookFirebase,
 } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
+import { cn } from "@/lib/utils";
 import {
   BookStatusEnum,
   BookType,
@@ -189,7 +190,7 @@ const UsersBooksReadPage = (): JSX.Element => {
         <div className="sticky top-10 z-10 flex flex-col gap-3 bg-background/70 duration-500">
           <Title>Livres lus par les membres</Title>
         </div>
-        <div className="flex gap-4 mb-4 items-center justify-center">
+        <div className="flex gap-4 mb-4 items-center justify-center text-center">
           <p className={isSearchOnFriendsBooks ? "text-gray-500 p-1" : "p-1"}>
             Tous les membres
           </p>
@@ -201,11 +202,11 @@ const UsersBooksReadPage = (): JSX.Element => {
             className="border-2 border-foreground/20"
           />
           <p
-            className={
+            className={cn(
               isSearchOnFriendsBooks
                 ? "bg-friend p-1 px-2 md:px-3 rounded-full text-black"
                 : "text-gray-500 p-1"
-            }
+            )}
           >
             Seulement mes amis
           </p>
