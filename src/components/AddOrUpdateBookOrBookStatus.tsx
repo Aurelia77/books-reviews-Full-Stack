@@ -241,7 +241,7 @@ const AddOrUpdateBookOrBookStatus = ({
         </DialogTrigger>
       ) : (
         <div className="relative flex flex-col">
-          <div className="flex items-center justify-around mb-2">
+          <div className="flex items-center justify-between mb-2">
             <div className="border border-border bg-secondary/60 p-2 shadow-md rounded-md shadow-foreground/70">
               {bookInMyBooks === BookStatusEnum.booksReadList && (
                 <div className="flex justify-center gap-2">
@@ -308,7 +308,7 @@ const AddOrUpdateBookOrBookStatus = ({
           <DialogTrigger asChild className="flex justify-center">
             {/* absolute -top-1 left-1/4  */}
             <Button
-              className="m-auto md:mt-2 mb-6 h-10 w-full md:w-1/2 border border-border bg-primary/60 shadow-md shadow-foreground/70"
+              className="m-auto md:mt-2 mb-6 h-10 w-full md:w-1/2 border-2 border-background bg-primary/60 shadow-md shadow-foreground/70"
               onClick={() => form.reset(defaultValues)}
             >
               Modifier mes infos

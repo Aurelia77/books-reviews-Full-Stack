@@ -269,7 +269,7 @@ const BookDetailPage = (): JSX.Element => {
               <img
                 src={bookInfos.imageLink || DEFAULT_BOOK_IMAGE}
                 onError={(e) => (e.currentTarget.src = DEFAULT_BOOK_IMAGE)}
-                className="w-32 rounded-sm border border-border  object-contain shadow-md shadow-foreground/70"
+                className="w-32 sm:w-40 md:w-48 rounded-sm border border-border  object-contain shadow-md shadow-foreground/70"
                 alt={`Image de couverture du livre ${bookInfos?.title}`}
               />
               <CardHeader className="flex flex-col justify-between overflow-hidden gap-4">
