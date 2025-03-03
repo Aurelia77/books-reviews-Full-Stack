@@ -21,26 +21,26 @@ const HomePage = (): JSX.Element => {
             Mes Livres
             <LibraryBig
               size={40}
-              className="bg-foreground/10 rounded-full p-2"
+              className="rounded-full bg-foreground/10 p-2"
             />
           </CustomLinkButton>
           <CustomLinkButton
-            className="bg-accent/60 flex gap-2"
+            className="flex gap-2 bg-accent/60"
             linkTo="/usersbooksread"
           >
             Lus par les membres
-            <BookOpen size={40} className="bg-foreground/10 rounded-full p-2" />
-            <Users size={40} className="bg-foreground/10 rounded-full p-2" />
+            <BookOpen size={40} className="rounded-full bg-foreground/10 p-2" />
+            <Users size={40} className="rounded-full bg-foreground/10 p-2" />
           </CustomLinkButton>
           <CustomLinkButton className="bg-primary/60" linkTo="/searchusers">
             Les Membres
-            <Users size={40} className="bg-foreground/10 rounded-full p-2" />
+            <Users size={40} className="rounded-full bg-foreground/10 p-2" />
           </CustomLinkButton>
-          <CustomLinkButton className="bg-secondary/60" linkTo="/searchusers">
+          <CustomLinkButton className="bg-secondary/60" linkTo="/account">
             Mon compte
             <CircleUser
               size={40}
-              className="bg-foreground/10 rounded-full p-2"
+              className="rounded-full bg-foreground/10 p-2"
             />
           </CustomLinkButton>
         </div>
@@ -48,13 +48,13 @@ const HomePage = (): JSX.Element => {
         <div className="flex flex-col gap-4">
           <CustomLinkButton className="bg-primary/80" linkTo="/login">
             Se connecter
-            <LogIn size={40} className="bg-foreground/10 rounded-full p-2" />
+            <LogIn size={40} className="rounded-full bg-foreground/10 p-2" />
           </CustomLinkButton>
           <CustomLinkButton className="bg-secondary/80" linkTo="/register">
             S'inscrire
             <ArrowDownToLine
               size={40}
-              className="bg-foreground/10 rounded-full p-2"
+              className="rounded-full bg-foreground/10 p-2"
             />
           </CustomLinkButton>
         </div>
@@ -62,7 +62,7 @@ const HomePage = (): JSX.Element => {
       {/* <CustomLinkButton className="bg-primary/50">Suggestions</CustomLinkButton> */}
       <CustomLinkButton className="bg-primary/50" linkTo="/searchbooks">
         Recherche de livre
-        <Search size={40} className="bg-foreground/10 rounded-full p-2" />
+        <Search size={40} className="rounded-full bg-foreground/10 p-2" />
       </CustomLinkButton>
     </div>
   );
