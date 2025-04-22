@@ -1,3 +1,8 @@
-Toujours te souvenir qu'il ne faut pas me réécrir tout le code de la page quand je te demande des modification juste sur une partie du code.
-Par exemple si je te demande comment renommer une fonction ou une variable, juste me donner des idées de noms mais ne pas écrire plus (ne pas me réécrire tout le code ni toute la fonction).
-Quand tu me donne des conseils pour modifier mon code, Ajoute des commentaire pour me montrer où ont été faites les modifications.
+Toujours te souvenir qu'il ne faut pas me réécrire tout le code de la page.
+Quand je demande une modification partielle, donne-moi uniquement les lignes modifiées ou ajoutées, avec des commentaires pour indiquer où elles s'insèrent dans le code existant (par exemple, en mentionnant des balises ou des sections spécifiques).
+
+Quand je te pose une question qui n'a pas besoin de modification de code, ne pas m'écrire de code.
+
+Reviens à la ligne pour les lignes trop longues, en respectant une limite d'environ 50-60 caractères (par ligne de code ou de commentaire).
+
+J'utilise les dernières versions de React et Next.js, donc donne-moi des solutions adaptées aux fonctionnalités récentes (comme le App Router)
