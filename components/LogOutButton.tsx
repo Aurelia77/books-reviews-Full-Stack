@@ -11,7 +11,7 @@ const LogOutButton = (props: ComponentPropsWithRef<"button">) => {
 
   return (
     <button
-      {...props} // à mettre avant le onClick pour pas que ça l'écrase
+      {...props} // à mettre avant onClick pour pas que ça l'écrase
       onClick={() =>
         authClient.signOut(
           {},
@@ -21,8 +21,8 @@ const LogOutButton = (props: ComponentPropsWithRef<"button">) => {
             },
             onSuccess: () => {
               setIsLoading(false);
-              router.push("/");
-              router.refresh();
+              //router.push("/");
+              router.refresh(); // la NavBar se met à jour
             },
             onError: (ctx) => {
               console.error(ctx.error.message);
@@ -30,9 +30,9 @@ const LogOutButton = (props: ComponentPropsWithRef<"button">) => {
           }
         )
       }
-      {...props}
+      className="cursor-pointer"
     >
-      {isLoading ? "Logging out..." : <X />}
+      {isLoading ? "Logging out..." : <X color="#dd5a5a" />}
     </button>
   );
 };

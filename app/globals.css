@@ -19,6 +19,10 @@ h1.form-sticky-active {
   display: none;
 }
 
+.text-destructive-foreground {
+  color: var(--color-destructive-foreground);
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -74,11 +78,10 @@ h1.form-sticky-active {
   --secondary-foreground: hsl(16.9, 71.8%, 0.3%);
   --muted: hsl(270 94% 28%);
   --muted-foreground: hsl(192.9, 59.1%, 14.6%);
-  --accent: hsl(270, 100%, 95%);
-
+  --accent: hsl(270, 50%, 70%);
   --accent-foreground: hsl(16.9, 71.8%, 0.3%);
   --destructive: hsl(187.9, 47.7%, 65.1%);
-  --destructive-foreground: hsl(hsl(357, 100%, 31%) %);
+  --destructive-foreground: hsl(357, 100%, 31%); /* marche pas  */
   --border: hsl(192.9, 22.7%, 83.9%);
   --input: hsl(192.9, 22.7%, 83.9%);
   --ring: hsl(197.9, 87.4%, 7.7%);
@@ -102,7 +105,7 @@ h1.form-sticky-active {
   --accent: hsl(268, 60%, 45%);
   --accent-foreground: hsl(272.3, 16.2%, 92.3%);
   --destructive: hsl(277.3, 45.6%, 42.4%);
-  --destructive-foreground: hsl(343, 94%, 82%);
+  --destructive-foreground: hsl(343, 94%, 82%); /* marche pas  */
 
   --border: hsl(268, 60%, 45%);
   --input: hsl(268, 60%, 45%);
@@ -116,6 +119,15 @@ h1.form-sticky-active {
   }
   body {
     @apply bg-background text-foreground;
+  }
+  h1 {
+    @apply text-4xl font-semibold;
+  }
+  h2 {
+    @apply text-3xl font-semibold;
+  }
+  h3 {
+    @apply text-2xl font-medium;
   }
 }
 

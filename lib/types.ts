@@ -10,12 +10,20 @@ export type BookType = {
   imageLink: string;
   language: string;
   isFromAPI: boolean;
-  rating: BookRatingType;
+  //rating: BookRatingType;
+  totalRating: number;
+  countRating: number;
 };
 
-export type BookRatingType = {
-  totalRating: number;
-  count: number;
+// export type BookRatingType = {
+//   totalRating: number;
+//   count: number;
+// };
+
+export type BooksSearchQueryType = {
+  title: string;
+  author: string;
+  lang: string;
 };
 
 export type UserInfoBookType = {
@@ -28,13 +36,16 @@ export type UserInfoBookType = {
 
 export type MyInfoBookPlusTitleAndNote = UserInfoBookType & {
   bookTitle: string;
-  bookNote?: BookRatingType;
+  //bookNote?: BookRatingType;
+  totalRating: number;
+  countRating: number;
 };
 
 export type MyInfoBookFormType = {
   bookStatus: BookStatusEnum;
   year?: number;
-  month?: number | null;
+  month?: number;
+  // month?: number | null;
   userNote?: number;
   userComments: string;
 };
@@ -49,7 +60,7 @@ export type UserType = {
   booksInProgress: UserInfoBookType[];
   booksToRead: UserInfoBookType[];
   friends: string[];
-  isMyFriend?: boolean;
+  isMyFriend?: boolean | null;
   isAdmin: boolean;
 };
 

@@ -60,27 +60,25 @@ const SignInPage = () => {
   const onSubmit: SubmitHandler<LoginFormType> = (data) => {
     const { email, password } = data;
 
-    const event = {
-      onRequest: () => {
-        setIsLoading(true);
-      },
-      onSuccess: () => {
-        // router.refresh();
-        router.push("/");
-      },
-      onError: (ctx: { error: { message: string } }) => {
-        console.error("Erreur côté client :", ctx.error);
-        toast.error(ctx.error.message);
-        setIsLoading(false);
-      },
-    };
-
     authClient.signIn.email(
       {
         email,
         password,
       },
-      event
+      {
+        onRequest: () => {
+          setIsLoading(true);
+        },
+        onSuccess: () => {
+          router.push("/");
+          router.refresh(); // la NavBar se met à jour
+        },
+        onError: (ctx: { error: { message: string } }) => {
+          console.error("Erreur côté client :", ctx.error);
+          toast.error(ctx.error.message);
+          setIsLoading(false);
+        },
+      }
     );
   };
 
@@ -137,7 +135,7 @@ const SignInPage = () => {
       >
         Mot de passe oublié ?
       </CustomLinkButton>
-      <CustomLinkButton className="bg-primary/60" linkTo="/register">
+      <CustomLinkButton className="bg-primary/60" linkTo="/auth/signup">
         Inscription
       </CustomLinkButton>
     </div>

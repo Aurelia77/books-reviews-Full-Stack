@@ -12,17 +12,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { FormEventHandler, useState } from "react";
-import { toast } from "sonner";
-// import {
-//   addOrUpdateUserFirebase,
-//   registerFirebase,
-// } from "@/firebase/firestore";
-// import { useToast } from "@/hooks/use-toast";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
-// import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { z } from "zod";
 
 type RegisterFormType = {
@@ -45,8 +39,8 @@ const registerFormSchema = z
       .max(10, {
         message: "Le pseudo doit contenir au maximum 10 caractères.",
       }),
-    password: z.string().min(6, {
-      message: "Entrez un mot de passe d'au moins 6 caractères.",
+    password: z.string().min(8, {
+      message: "Entrez un mot de passe d'au moins 8 caractères.",
     }),
     verifyPassword: z.string(),
   })
@@ -55,7 +49,7 @@ const registerFormSchema = z
     path: ["verifyPassword"],
   });
 
-const SignUppage = () => {
+const SignUpPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -69,31 +63,26 @@ const SignUppage = () => {
     },
   });
 
-  // const onSubmit: SubmitHandler<RegisterFormType> = (data) => {
-  //   console.log("data", data);
-  //   registerFirebase(data.email, data.password)
-  //     .then((newUser) => {
-  //       addOrUpdateUserFirebase(newUser.uid, {
-  //         ...EMPTY_USER,
-  //         id: newUser.uid,
-  //         email: data.email,
-  //         userName: data.userName,
-  //         isAdmin: data.email === "aurelia.h@hotmail.fr",
-  //       });
-  //       navigate("/");
-  //     })
-  //     .then(() => {
-  //       toast({
-  //         title: "Inscription réussie",
-  //         description:
-  //           "Vous êtes connecté, bonne navigation au travers des livres !",
-  //       });
-  //     })
-  //     .catch((error) => {
-  //       console.error("Firebase register error:", error.message);
-  //       setFirebaseError("L'email est déjà utilisé.");
-  //     });
-  // };
+  const addAppUser = async (id: string, email: string, userName: string) => {
+    try {
+      const response = await fetch("/api/appUser", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, email, userName }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Erreur lors de l'ajout dans AppUser :", errorData.error);
+        toast.error("Une erreur est survenue lors de l'ajout dans AppUser.");
+      }
+    } catch (error) {
+      console.error("Erreur lors de l'appel à l'API AppUser :", error);
+      toast.error("Une erreur est survenue lors de l'inscription.");
+    }
+  };
 
   const onSubmit: SubmitHandler<RegisterFormType> = (data) => {
     setIsLoading(true);
@@ -103,20 +92,20 @@ const SignUppage = () => {
         email: data.email,
         password: data.password,
         name: data.userName,
-        callbackURL: "/auth", // URL de redirection après vérification de l'email
+        callbackURL: "/", // URL de redirection après vérification de l'email
       },
       {
         onRequest: () => {
           setIsLoading(true);
         },
-        onSuccess: () => {
+        onSuccess: async (user) => {
+          // on récupère l'id de l'utilisateur créé pour l'utiliser dans addAppUser => on aura donc les mêmes id dans AppUser et les tables BetterAuth
+          const userId = user.data.user.id;
+
+          await addAppUser(userId, data.email, data.userName);
+
           router.push("/");
-          router.refresh();
-          // toast({
-          //   title: "Inscription réussie",
-          //   description:
-          //     "Vous êtes connecté, bonne navigation au travers des livres !",
-          // });
+          router.refresh(); // la NavBar se met à jour
           toast.success("Inscription réussie", {
             description:
               "Vous êtes connecté, bonne navigation au travers des livres !",
@@ -228,15 +217,21 @@ const SignUppage = () => {
               </FormItem>
             )}
           />
-          <Button
-            type="submit"
-            className="m-auto mt-7 w-4/5 text-lg font-semibold"
-          >
-            S'inscrire
-          </Button>
+          {isLoading ? (
+            <div className="flex justify-center mt-7">
+              <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          ) : (
+            <Button
+              type="submit"
+              className="m-auto mt-7 w-4/5 text-lg font-semibold"
+            >
+              S'inscrire
+            </Button>
+          )}
         </form>
       </Form>
-      <CustomLinkButton className="mb-4 bg-primary/50" linkTo="/login">
+      <CustomLinkButton className="mb-4 bg-primary/50" linkTo="/auth/signin">
         Connexion
       </CustomLinkButton>
 
@@ -248,4 +243,4 @@ const SignUppage = () => {
   );
 };
 
-export default SignUppage;
+export default SignUpPage;
