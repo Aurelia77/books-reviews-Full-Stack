@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { BookStatusEnum, BookType, BookTypePlusUsersWhoRead } from "./types";
+import { BookType, BookTypePlusUsersWhoRead } from "./types";
+import { BookStatus } from "@prisma/client";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -68,18 +69,18 @@ export const cleanDescription = (description: string) => {
 
 export const sortBook = <T extends BookTypePlusUsersWhoRead | BookType>(
   books: T[],
-  sortState: { [key in BookStatusEnum]: { criteria: string; order: string } }
+  sortState: { [key in BookStatus]: { criteria: string; order: string } }
 ): T[] => {
   if (books.length <= 1) {
     return books;
   }
 
-  console.log("sortBookTypes sortState", sortState);
+  // console.log("sortBookTypes sortState", sortState);
 
   //const { criteria, order } = sortState;
-  const { criteria, order } = sortState[BookStatusEnum.booksReadList];
+  const { criteria, order } = sortState[BookStatus.READ];
 
-  console.log("*-*-sortBook", books, criteria, order);
+  // console.log("*-*-sortBook", books, criteria, order);
 
   const sortedBooks = books.sort((a, b) => {
     let comparison = 0;
@@ -102,6 +103,6 @@ export const sortBook = <T extends BookTypePlusUsersWhoRead | BookType>(
 
     return order === "asc" ? comparison : -comparison;
   });
-  console.log("*-*- RETURN", sortedBooks);
+  // console.log("*-*- RETURN", sortedBooks);
   return sortedBooks;
 };

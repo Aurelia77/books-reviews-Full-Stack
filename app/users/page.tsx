@@ -13,7 +13,7 @@ import { UserInfoBookType, UserType } from "@/lib/types";
 //import useSWR from "swr";
 
 const UsersPage = async () => {
-  const user = await getUser();
+  const currentUser = await getUser();
 
   // const delay = (ms: number) =>
   //   new Promise((resolve) => setTimeout(resolve, ms));
@@ -23,28 +23,28 @@ const UsersPage = async () => {
 
   const otherUsers = await prisma.appUser.findMany({
     where: {
-      id: { not: user?.id },
+      id: { not: currentUser?.id },
     },
   });
 
   // Car certains champs sont de type UserInfoBookType[]
-  const transformedUsers: UserType[] = otherUsers.map((user) => ({
-    ...user,
-    booksRead: Array.isArray(user.booksRead)
-      ? (user.booksRead as UserInfoBookType[])
-      : [],
-    booksInProgress: Array.isArray(user.booksInProgress)
-      ? (user.booksInProgress as UserInfoBookType[])
-      : [],
-    booksToRead: Array.isArray(user.booksToRead)
-      ? (user.booksToRead as UserInfoBookType[])
-      : [],
-  }));
+  // const transformedUsers: UserType[] = otherUsers.map((user) => ({
+  //   ...user,
+  //   booksRead: Array.isArray(user.booksRead)
+  //     ? (user.booksRead as UserInfoBookType[])
+  //     : [],
+  //   booksInProgress: Array.isArray(user.booksInProgress)
+  //     ? (user.booksInProgress as UserInfoBookType[])
+  //     : [],
+  //   booksToRead: Array.isArray(user.booksToRead)
+  //     ? (user.booksToRead as UserInfoBookType[])
+  //     : [],
+  // }));
 
   return (
     <div className="flex h-full flex-col gap-6">
-      {transformedUsers.length > 0 ? (
-        <UsersSearch users={transformedUsers} />
+      {otherUsers.length > 0 ? (
+        <UsersSearch users={otherUsers} />
       ) : (
         <FeedbackMessage message="Aucun autre utilisateur pour l'instant." />
       )}

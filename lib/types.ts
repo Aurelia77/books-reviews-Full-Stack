@@ -1,3 +1,5 @@
+import { BookStatus } from "@prisma/client";
+
 export type BookType = {
   id: string;
   title: string;
@@ -26,12 +28,22 @@ export type BooksSearchQueryType = {
   lang: string;
 };
 
+// export type UserInfoBookType = {
+//   id: string;
+//   year?: number | null;
+//   month?: number | null;
+//   userNote?: number | null;
+//   userComments: string;
+// };
 export type UserInfoBookType = {
-  id: string;
-  year?: number | null;
-  month?: number | null;
-  userNote?: number | null;
-  userComments: string;
+  id: string; // Ajout de l'identifiant unique
+  userId: string; // Ajout de la clé étrangère vers l'utilisateur
+  bookId: string; // Ajout de la clé étrangère vers le livre
+  year?: number | null; // Année (optionnelle)
+  month?: number | null; // Mois (optionnel)
+  note?: number | null; // Note (optionnelle)
+  comments?: string | null; // Commentaires (optionnels)
+  status: BookStatus; // Statut du livre
 };
 
 export type MyInfoBookPlusTitleAndNote = UserInfoBookType & {
@@ -42,7 +54,8 @@ export type MyInfoBookPlusTitleAndNote = UserInfoBookType & {
 };
 
 export type MyInfoBookFormType = {
-  bookStatus: BookStatusEnum;
+  bookStatus: BookStatus;
+  // bookStatus: BookStatusEnum;
   year?: number;
   month?: number;
   // month?: number | null;
@@ -56,9 +69,7 @@ export type UserType = {
   userName: string;
   imgURL: string;
   description: string;
-  booksRead: UserInfoBookType[];
-  booksInProgress: UserInfoBookType[];
-  booksToRead: UserInfoBookType[];
+  books: string[];
   friends: string[];
   isMyFriend?: boolean | null;
   isAdmin: boolean;
@@ -70,13 +81,13 @@ export type UserTypePlusBooksTitleAndNote = UserType & {
   booksToRead: MyInfoBookPlusTitleAndNote[];
 };
 
-export type UserBookInfoType = {
-  userName: string;
-  imgURL: string;
-  userId: string;
-  userComments: string;
-  userNote?: number;
-};
+// export type UserBookInfoType = {
+//   userName: string;
+//   imgURL: string;
+//   userId: string;
+//   userComments: string;
+//   userNote?: number;
+// };
 
 export type AccountFormType = {
   userName: string;
@@ -124,18 +135,23 @@ export type BookTypePlusUsersWhoRead = BookType & {
 //   bookInProgress = "en cours",
 //   bookToRead = "à lire",
 // }
-export enum BookStatusEnum {
-  booksReadList = "booksRead",
-  booksInProgressList = "booksInProgress",
-  booksToReadList = "booksToRead",
-}
+// export enum BookStatusEnum {
+//   booksReadList = "booksRead",
+//   booksInProgressList = "booksInProgress",
+//   booksToReadList = "booksToRead",
+// }
+// export enum BookStatusEnum {
+//   booksReadList = "READ",
+//   booksInProgressList = "IN_PROGRESS",
+//   booksToReadList = "TO_READ",
+// }
 
 // export type SortStateType = {
 //   criteria: "title" | "date" | "note";
 //   order: "asc" | "desc";
 // };
 export type SortStateType = {
-  [key in BookStatusEnum]: {
+  [key in BookStatus]: {
     criteria: "title" | "date" | "note" | "reviews";
     order: "asc" | "desc";
   };

@@ -8,9 +8,7 @@ export const EMPTY_USER: UserType = {
   userName: "",
   imgURL: "",
   description: "",
-  booksRead: [],
-  booksInProgress: [],
-  booksToRead: [],
+  books: [],
   friends: [],
   isAdmin: false,
 };
@@ -27,7 +25,8 @@ export const EMPTY_BOOK: BookType = {
   imageLink: "",
   language: "",
   isFromAPI: true,
-  rating: { totalRating: 0, count: 0 },
+  countRating: 0,
+  totalRating: 0,
 };
 
 export const DEFAULT_BOOK_IMAGE =

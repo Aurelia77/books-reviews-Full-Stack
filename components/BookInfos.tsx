@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Card,
   CardDescription,
@@ -12,8 +14,11 @@ import {
 // import useUserStore from "@/hooks/useUserStore";
 import { DEFAULT_BOOK_IMAGE, NO_DESCRIPTION } from "@/lib/constants";
 import { BookType } from "@/lib/types";
-import { cleanDescription } from "@/lib/utils";
-import { Quote } from "lucide-react";
+import { cleanDescription, cn } from "@/lib/utils";
+import { BookStatus } from "@prisma/client";
+import { Check, Ellipsis, Quote, Smile } from "lucide-react";
+import { useState } from "react";
+import BookUserInfo from "./BookUserInfo";
 //import useSWR from "swr";
 // import AverageBookRating from "./AverageBookRating";
 // import BookUserInfo from "./BookUserInfo";
@@ -24,10 +29,28 @@ import { Quote } from "lucide-react";
 //// ou mettre avec hook perso.............
 // userViewId = id du user à ne pas compter dans les amis qui ont lu le livre (si on est sur UserAccountPage) + qd on est sur UserAccountPage => on voit ses info et non celles du user connecté
 type BookInfosProps =
-  | { book: BookType; bookId?: never; userViewId?: string }
-  | { book?: never; bookId: string; userViewId?: string };
+  | {
+      book: BookType;
+      bookId?: never;
+      userViewId?: string;
+      userId?: string | undefined;
+      bookUserStatus: BookStatus | null;
+    }
+  | {
+      book?: never;
+      bookId: string;
+      userViewId?: string;
+      userId?: string | undefined;
+      bookUserStatus: BookStatus | null;
+    };
 
-const BookInfos = ({ book, bookId, userViewId }: BookInfosProps) => {
+const BookInfos = ({
+  book,
+  bookId,
+  userViewId,
+  userId,
+  bookUserStatus,
+}: BookInfosProps) => {
   //console.log("❤️", book);
   ////console.log("bookId", bookId);
 
@@ -38,11 +61,12 @@ const BookInfos = ({ book, bookId, userViewId }: BookInfosProps) => {
   // console.log("💛💙💚❤️🤍🤎id", bookId);
   // console.log("book", book);
 
-  // const [bookInfos, setBookInfos] = useState<BookType | null>(book || null);
+  const [bookInfos, setBookInfos] = useState<BookType | null>(book || null);
   // console.log("bookInfos", bookInfos);
   // console.log("bookInfos description", bookInfos?.description);
 
-  // const [bookInMyList, setBookInMyList] = useState<BookStatusEnum | "">("");
+  // const [bookStatus, setBookStatus] = useState<BookStatus | "">("");
+  // console.log("💛 bookinmylist", bookStatus);
   // const [bookInFriendList, setBookInFriendList] = useState<BookStatusEnum | "">(
   //   ""
   // );
@@ -84,17 +108,40 @@ const BookInfos = ({ book, bookId, userViewId }: BookInfosProps) => {
   // // ==============FAIRE HOOK PERSO !!!
 
   // useEffect(() => {
-  //   // ou gérer le undefined dans fonction bookInMyBooksFirebase ??????????
-  //   if (currentUser)
-  //     findBookCatInUserLibraryFirebase(bookInfos?.id, currentUser?.uid).then(
-  //       (bookInMyList) => setBookInMyList(bookInMyList)
-  //     );
+  //   console.log(
+  //     "💛💙💚❤️🤍🤎 useEffect userId && bookInfos",
+  //     userId,
+  //     bookInfos
+  //   );
+  //   //ou gérer le undefined dans fonction bookInMyBooksFirebase ??????????
+  //   if (userId && bookInfos) {
+  //     fetch("/api/book/bookStatus", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ userId, bookId: bookInfos.id }),
+  //     })
+  //       .then((response) => response.json())
+  //       .then((data) => {
+  //         if (data.status) {
+  //           setBookStatus(data.status);
+  //         }
+  //       })
+  //       .catch((error) => console.error("Error fetching book status:", error));
+  //   }
 
-  //   if (userViewId !== currentUser?.uid)
-  //     findBookCatInUserLibraryFirebase(bookInfos?.id, userViewId).then(
-  //       (bookInFriendList) => setBookInFriendList(bookInFriendList)
-  //     );
-  // }, [bookInfos?.id, currentUser, userViewId]);
+  //   // if (userViewId !== currentUser?.uid)
+  //   //   findBookCatInUserLibraryFirebase(bookInfos?.id, userViewId).then(
+  //   //     (bookInFriendList) => setBookInFriendList(bookInFriendList)
+  //   //   );
+  // }, []);
+  ////////// AJOUTER LES dépendance là c'était car boucle infinie !!!!!!!!!!!!!
+  ////////// AJOUTER LES dépendance là c'était car boucle infinie !!!!!!!!!!!!!
+  ////////// AJOUTER LES dépendance là c'était car boucle infinie !!!!!!!!!!!!!
+  ////////// AJOUTER LES dépendance là c'était car boucle infinie !!!!!!!!!!!!!
+  ////////// AJOUTER LES dépendance là c'était car boucle infinie !!!!!!!!!!!!!
+  // }, [bookInfos?.id, userId, userViewId]);
 
   // const handleLinkClick = () => {
   //   if (!currentUser?.uid) {
@@ -152,47 +199,45 @@ const BookInfos = ({ book, bookId, userViewId }: BookInfosProps) => {
                 {/* <AverageBookRating bookInfos={book} /> */}
               </CardHeader>
 
-              {/* {bookInMyList && (
-                    <div
-                      className={cn(
-                        "absolute -bottom-16 right-2 rounded-full bg-primary/50 p-1 shadow-sm shadow-foreground",
-                        bookInMyList === BookStatusEnum.booksReadList &&
-                          "bg-green-500/40",
-                        bookInMyList === BookStatusEnum.booksInProgressList &&
-                          "bg-blue-500/40",
-                        bookInMyList === BookStatusEnum.booksToReadList &&
-                          "bg-pink-500/40"
-                      )}
-                    >
-                      {bookInMyList === BookStatusEnum.booksReadList && (
-                        <div className="flex flex-col items-center p-1 text-xs">
-                          J'ai lu
-                          <Check />
-                        </div>
-                      )}
-                      {bookInMyList === BookStatusEnum.booksInProgressList && (
-                        <div className="flex flex-col items-center p-1 text-xs">
-                          Je lis...
-                          <Ellipsis />
-                        </div>
-                      )}
-                      {bookInMyList === BookStatusEnum.booksToReadList && (
-                        <div className="flex flex-col items-center p-1 text-xs">
-                          A lire !
-                          <Smile />
-                        </div>
-                      )}
+              {bookUserStatus && (
+                <div
+                  className={cn(
+                    "absolute -bottom-16 right-2 rounded-full bg-primary/50 p-1 shadow-sm shadow-foreground",
+                    bookUserStatus === BookStatus.READ && "bg-green-500/40",
+                    bookUserStatus === BookStatus.IN_PROGRESS &&
+                      "bg-blue-500/40",
+                    bookUserStatus === BookStatus.TO_READ && "bg-pink-500/40"
+                  )}
+                >
+                  {bookUserStatus === BookStatus.READ && (
+                    <div className="flex flex-col items-center p-1 text-xs">
+                      J'ai lu
+                      <Check />
                     </div>
-                  )} */}
+                  )}
+                  {bookUserStatus === BookStatus.IN_PROGRESS && (
+                    <div className="flex flex-col items-center p-1 text-xs">
+                      Je lis...
+                      <Ellipsis />
+                    </div>
+                  )}
+                  {bookUserStatus === BookStatus.TO_READ && (
+                    <div className="flex flex-col items-center p-1 text-xs">
+                      A lire !
+                      <Smile />
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
-            {/* {(bookInMyList !== "" || bookInFriendList !== "") && (
-                  <BookUserInfo
-                    userId={userViewId || currentUser?.uid}
-                    bookInfosId={bookInfos.id}
-                    bookStatus={bookInMyList}
-                    friendBookStatus={bookInFriendList}
-                  />
-                )} */}
+            {/* {(bookUserStatus || bookInFriendList !== "") && (
+              <BookUserInfo
+                userId={userViewId || currentUser?.uid}
+                bookInfosId={bookInfos.id}
+                bookStatus={bookUserStatus}
+                friendBookStatus={bookInFriendList}
+              />
+            )} */}
           </div>
           {/* <FriendsWhoReadBook bookId={bookInfos.id} userViewId={userViewId} /> */}
         </Card>

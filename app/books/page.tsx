@@ -1,17 +1,11 @@
-import BookInfos from "@/components/BookInfos";
 import BooksSearch from "@/components/BooksSearch";
-import BooksSortControls from "@/components/BooksSortControls";
+import BooksWithSortControls from "@/components/BooksWithSortControls";
 import FeedbackMessage from "@/components/FeedbackMessage";
 import { getUser } from "@/lib/auth-session";
 import { GOOGLE_BOOKS_API_URL } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
-import {
-  BookAPIType,
-  BooksSearchQueryType,
-  BookStatusEnum,
-  BookType,
-} from "@/lib/types";
-import Link from "next/link";
+import { BookAPIType, BooksSearchQueryType, BookType } from "@/lib/types";
+import { BookStatus } from "@prisma/client";
 
 const MAX_RESULTS = 4; // jusqu'à 40
 
@@ -57,7 +51,7 @@ const Page = async (props: {
   //const books = await prisma.book.findMany(); // Récupération des données côté serveur
 
   const searchParams = await props.searchParams;
-  const user = await getUser();
+  const currentUser = await getUser();
 
   // Simulation pour loading / error
   // const delay = (ms: number) =>
@@ -85,7 +79,6 @@ const Page = async (props: {
     .then((books) => {
       if (books.length > 0) {
         if (!query.title && !query.author && !query.lang) {
-          // Si tous les inputs sont vides, retourner tous les livres
           return books;
         }
         return books.filter((book) => {
@@ -108,7 +101,7 @@ const Page = async (props: {
       }
     });
 
-  // console.log("💛💙💚 dbBooks", filteredDbBooks);
+  console.log("💛💙💚 filteredDbBooks", filteredDbBooks);
 
   // 2- Puis on va chercher les livres de l'API Google Books
 
@@ -211,25 +204,37 @@ const Page = async (props: {
       // console.log("9+++++-uniqueApiBooks", uniqueApiBooks);
       // return uniqueApiBooks;
 
-      return apiBooks.map((book: BookAPIType) => {
-        //uniqueBooks.add(book.id);
+      console.log("💛1");
+      return (
+        apiBooks
+          // on ne veut pas les livres qui sont déjà dans la BDD
+          .filter((book: BookAPIType) => {
+            console.log("💛2");
+            return !filteredDbBooks.some((dbBook) => {
+              console.log("💛3", dbBook.title, dbBook.id === book.id);
+              console.log("💛💙💚❤️🤍🤎 == ??", dbBook.id, book.id);
 
-        return {
-          id: book.id,
-          title: book.volumeInfo.title,
-          authors: book.volumeInfo?.authors, //?.[0] ?? "Auteur inconnu",
-          description: book.volumeInfo.description,
-          categories: book.volumeInfo.categories,
-          pageCount: book.volumeInfo.pageCount,
-          publishedDate: book.volumeInfo.publishedDate,
-          publisher: book.volumeInfo.publisher,
-          imageLink: book.volumeInfo.imageLinks?.thumbnail,
-          language: book.volumeInfo.language,
-          isFromAPI: true,
-          totalRating: 0,
-          countRating: 0,
-        };
-      });
+              return dbBook.id === book.id;
+            });
+          })
+          .map((book: BookAPIType) => {
+            return {
+              id: book.id,
+              title: book.volumeInfo.title,
+              authors: book.volumeInfo?.authors, //?.[0] ?? "Auteur inconnu",
+              description: book.volumeInfo.description,
+              categories: book.volumeInfo.categories,
+              pageCount: book.volumeInfo.pageCount,
+              publishedDate: book.volumeInfo.publishedDate,
+              publisher: book.volumeInfo.publisher,
+              imageLink: book.volumeInfo.imageLinks?.thumbnail,
+              language: book.volumeInfo.language,
+              isFromAPI: true,
+              totalRating: 0,
+              countRating: 0,
+            };
+          })
+      );
     })
     // .then((apiBooks) => {
     //   console.log("❤️🤍", apiBooks);
@@ -266,12 +271,14 @@ const Page = async (props: {
       {/* kkkkkkkkkkkkk */}
       {/* kkkkkkkkkkkkk */}
       {(query.title || query.author || query.lang) && (
-        <p>{filteredDbAndApiBooks.length} livres trouvés</p>
+        <p className="text-right">
+          {filteredDbAndApiBooks.length} livres trouvés
+        </p>
       )}
       {filteredDbAndApiBooks?.length > 0 ? (
-        <BooksSortControls
-          booksStatus={BookStatusEnum.booksReadList}
-          isUserConnected={!!user}
+        <BooksWithSortControls
+          displayBookStatus={BookStatus.READ}
+          userId={currentUser?.id}
           books={filteredDbAndApiBooks}
         />
       ) : (

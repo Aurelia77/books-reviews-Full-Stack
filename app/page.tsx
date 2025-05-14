@@ -14,11 +14,11 @@ import Link from "next/link";
 
 const HomePage = async () => {
   // const { currentUser: user } = useUserStore();
-  const user = await getUser();
+  const currentUser = await getUser();
 
   return (
     <div className="flex min-h-screen max-w-3xl flex-col gap-4 py-12 md:m-auto md:mt-8">
-      {user ? (
+      {currentUser ? (
         <div className="flex flex-col gap-4">
           <CustomLinkButton className="bg-primary" linkTo="/mybooks">
             Mes Livres

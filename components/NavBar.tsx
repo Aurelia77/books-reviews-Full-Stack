@@ -22,7 +22,7 @@ import { Avatar, AvatarImage } from "./ui/avatar";
 // import { DarkModeToggle } from "./DarkModeToggle";
 
 const NavBar = async () => {
-  const user = await getUser();
+  const currentUser = await getUser();
   // const router = useRouter();
 
   // A VOIR !!!!!!!
@@ -31,7 +31,7 @@ const NavBar = async () => {
   return (
     <div className="sticky top-0 z-20 flex h-12 items-center bg-primary/70 p-1 text-muted shadow-md">
       <p className="hidden sm:block absolute left-10 top-4 text-xs">
-        {user?.email}
+        {currentUser?.email}
       </p>
       <BackArrow />
       <NavigationMenu>
@@ -45,7 +45,7 @@ const NavBar = async () => {
             <Search />
           </NavItem>
 
-          {user ? (
+          {currentUser ? (
             <div className="flex items-center">
               {/* MES LIVRES */}
               <NavItem href="/mybooks">
@@ -63,7 +63,9 @@ const NavBar = async () => {
                   </Avatar>
                 ) : (
                   <Avatar className="flex items-center justify-center bg-secondary rounded-full w-8 h-8">
-                    {user?.email ? user.email.charAt(0).toUpperCase() : ""}
+                    {currentUser?.email
+                      ? currentUser.email.charAt(0).toUpperCase()
+                      : ""}
                   </Avatar>
                 )}
               </NavItem>

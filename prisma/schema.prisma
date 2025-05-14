@@ -30,18 +30,44 @@ model Book {
 }
 
 model AppUser {
-  id              String   @id @default(ulid())
-  email           String   @unique
-  userName        String
-  imgURL          String
-  description     String
-  booksRead       Json
-  booksInProgress Json
-  booksToRead     Json
-  friends         String[]
-  isMyFriend      Boolean?
-  isAdmin         Boolean
+  id           String         @id @default(ulid())
+  email        String         @unique
+  userName     String
+  imgURL       String
+  description  String
+  books        String[]
+  friends      String[]
+  isMyFriend   Boolean?
+  isAdmin      Boolean
+  UserInfoBook UserInfoBook[]
 }
+
+model UserInfoBook {
+  id       String     @id @default(ulid())
+  user     AppUser    @relation(fields: [userId], references: [id])
+  userId   String
+  bookId   String
+  year     Int?
+  month    Int?
+  note     Int?
+  comments String?
+  status   BookStatus
+
+  @@unique([userId, bookId]) // <- Clé composite UNIQUE
+  @@map("BookInfo")
+}
+
+enum BookStatus {
+  READ
+  IN_PROGRESS
+  TO_READ
+}
+
+// export enum BookStatusEnum {
+// booksReadList = "booksRead",
+// booksInProgressList = "booksInProgress",
+// booksToReadList = "booksToRead",
+// }
 
 model User {
   id            String    @id

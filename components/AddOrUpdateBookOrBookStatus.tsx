@@ -1,8 +1,6 @@
 "use client";
 
 //import BookUserInfo from "@/components/BookUserInfo";
-import CustomLinkButton from "@/components/CustomLinkButton";
-import FeedbackMessage from "@/components/FeedbackMessage";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,7 +11,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -22,36 +19,43 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { MONTHS } from "@/lib/constants";
 import {
-  BookStatusEnum,
-  BookType,
-  MyInfoBookFormType,
-  UserInfoBookType,
-} from "@/lib/types";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, Ellipsis, Smile, X } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
-import StarRating from "./StarRating";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form";
-import { Label } from "./ui/label";
-import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
+} from "@/components/ui/select";
+import { MONTHS } from "@/lib/constants";
+import { BookType, MyInfoBookFormType, UserInfoBookType } from "@/lib/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { BookStatus } from "@prisma/client";
+import { Check, Ellipsis, Smile, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import BookUserInfo from "./BookUserInfo";
+import CustomLinkButton from "./CustomLinkButton";
+import FeedbackMessage from "./FeedbackMessage";
+import StarRating from "./StarRating";
+import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
+import { useRouter } from "next/navigation";
 
 const currentYear = new Date().getFullYear();
 
 const bookFormSchema = z.object({
-  bookStatus: z.nativeEnum(BookStatusEnum),
+  bookStatus: z.nativeEnum(BookStatus),
   year: z
     .number()
     .int()
@@ -66,23 +70,32 @@ const bookFormSchema = z.object({
 });
 
 type AddOrUpdateBookProps = {
-  userId: string;
+  currentUserId: string;
   bookInfos: BookType;
   //onUpdate: () => void;
+  userBookStatus?: BookStatus | null;
 };
 
 const AddOrUpdateBookOrBookStatus = ({
-  userId,
+  currentUserId,
   bookInfos,
+  userBookStatus,
 }: //onUpdate,
 AddOrUpdateBookProps) => {
+  const router = useRouter();
+
+  //console.log("💙❤️❤️❤️🤎 currentUserId", currentUserId);
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [bookInMyBooks, setBookInMyBooks] = useState<BookStatusEnum | "">("");
- // console.log("bookInMyBooks", bookInMyBooks);
+  // console.log("bookInMyBooks", bookInMyBooks);
   const [userBookInfos, setUserBookInfos] = useState<UserInfoBookType | null>();
+  console.log("💛💙💚❤️🤍🤎 userBookInfo", userBookInfos);
+
+  const [userBookStatusState, setUserBookStatusState] =
+    useState(userBookStatus);
 
   //console.log("/*-/*-bookInMyBooks userBookInfos", userBookInfos);
- // console.log("/*-/*-bookInMyBooks userBookInfos", userBookInfos?.userNote);
+  // console.log("/*-/*-bookInMyBooks userBookInfos", userBookInfos?.userNote);
 
   // console.log("789 bookInMyBooks", bookInMyBooks);
 
@@ -90,24 +103,58 @@ AddOrUpdateBookProps) => {
 
   //console.log("refreshKey", refreshKey);
 
-  const handleUpdate = () => {
-   // console.log("handleUpdate");
-    setRefreshKey((prevKey) => prevKey + 1);
-    //onUpdate(); // Call the parent update function
+  const handleUpdate = async () => {
+    // Logique de mise à jour existante...
+
+    // Appeler l'API pour revalider la page
+    await fetch("/api/revalidate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ path: `/books/${bookInfos.id}` }),
+    });
+
+    // Optionnel : forcer un rafraîchissement côté client
+    router.refresh();
   };
 
   useEffect(() => {
-   // console.log("handleUpdate useEffect");
-    handleUpdate();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userBookInfos]);
+    if (userBookStatusState === BookStatus.READ) {
+      (async () => {
+        try {
+          const response = await fetch(
+            `/api/userInfoBook/getOne?userId=${currentUserId}&bookId=${bookInfos.id}`
+          );
+          if (response.ok) {
+            const myBook = await response.json();
+            setUserBookInfos(myBook);
+          }
+        } catch (error) {
+          console.error("Error fetching user book info:", error);
+        }
+      })();
+    }
+  }, [bookInfos.id, currentUserId, userBookStatusState]);
+
+  // const handleUpdate = () => {
+  //   // console.log("handleUpdate");
+  //   setRefreshKey((prevKey) => prevKey + 1);
+  //   //onUpdate(); // Call the parent update function
+  // };
+
+  // useEffect(() => {
+  //   // console.log("handleUpdate useEffect");
+  //   handleUpdate();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [userBookInfos]);
 
   const defaultValues = {
-    bookStatus: bookInMyBooks || BookStatusEnum.booksReadList,
+    bookStatus: userBookStatusState || BookStatus.READ,
     year: userBookInfos?.year || currentYear,
     month: userBookInfos?.month || 0,
-    userNote: userBookInfos?.userNote || 0,
-    userComments: userBookInfos?.userComments || "",
+    userNote: userBookInfos?.note || 0,
+    userComments: userBookInfos?.comments || "",
   };
 
   const form = useForm<MyInfoBookFormType>({
@@ -116,8 +163,8 @@ AddOrUpdateBookProps) => {
   });
 
   const updateUserBookInfos = () => {
-   // console.log("updateUserBookInfos");
-    if (bookInMyBooks && bookInfos) {
+    // console.log("updateUserBookInfos");
+    if (userBookStatusState && bookInfos) {
       // getUserInfosBookFirebase(userId, bookInfos.id, bookInMyBooks).then(
       //   (myBook) => {
       //     console.log("updateUserBookInfos !!!!!!!!!!! myBook", myBook);
@@ -129,9 +176,9 @@ AddOrUpdateBookProps) => {
   };
 
   useEffect(() => {
-   // console.log("bookInMyBooks change ??? useEffect setUserBookInfos");
-    if (bookInMyBooks && bookInfos) {
-     // console.log("bookInMyBooks && bookInfos", bookInMyBooks, bookInfos);
+    // console.log("bookInMyBooks change ??? useEffect setUserBookInfos");
+    if (userBookStatusState && bookInfos) {
+      // console.log("bookInMyBooks && bookInfos", bookInMyBooks, bookInfos);
       // getUserInfosBookFirebase(userId, bookInfos.id, bookInMyBooks).then(
       //   (myBook) => {
       //     console.log("bookInMyBooks !!!!!!!!!!!!!!", myBook);
@@ -140,16 +187,17 @@ AddOrUpdateBookProps) => {
       // );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bookInfos?.id, bookInMyBooks, userId]);
+  }, [bookInfos?.id, userBookStatusState, currentUserId]);
 
-  // useEffect(() => {
-  //   form.reset(defaultValues); // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [userBookInfos, form]);
+  // Sinon valeurs par défaut du form sont vides
+  useEffect(() => {
+    form.reset(defaultValues); // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userBookInfos, form]);
 
   // ici j'utilise async/await car le .then ne fonctionne pas, pourtant normalement ça fait exactement la même chose !!!
   const handleDeleteBook = async (bookId: string) => {
     // await deleteBookFromMyBooksFirebase(userId, bookId, bookInMyBooks);
-    setBookInMyBooks("");
+    setUserBookStatusState(null);
     updateUserBookInfos();
   };
 
@@ -157,82 +205,148 @@ AddOrUpdateBookProps) => {
 
   const onSubmit: SubmitHandler<MyInfoBookFormType> = async (formData) => {
     try {
-      const response = await fetch("/api/book", {
+      const response = await fetch("/api/book/new-or-update", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, bookInfos, formData }),
+        body: JSON.stringify({
+          currentUserId,
+          bookInfos,
+          formData,
+          previousNote: userBookInfos?.note,
+        }),
       });
+
+      // console.log("💛💙💚❤️🤍🤎 response", response);
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.error("Erreur lors de l'ajout dans AppUser :", errorData.error);
-        toast.error("Une erreur est survenue lors de l'ajout dans AppUser.");
+        console.log("💛💙💚❤️🤍🤎", errorData);
+        console.error(
+          "Erreur lors de l'ajout du livre ou des informations :",
+          errorData.error,
+          errorData.message
+        );
+        toast.error(
+          "Impossible d'ajouter le livre ou les informations. Veuillez vérifier votre connexion ou réessayer plus tard."
+        );
       }
     } catch (error) {
-      console.error("Erreur lors de l'appel à l'API AppUser :", error);
-      toast.error("Une erreur est survenue lors de l'inscription.");
+      console.error(
+        "Erreur lors de l'appel à l'API book/new-or-update :",
+        error
+      );
+      toast.error(
+        "Une erreur est survenue lors de la mise à jour des informations. Veuillez réessayer plus tard."
+      );
     }
 
-    //   const result = await response.json();
-    //   if (result.success) {
-    //     console.log("Livre ajouté avec succès :", result.result);
-    //     updateUserBookInfos();
-    //   } else {
-    //     console.error("Erreur lors de l'ajout :", result.error);
-    //   }
-    // } catch (error) {
-    //   console.error("Erreur réseau :", error);
-    // }
-
-    // if (bookInfos) {
-    //   {
-    //     if (bookInMyBooks === "") {
-    //       console.log("bookInMyBooks", bookInMyBooks);
-
-    //       //await addBookFirebase(userId, bookInfos, formData); // Ajout de await ici
-    //       console.log("Livre ajouté ! ", bookInfos.title, formData.bookStatus);
-    //       updateUserBookInfos();
-    //       // addBookFirebase(userId, bookInfos, formData).then(() => {
-    //       //   console.log(
-    //       //     "Livre ajouté ! ",
-    //       //     bookInfos.title,
-    //       //     formData.bookStatus
-    //       //   );
-
-    //       //   updateUserBookInfos();
-    //       // });
-    //     } else {
-    //     }
-    //     // addOrUpdateBookInfoToMyBooksFirebase(
-    //     //   userId,
-    //     //   bookInfos.id,
-    //     //   formData,
-    //     //   userBookInfos?.userNote
-    //     // ).then(() => {
-    //     //   updateUserBookInfos();
-    //     //   console.log(
-    //     //     "Livre ajouté ! ",
-    //     //     bookInfos.title,
-    //     //     formData.bookStatus
-    //     //   );
-    //     // });
-    //   }
-    // }
-    setBookInMyBooks(formData.bookStatus);
+    setUserBookStatusState(formData.bookStatus);
     setIsDialogOpen(false);
+    // ??? besoin ci-dessous ?
     setRefreshKey((prevKey) => prevKey + 1); // Increment refreshKey to trigger re-render of this component
+    handleUpdate(); // pour mettre à jour le parent et donc la note moyenne du livre
   };
 
   useEffect(() => {
     // findBookCatInUserLibraryFirebase(bookInfos?.id, userId).then((res) =>
     //   setBookInMyBooks(res)
     // );
-  }, [bookInfos, userId]);
+  }, [bookInfos, currentUserId]);
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       {/* <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}> */}
-      {bookInMyBooks === "" ? (
+      {userBookStatusState ? (
+        <div className="relative flex flex-col">
+          <div className="flex items-center justify-between mb-2">
+            <div className="border border-border bg-secondary/60 p-2 shadow-md rounded-md shadow-foreground/70">
+              {userBookStatusState === BookStatus.READ && (
+                <div className="flex justify-center gap-2">
+                  <p>Je l'ai lu !</p>
+                  <Check className="rounded-full bg-primary/50 p-1  shadow-sm shadow-foreground" />
+                </div>
+              )}
+              {userBookStatusState === BookStatus.IN_PROGRESS && (
+                <div className="flex justify-center gap-2 items-center">
+                  <p>Je suis en train de le lire</p>
+                  <Ellipsis className="rounded-full bg-primary/50 p-1  shadow-sm shadow-foreground" />
+                </div>
+              )}
+              {userBookStatusState === BookStatus.TO_READ && (
+                <div className="flex justify-center gap-2">
+                  <p>J'aimerais le lire</p>
+                  <Smile className="rounded-full bg-primary/50 p-1  shadow-sm shadow-foreground" />
+                </div>
+              )}
+            </div>
+            <AlertDialog>
+              <AlertDialogTrigger>
+                {/* <Button
+                 // role="button"
+                 className="bg-red-600/70 flex items-center gap-1"
+               > */}
+                <div
+                  className="px-4 py-2 rounded cursor-pointer bg-red-600/70 flex items-center gap-1"
+                  role="button"
+                  //tabIndex={0}
+                  //onKeyDown={(e) => e.key === "Enter" && setIsDialogOpen(true)}
+                >
+                  Supprimer
+                  <X className="bottom-8 mr-0 text-destructive-foreground" />
+                </div>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="text-foreground">
+                    Etes-vous sûrs de vouloir supprimer le livre de votre liste
+                    de{" "}
+                    <span className="font-bold text-muted">
+                      {userBookStatusState === BookStatus.READ && "livres lus"}
+                      {userBookStatusState === BookStatus.IN_PROGRESS &&
+                        "livres en cours"}
+                      {userBookStatusState === BookStatus.TO_READ &&
+                        "livres à lire"}
+                    </span>{" "}
+                    ?
+                  </AlertDialogTitle>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel className="border-none bg-primary">
+                    Annuler
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => handleDeleteBook(bookInfos.id)}
+                    className="bg-red-600/70"
+                  >
+                    Oui !
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+          <BookUserInfo
+            key={refreshKey} // refreshKey = key to force re-render when bookInfos changed
+            userId={currentUserId}
+            bookId={bookInfos.id}
+            bookStatus={userBookStatusState}
+            currentUserId={currentUserId}
+          />
+          <DialogTrigger asChild className="flex justify-center">
+            {/* <Button
+             className="m-auto md:mt-2 mb-6 h-10 w-full md:w-1/2 border-2 border-background bg-primary/60 shadow-md shadow-foreground/70"
+             //onClick={() => form.reset(defaultValues)}
+           > */}
+            <div
+              className="px-4 py-2 rounded cursor-pointer m-auto md:mt-2 mb-6 h-10 w-full md:w-1/2 border-2 border-background bg-primary/60 shadow-md shadow-foreground/70"
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === "Enter" && setIsDialogOpen(true)}
+            >
+              Modifier mes infos
+            </div>
+          </DialogTrigger>
+        </div>
+      ) : (
         <DialogTrigger asChild className="flex justify-center">
           {/* absolute -top-1 left-1/4  */}
           {/* <Button
@@ -257,106 +371,15 @@ AddOrUpdateBookProps) => {
             Ajouter à mes livres
           </div>
         </DialogTrigger>
-      ) : (
-        <div className="relative flex flex-col">
-          <div className="flex items-center justify-between mb-2">
-            <div className="border border-border bg-secondary/60 p-2 shadow-md rounded-md shadow-foreground/70">
-              {bookInMyBooks === BookStatusEnum.booksReadList && (
-                <div className="flex justify-center gap-2">
-                  <p>Je l'ai lu !</p>
-                  <Check className="rounded-full bg-primary/50 p-1  shadow-sm shadow-foreground" />
-                </div>
-              )}
-              {bookInMyBooks === BookStatusEnum.booksInProgressList && (
-                <div className="flex justify-center gap-2 items-center">
-                  <p>Je suis en train de le lire</p>
-                  <Ellipsis className="rounded-full bg-primary/50 p-1  shadow-sm shadow-foreground" />
-                </div>
-              )}
-              {bookInMyBooks === BookStatusEnum.booksToReadList && (
-                <div className="flex justify-center gap-2">
-                  <p>J'aimerais le lire</p>
-                  <Smile className="rounded-full bg-primary/50 p-1  shadow-sm shadow-foreground" />
-                </div>
-              )}
-            </div>
-            <AlertDialog>
-              <AlertDialogTrigger>
-                {/* <Button
-                  // role="button"
-                  className="bg-red-600/70 flex items-center gap-1"
-                > */}
-                <div
-                  className="px-4 py-2 rounded cursor-pointer bg-red-600/70 flex items-center gap-1"
-                  role="button"
-                  //tabIndex={0}
-                  //onKeyDown={(e) => e.key === "Enter" && setIsDialogOpen(true)}
-                >
-                  Supprimer
-                  <X className="bottom-8 mr-0 text-destructive-foreground" />
-                </div>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle className="text-foreground">
-                    Etes-vous sûrs de vouloir supprimer le livre de votre liste
-                    de{" "}
-                    <span className="font-bold text-muted">
-                      {bookInMyBooks === BookStatusEnum.booksReadList &&
-                        "livres lus"}
-                      {bookInMyBooks === BookStatusEnum.booksInProgressList &&
-                        "livres en cours"}
-                      {bookInMyBooks === BookStatusEnum.booksToReadList &&
-                        "livres à lire"}
-                    </span>{" "}
-                    ?
-                  </AlertDialogTitle>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel className="border-none bg-primary">
-                    Annuler
-                  </AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={() => handleDeleteBook(bookInfos.id)}
-                    className="bg-red-600/70"
-                  >
-                    Oui !
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
-          {/* <BookUserInfo
-            key={refreshKey} // refreshKey = key to force re-render when bookInfos changed
-            userId={userId}
-            bookInfosId={bookInfos.id}
-            bookStatus={bookInMyBooks}
-          /> */}
-          <DialogTrigger asChild className="flex justify-center">
-            {/* absolute -top-1 left-1/4  */}
-            {/* <Button
-              className="m-auto md:mt-2 mb-6 h-10 w-full md:w-1/2 border-2 border-background bg-primary/60 shadow-md shadow-foreground/70"
-              //onClick={() => form.reset(defaultValues)}
-            > */}
-            <div
-              className="px-4 py-2 rounded cursor-pointer m-auto md:mt-2 mb-6 h-10 w-full md:w-1/2 border-2 border-background bg-primary/60 shadow-md shadow-foreground/70"
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => e.key === "Enter" && setIsDialogOpen(true)}
-            >
-              Modifier mes infos
-            </div>
-          </DialogTrigger>
-        </div>
       )}
       <DialogContent className="sm:max-w-[425px]">
-        {userId ? (
+        {currentUserId ? (
           <>
             <DialogHeader>
-              {bookInMyBooks === "" ? (
-                <DialogTitle>AJOUTER LIVRE</DialogTitle>
-              ) : (
+              {userBookStatusState ? (
                 <DialogTitle>MODIFIER MES INFOS</DialogTitle>
+              ) : (
+                <DialogTitle>AJOUTER LIVRE</DialogTitle>
               )}
               <DialogDescription>{bookInfos?.title}</DialogDescription>
             </DialogHeader>
@@ -376,21 +399,21 @@ AddOrUpdateBookProps) => {
                       >
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem
-                            value={BookStatusEnum.booksReadList}
+                            value={BookStatus.READ}
                             id="booksRead"
                           />
                           <Label htmlFor="read">Lu</Label>
                         </div>
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem
-                            value={BookStatusEnum.booksInProgressList}
+                            value={BookStatus.IN_PROGRESS}
                             id="booksInProgress"
                           />
                           <Label htmlFor="booksInProgress">En cours</Label>
                         </div>
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem
-                            value={BookStatusEnum.booksToReadList}
+                            value={BookStatus.TO_READ}
                             id="toRead"
                           />
                           <Label htmlFor="toRead">À lire</Label>
@@ -403,14 +426,14 @@ AddOrUpdateBookProps) => {
                     name="userComments"
                     render={({ field }) => (
                       <FormItem>
-                        <FormControl>
+                        <div>
                           <Textarea placeholder="Mes commentaires" {...field} />
-                        </FormControl>
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  {form.watch().bookStatus === BookStatusEnum.booksReadList && (
+                  {form.watch().bookStatus === BookStatus.READ && (
                     <div className="flex items-center justify-around">
                       <FormField
                         control={form.control}

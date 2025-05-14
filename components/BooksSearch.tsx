@@ -8,12 +8,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { LANGUAGES } from "@/lib/constants";
-import { BooksSearchQueryType, BookStatusEnum, BookType } from "@/lib/types";
+import { BooksSearchQueryType, BookType } from "@/lib/types";
 import { X } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import Title from "./Title";
 import { Input } from "./ui/input";
+import { BookStatus } from "@prisma/client";
 
 type BooksSearchProps = {
   bdAndApiBooks: BookType[];
@@ -75,7 +76,7 @@ const BooksSearch = (props: { query: BooksSearchQueryType }) => {
   // const [inApi, setInApi] = useState(true);
 
   const [sortState, setSortState] = useState<any>({
-    [BookStatusEnum.booksReadList]: { criteria: "title", order: "asc" },
+    [BookStatus.READ]: { criteria: "title", order: "asc" },
   });
 
   // DEBUT============================FAIRE HOOK PERSO !!!
