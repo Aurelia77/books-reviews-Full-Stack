@@ -40,7 +40,8 @@ import { BookType, MyInfoBookFormType, UserInfoBookType } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { BookStatus } from "@prisma/client";
 import { Check, Ellipsis, Smile, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { memo, useEffect, useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -50,7 +51,26 @@ import FeedbackMessage from "./FeedbackMessage";
 import StarRating from "./StarRating";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
-import { useRouter } from "next/navigation";
+
+// Pour éviter les re-renders inutiles (sinon très long à chaque ajout de caractère)
+// const MemoizedTextarea = memo(({ field }: { field: any }) => (
+//   <Textarea placeholder="Mes commentaires" {...field} />
+// ));
+const MemoizedTextarea = memo(
+  ({
+    value,
+    onChange,
+  }: {
+    value: string;
+    onChange: (value: string) => void;
+  }) => (
+    <Textarea
+      placeholder="Mes commentaires"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+    />
+  )
+);
 
 const currentYear = new Date().getFullYear();
 
@@ -427,7 +447,11 @@ AddOrUpdateBookProps) => {
                     render={({ field }) => (
                       <FormItem>
                         <div>
-                          <Textarea placeholder="Mes commentaires" {...field} />
+                          {/* <Textarea placeholder="Mes commentaires" {...field} /> */}
+                          <MemoizedTextarea
+                            value={field.value}
+                            onChange={field.onChange}
+                          />
                         </div>
                         <FormMessage />
                       </FormItem>

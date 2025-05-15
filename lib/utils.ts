@@ -1,6 +1,10 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { BookType, BookTypePlusUsersWhoRead } from "./types";
+import {
+  BookType,
+  BookTypePlusUsersWhoRead,
+  MyInfoBookPlusTitleAndNote,
+} from "./types";
 import { BookStatus } from "@prisma/client";
 
 export function cn(...inputs: ClassValue[]) {
@@ -21,51 +25,51 @@ export const cleanDescription = (description: string) => {
   );
 };
 
-// export const sortBooksByStatus = (
-//   books: MyInfoBookPlusTitleAndNote[],
-//   bookStatus: BookStatusEnum,
-//   sortState: { [key in BookStatusEnum]: { criteria: string; order: string } }
-// ): MyInfoBookPlusTitleAndNote[] => {
-//   console.log("sortBooksByStatus");
+export const sortBooksByStatus = (
+  books: MyInfoBookPlusTitleAndNote[],
+  bookStatus: BookStatus,
+  sortState: { [key in BookStatus]: { criteria: string; order: string } }
+): MyInfoBookPlusTitleAndNote[] => {
+  console.log("sortBooksByStatus");
 
-//   if (books.length <= 1) {
-//     return books;
-//   }
+  if (books.length <= 1) {
+    return books;
+  }
 
-//   const { criteria, order } = sortState[bookStatus];
+  const { criteria, order } = sortState[bookStatus];
 
-//   console.log("*-*-sortBooksByStatus criteria", criteria);
-//   console.log("*-*-sortBooksByStatus order", order);
+  console.log("*-*-sortBooksByStatus criteria", criteria);
+  console.log("*-*-sortBooksByStatus order", order);
 
-//   return books.sort((a, b) => {
-//     let comparison = 0;
-//     let yearComparison = 0;
-//     const ratingA = a.bookNote ? a.bookNote.totalRating / a.bookNote.count : 0;
-//     const ratingB = b.bookNote ? b.bookNote.totalRating / b.bookNote.count : 0;
+  return books.sort((a, b) => {
+    let comparison = 0;
+    let yearComparison = 0;
+    const ratingA = a.totalRating > 0 ? a.totalRating / a.countRating : 0;
+    const ratingB = b.totalRating > 0 ? b.totalRating / b.countRating : 0;
 
-//     switch (criteria) {
-//       case "title":
-//         comparison = b.bookTitle.localeCompare(a.bookTitle);
-//         break;
-//       case "date":
-//         yearComparison = (a.year ?? 0) - (b.year ?? 0);
-//         if (yearComparison !== 0) {
-//           comparison = yearComparison;
-//         } else {
-//           comparison = (a.month ?? 0) - (b.month ?? 0);
-//         }
-//         break;
-//       case "note":
-//         comparison = ratingA - ratingB;
-//         break;
-//       case "reviews":
-//         console.log("REVIEW", a.bookNote?.count, b.bookNote?.count);
-//         comparison = (a.bookNote?.count ?? 0) - (b.bookNote?.count ?? 0);
-//         break;
-//     }
-//     return order === "asc" ? comparison : -comparison;
-//   });
-// };
+    switch (criteria) {
+      case "title":
+        comparison = b.bookTitle.localeCompare(a.bookTitle);
+        break;
+      case "date":
+        yearComparison = (a.year ?? 0) - (b.year ?? 0);
+        if (yearComparison !== 0) {
+          comparison = yearComparison;
+        } else {
+          comparison = (a.month ?? 0) - (b.month ?? 0);
+        }
+        break;
+      case "note":
+        comparison = ratingA - ratingB;
+        break;
+      case "reviews":
+        // console.log("REVIEW", a.bookNote?.count, b.bookNote?.count);
+        comparison = (a.countRating ?? 0) - (b.countRating ?? 0);
+        break;
+    }
+    return order === "asc" ? comparison : -comparison;
+  });
+};
 
 export const sortBook = <T extends BookTypePlusUsersWhoRead | BookType>(
   books: T[],

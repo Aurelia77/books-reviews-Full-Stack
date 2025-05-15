@@ -53,7 +53,7 @@ const NavBar = async () => {
               </NavItem>
 
               {/* MON COMPTE */}
-              <NavItem href="/account">
+              <NavItem href="/myaccount">
                 {profileImage ? (
                   <Avatar className="flex items-center justify-center">
                     <AvatarImage

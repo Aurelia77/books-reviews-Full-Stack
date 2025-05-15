@@ -39,7 +39,7 @@ const HomePage = async () => {
             Les Membres
             <Users size={40} className="rounded-full bg-foreground/10 p-2" />
           </CustomLinkButton>
-          <CustomLinkButton className="bg-secondary/60" linkTo="/account">
+          <CustomLinkButton className="bg-secondary/60" linkTo="/myaccount">
             Mon compte
             <CircleUser
               size={40}

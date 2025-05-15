@@ -45,7 +45,7 @@ const getRandomChar = (): string => {
   return chars[randomIndex];
 };
 
-const Page = async (props: {
+const SearchBooksPage = async (props: {
   searchParams: Promise<Record<string, string>>;
 }) => {
   //const books = await prisma.book.findMany(); // Récupération des données côté serveur
@@ -288,4 +288,4 @@ const Page = async (props: {
   );
 };
 
-export default Page;
+export default SearchBooksPage;

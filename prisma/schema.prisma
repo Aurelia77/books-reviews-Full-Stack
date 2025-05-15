@@ -35,7 +35,6 @@ model AppUser {
   userName     String
   imgURL       String
   description  String
-  books        String[]
   friends      String[]
   isMyFriend   Boolean?
   isAdmin      Boolean

@@ -32,7 +32,13 @@ const LogOutButton = (props: ComponentPropsWithRef<"button">) => {
       }
       className="cursor-pointer"
     >
-      {isLoading ? "Logging out..." : <X color="#dd5a5a" />}
+      {isLoading ? (
+        <div className="w-7 h-7 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      ) : (
+        <X
+        //color="#dd5a5a"
+        />
+      )}
     </button>
   );
 };

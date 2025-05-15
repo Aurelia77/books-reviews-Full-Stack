@@ -69,7 +69,6 @@ export type UserType = {
   userName: string;
   imgURL: string;
   description: string;
-  books: string[];
   friends: string[];
   isMyFriend?: boolean | null;
   isAdmin: boolean;

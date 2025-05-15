@@ -6,6 +6,10 @@ export async function POST(req: Request) {
   const body = await req.json();
   const { id, email, userName } = body;
 
+  console.log("💛💙 id", id);
+  console.log("💛💙 email", email);
+  console.log("💛💙 userName", userName);
+
   try {
     // Vérification des données
     if (!email || !userName) {

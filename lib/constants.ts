@@ -8,7 +8,6 @@ export const EMPTY_USER: UserType = {
   userName: "",
   imgURL: "",
   description: "",
-  books: [],
   friends: [],
   isAdmin: false,
 };
