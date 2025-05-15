@@ -120,7 +120,7 @@ const MyAccount = ({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           currentUserId: currentUser.id,
-          formData,
+          data: formData,
         }),
       });
 

@@ -1,5 +1,7 @@
 import UserAccount from "@/components/UserAccount";
+import { getUser } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
+import { UserType } from "@/lib/types";
 
 export default async function Post({
   params,
@@ -7,16 +9,20 @@ export default async function Post({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+
+  const currentUser = await getUser();
+
   const user = await prisma.appUser.findUnique({
     where: { id: id },
-    // include: {
-    //   author: true,
-    // },
+  });
+
+  const currentAppUser: UserType | null = await prisma.appUser.findUnique({
+    where: { id: currentUser?.id },
   });
 
   return (
     user && (
-      <UserAccount userInfo={user} />
+      <UserAccount currentUser={currentAppUser} userInfo={user} />
       // <div
       //   className={cn("min-h-screen max-w-3xl sm:p-2 md:m-auto md:mt-8", {
       //     //"bg-friend/20": isFriend,

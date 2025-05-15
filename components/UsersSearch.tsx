@@ -64,7 +64,7 @@ const UsersSearch = ({ users }: UsersSearchProps) => {
                 <p>Ami</p>
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  NON (mettre btn ajouter ami)
+                  NON !!! (à supp)
                 </p>
               )}
 

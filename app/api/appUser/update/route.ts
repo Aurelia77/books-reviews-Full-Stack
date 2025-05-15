@@ -6,24 +6,11 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     //console.log("Données reçues💚💚💚 :", body);
-    const {
-      currentUserId,
-      formData,
-    }: {
-      currentUserId: string;
-      formData: AccountFormType;
-    } = body;
+    const { currentUserId, data } = body;
 
-    console.log("💚💙💚 formData", formData);
-    console.log("🤎 userId", currentUserId);
+    console.log("💚💙💚 data", data);
 
-    console.log("💙💙Types des données :", {
-      userName: typeof formData.userName,
-      imgURL: typeof formData.imgURL,
-      description: typeof formData.description,
-    });
-
-    if (!formData) {
+    if (!data) {
       return NextResponse.json(
         { message: "Données manquantes ou invalides" },
         { status: 400 }
@@ -33,11 +20,7 @@ export async function POST(req: Request) {
         where: {
           id: currentUserId,
         },
-        data: {
-          userName: formData.userName,
-          description: formData.description,
-          imgURL: formData.imgURL,
-        },
+        data: data,
       });
 
       return NextResponse.json(

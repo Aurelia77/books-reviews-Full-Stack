@@ -13,10 +13,17 @@ import { Card, CardDescription } from "@/components/ui/card";
 // import useUserStore from "@/hooks/useUserStore";
 import { UserType } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 // import { useParams } from "react-router-dom";
 
-const UserAccount = ({ userInfo }: { userInfo: UserType }) => {
+const UserAccount = ({
+  currentUser,
+  userInfo,
+}: {
+  currentUser: UserType | null;
+  userInfo: UserType;
+}) => {
   // const [userInfo, setUserInfo] = useState<UserType>();
   const [isFriend, setIsFriend] = useState<boolean>();
   console.log("isFriend", isFriend);
@@ -28,26 +35,60 @@ const UserAccount = ({ userInfo }: { userInfo: UserType }) => {
 
   // const { currentUser } = useUserStore();
 
-  // useEffect(() => {
-  //   getDocsByQueryFirebase<UserType>("users", "id", userInUrl.userId)
-  //     .then((users) => {
-  //       setUserInfo(users[0]);
-  //       return users[0];
-  //     })
-  //     .then((user) => isUserMyFriendFirebase(user.id, currentUser?.uid))
-  //     .then((isFriend) => setIsFriend(isFriend));
-  // }, [userInUrl, currentUser?.uid]);
+  useEffect(() => {
+    // getDocsByQueryFirebase<UserType>("users", "id", userInUrl.userId)
+    //   .then((users) => {
+    //     setUserInfo(users[0]);
+    //     return users[0];
+    //   })
+    //   .then((user) => isUserMyFriendFirebase(user.id, currentUser?.uid))
+    //   .then((isFriend) => setIsFriend(isFriend));
+    currentUser?.friends?.includes(userInfo.id)
+      ? setIsFriend(true)
+      : setIsFriend(false);
+  }, [currentUser, userInfo]);
 
-  const addFriendHandler = () => {
-    // addUserIdToMyFriendsFirebase(currentUser?.uid, userInUrl.userId).then(() =>
-    //   setIsFriend(true)
-    // );
-  };
+  const updateFriendHandler = async (action: "add" | "remove") => {
+    if (currentUser?.id) {
+      const updatedFriends =
+        action === "add"
+          ? [...currentUser.friends, userInfo.id]
+          : currentUser.friends.filter((friendId) => friendId !== userInfo.id);
 
-  const deleteFriendHandler = () => {
-    // deleteUserIdToMyFriendsFirebase(currentUser?.uid, userInUrl.userId).then(
-    //   () => setIsFriend(false)
-    // );
+      try {
+        const response = await fetch("/api/appUser/update", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            currentUserId: currentUser.id,
+            data: { friends: updatedFriends },
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error(
+            "Erreur lors de la mise à jour du profil :",
+            errorData.error,
+            errorData.message
+          );
+          toast.error(
+            "Impossible de mettre à jour le profil. Veuillez vérifier votre connexion ou réessayer plus tard."
+          );
+        } else {
+          toast.success("Profil mis à jour avec succès !");
+          setIsFriend(action === "add");
+        }
+      } catch (error) {
+        console.error(
+          "Erreur lors de l'appel à l'API /appUser/update :",
+          error
+        );
+        toast.error(
+          "Une erreur est survenue lors de la mise à jour des informations. Veuillez réessayer plus tard."
+        );
+      }
+    }
   };
 
   return (
@@ -66,12 +107,16 @@ const UserAccount = ({ userInfo }: { userInfo: UserType }) => {
               <div className="flex gap-4 items-center">
                 <FriendSparkles />
                 <p>Ami</p>
-                <Button onClick={deleteFriendHandler}>Supprimer</Button>
+                <Button onClick={() => updateFriendHandler("remove")}>
+                  Supprimer
+                </Button>
               </div>
             ) : (
               <div className="flex gap-4 items-center">
                 <p>Non ami</p>
-                <Button onClick={addFriendHandler}>Ajouter</Button>
+                <Button onClick={() => updateFriendHandler("add")}>
+                  Ajouter
+                </Button>
               </div>
             )}
           </div>
