@@ -39,9 +39,14 @@ const accountFormSchema = z.object({
   imgURL: z
     .string()
     .refine(
-      (value) => value === "" || z.string().url().safeParse(value).success,
+      (value) =>
+        value === "" ||
+        z.string().url().safeParse(value).success ||
+        value.startsWith("/"),
       {
-        message: "Entrez une URL valide ou laissez vide.",
+        message:
+          "Entrez une URL valide, un chemin " +
+          "relatif commençant par /, ou laissez vide.",
       }
     ),
   description: z.string(),
@@ -70,22 +75,25 @@ const MyAccount = ({
   );
 
   const [imageUpload, setImageUpload] = useState<File | null>(null);
+  console.log("💛💙💚❤️🤍🤎imageUpload", imageUpload);
+
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  const uploadImage = () => {
+  const uploadImage = async () => {
+    if (!imageUpload) return;
     setIsImageLoading(true);
-    if (imageUpload) {
-      // uploadImageOnFirebase(imageUpload, storage, setProgress)
-      //   .then((url) => {
-      //     setIsImageLoading(false);
-      //     if (url) form.setValue("imgURL", url);
-      //   })
-      //   .catch((error) => {
-      //     console.error("Erreur lors du téléchargement de l'image => ", error);
-      //     setIsImageLoading(false);
-      //   });
+    const data = new FormData();
+    data.append("file", imageUpload);
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      body: data,
+    });
+    const result = await res.json();
+    if (result.url) {
+      form.setValue("imgURL", result.url);
     }
+    setIsImageLoading(false);
   };
 
   const form = useForm<AccountFormType>({
@@ -96,6 +104,9 @@ const MyAccount = ({
       description: "",
     },
   });
+
+  console.log("form.watch(imgURL)🤍🤎", form.watch("imgURL"));
+  console.log("form.watch(userName)🤍🤎", form.watch("userName"));
 
   const { reset } = form;
 
@@ -110,7 +121,8 @@ const MyAccount = ({
   }, [currentUserInfo, reset]);
 
   const onSubmit: SubmitHandler<AccountFormType> = async (formData) => {
-    //console.log("data", data);
+    console.log("data💛", formData);
+    console.log("data💛💛 img", formData.imgURL);
     // addOrUpdateUserFirebase(currentUser?.uid, data);
     // useUserStore.getState().setProfileImage(data.imgURL);
 
