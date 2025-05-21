@@ -1,7 +1,6 @@
 "use client";
 
 import { MONTHS } from "@/lib/constants";
-import { prisma } from "@/lib/prisma";
 import { UserInfoBookType } from "@/lib/types";
 import { BookStatus } from "@prisma/client";
 import { useEffect, useState } from "react";
@@ -9,16 +8,20 @@ import StarRating from "./StarRating";
 
 const BookUserInfo = ({
   userId,
+  currentUserId,
   bookId,
   bookStatus,
-  friendBookStatus,
-  currentUserId,
-}: {
+  userViewId,
+}: // friendBookStatus,
+//currentUserId,
+{
   userId: string | undefined;
+  currentUserId: string | undefined;
   bookId: string;
   bookStatus: BookStatus | "";
-  friendBookStatus?: BookStatus | "";
-  currentUserId: string;
+  userViewId: string | undefined;
+  // friendBookStatus?: BookStatus | "";
+  //currentUserId: string;
 }) => {
   //console.log("555 userId", userId);
   //console.log("555 bookInfosId", bookInfosId);
@@ -27,17 +30,21 @@ const BookUserInfo = ({
 
   const [userBookInfos, setUserBookInfos] = useState<UserInfoBookType>();
 
-  // console.log("💛💙💚❤️🤍🤎userBookInfos", userBookInfos);
+  // console.log("💛💚🤍 userBookInfos", userBookInfos);
+  console.log("💛💚🤍 userBookInfos.bookId", userBookInfos?.bookId);
+  console.log("💛💚 userId", userId);
+  console.log("💛💚 userViewId", userViewId);
+  console.log("💛💚 bookStatus", bookStatus);
 
   //console.log("789", userBookInfos?.month);
 
-  const status = (friendBookStatus || bookStatus) as BookStatus;
+  // const status = (userViewId || bookStatus) as BookStatus;
 
   const [userName, setUserName] = useState<string | null>(null);
 
   // Récupérer les infos données par l'utilisateur (soit le user visité si friendBookStatus !== "" soit le user connecté)
   useEffect(() => {
-    if (friendBookStatus !== "" || bookStatus !== "") {
+    if (userViewId || bookStatus !== "") {
       (async () => {
         try {
           const response = await fetch(
@@ -62,10 +69,25 @@ const BookUserInfo = ({
     //     if (myBook) setUserBookInfos(myBook);
     //   });
     // }
-  }, [bookId, bookStatus, friendBookStatus, userId, status]);
+  }, [bookId, bookStatus, userViewId, userId, status]);
   //}, [bookInfos?.id]);  // pbm info autre membre ne s'affichaient pas, ms j'ai l'impression que maintenant ça marche même qd il manque des dépendances ??????
 
   useEffect(() => {
+    if (!userId) return;
+    (async () => {
+      try {
+        const res = await fetch(`/api/appUser/${userId}`);
+
+        if (res.ok) {
+          const user = await res.json();
+          setUserName(user.userName);
+        } else {
+          setUserName(null);
+        }
+      } catch (err) {
+        setUserName(null);
+      }
+    })();
     // getDocsByQueryFirebase<UserType>("users", "id", userId).then((user) => {
     //   if (user) {
     //     setUserName(user[0].userName);
@@ -76,6 +98,9 @@ const BookUserInfo = ({
   return (
     userBookInfos && (
       <div>
+        <p className="bg-cyan-500">On est dans BookUserInfo</p>
+        <p className="bg-cyan-500">userId {userId} </p>
+        <p className="bg-cyan-500">currentUserId {currentUserId} </p>
         {/* Pour les livres lus on a des info en plus :
                      - Livre lu par moi => on affiche mes info données sur ce livre,
                      - Livre lu par le user visité => on affiche ses info */}
@@ -86,23 +111,23 @@ const BookUserInfo = ({
               : "Mes Infos et Avis :"}
           </h2>
 
-          {status === BookStatus.READ && (
-            <div className="flex items-center justify-around">
-              <p>
-                {userBookInfos &&
-                  userBookInfos.month !== undefined &&
-                  userBookInfos.month !== null &&
-                  userBookInfos.month !== 0 &&
-                  `   ${MONTHS[userBookInfos?.month]} `}
-                {userBookInfos?.year}
-              </p>
-              {userBookInfos.note ? (
-                <StarRating value={userBookInfos.note} forReadBook />
-              ) : (
-                <p className="italic">Aucune note</p>
-              )}
-            </div>
-          )}
+          {/* {status === BookStatus.READ && ( */}
+          <div className="flex items-center justify-around">
+            <p>
+              {userBookInfos &&
+                userBookInfos.month !== undefined &&
+                userBookInfos.month !== null &&
+                userBookInfos.month !== 0 &&
+                `   ${MONTHS[userBookInfos?.month]} `}
+              {userBookInfos?.year}
+            </p>
+            {userBookInfos.note ? (
+              <StarRating value={userBookInfos.note} forReadBook />
+            ) : (
+              <p className="italic">Aucune note</p>
+            )}
+          </div>
+          {/* )} */}
 
           <p className="whitespace-pre-wrap">
             {userBookInfos?.comments ? (

@@ -37,31 +37,6 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     } else {
-      const bookEntry = await prisma.userInfoBook.upsert({
-        where: {
-          userId_bookId: {
-            userId: currentUserId,
-            bookId: bookInfos.id,
-          },
-        },
-        update: {
-          year: formData.year,
-          month: formData.month,
-          note: formData.userNote,
-          comments: formData.userComments,
-          status: formData.bookStatus,
-        },
-        create: {
-          userId: currentUserId,
-          bookId: bookInfos.id,
-          year: formData.year,
-          month: formData.month,
-          note: formData.userNote,
-          comments: formData.userComments,
-          status: formData.bookStatus,
-        },
-      });
-
       const existingBook = await prisma.book.findUnique({
         where: { id: bookInfos.id },
       });
@@ -70,7 +45,7 @@ export async function POST(req: Request) {
       if (!existingBook) {
         console.log("💛🤍 book NOT existe");
 
-        const newBook: BookType = await prisma.book.create({
+        await prisma.book.create({
           data: {
             ...EMPTY_BOOK,
             ...bookInfos,
@@ -78,11 +53,11 @@ export async function POST(req: Request) {
             countRating: 1,
           },
         });
-        return NextResponse.json(
-          { message: "Livre créé avec succès", book: newBook },
-          { status: 201 }
-        );
-        // Sinon, si le livre existe => on met à jour les rating
+        // return NextResponse.json(
+        //   { message: "Livre créé avec succès", book: newBook },
+        //   { status: 201 }
+        // );
+        // Sinon, si le livre existe => on met à jour les ratings en fonction de la note donnée par l'utilisateur qui ajoute le livre
       } else {
         console.log("💛❤️🤍 book existe");
         let newTotalRating = existingBook.totalRating;
@@ -115,7 +90,38 @@ export async function POST(req: Request) {
         });
       }
 
-      return NextResponse.json(bookEntry, { status: 201 });
+      const bookEntry = await prisma.userInfoBook.upsert({
+        where: {
+          userId_bookId: {
+            userId: currentUserId,
+            bookId: bookInfos.id,
+          },
+        },
+        update: {
+          year: formData.year,
+          month: formData.month,
+          note: formData.userNote,
+          comments: formData.userComments,
+          status: formData.bookStatus,
+        },
+        create: {
+          userId: currentUserId,
+          bookId: bookInfos.id,
+          year: formData.year,
+          month: formData.month,
+          note: formData.userNote,
+          comments: formData.userComments,
+          status: formData.bookStatus,
+        },
+      });
+
+      return NextResponse.json(
+        {
+          message: "Book et UserInfoBook créés ou mis à jour avec succès",
+          bookEntry: bookEntry,
+        },
+        { status: 201 }
+      );
     }
   } catch (error) {
     console.error("Erreur dans l'API :", error);

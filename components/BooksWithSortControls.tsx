@@ -1,49 +1,136 @@
 "use client";
 
-import { BookType, SortStateType } from "@/lib/types";
-import { sortBook } from "@/lib/utils";
+import { BookType, BookTypePlusDate, SortStateType } from "@/lib/types";
 import { BookStatus } from "@prisma/client";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import BookInfos from "./BookInfos";
 import { Button } from "./ui/button";
+import { sortBook } from "@/lib/utils";
 
-type BooksSortControlsType = {
-  displayBookStatus: BookStatus;
-  //sortState: SortStateType;
-  //setSortState: React.Dispatch<React.SetStateAction<SortStateType>>;
-  books: BookType[];
-  userId: string | undefined;
-  withDateOption?: boolean;
-};
+type BooksSortControlsType =
+  | {
+      displayBookStatus: BookStatus;
+      // sortState: SortStateType;
+      // setSortState: React.Dispatch<React.SetStateAction<SortStateType>>;
+      books: BookType[];
+      bookIds?: never;
+      displayedAppUserId?: string | undefined;
+      withDateOption?: boolean;
+    }
+  | {
+      displayBookStatus: BookStatus;
+      //sortState: SortStateType;
+      // setSortState: React.Dispatch<React.SetStateAction<SortStateType>>;
+      books?: never;
+      bookIds: string[];
+      displayedAppUserId?: string | undefined;
+      withDateOption?: boolean;
+    };
 
 const BooksWithSortControls = ({
-  displayBookStatus = BookStatus.READ,
+  displayBookStatus,
   // sortState,
   // setSortState,
   books,
-  userId,
+  bookIds,
+  displayedAppUserId,
   withDateOption = false,
 }: BooksSortControlsType) => {
-  // console.log("displayBookStatus", displayBookStatus);
+  console.log("❤️🤍🤎 displayBookStatus", displayBookStatus);
 
   // console.log("*-*-sortState", sortState);
   // console.log("*-*-sortState", sortState[displayBookStatus]);
 
+  // const [sortState, setSortState] = useState<any>({
+  //   [BookStatus.READ]: { criteria: "title", order: "asc" },
+  // });
+
+  // const [sortState, setSortState] = useState<SortStateType>({
+  //   [BookStatus.READ]: { criteria: "date", order: "asc" },
+  //   [BookStatus.IN_PROGRESS]: { criteria: "date", order: "asc" },
+  //   [BookStatus.TO_READ]: { criteria: "date", order: "asc" },
+  // });
+
   const [sortState, setSortState] = useState<any>({
-    [BookStatus.READ]: { criteria: "title", order: "asc" },
+    [displayBookStatus]: { criteria: "title", order: "asc" },
   });
+
+  /////////////////////
+  /////////////////////
+  /////////////////////
+  /////////////////////TRI ???????????????????
+  /////////////////////
+  /////////////////////
+  // console.log("💛💚🤍 sortState", sortState);
+  console.log(
+    "💛💚🤍 sortState",
+    displayBookStatus,
+    sortState[displayBookStatus]
+  );
 
   const [booksStatuses, setBooksStatuses] = useState<
     Record<string, BookStatus | null>
   >({});
 
+  console.log("💛💙💚❤️🤍🤎 booksStatuses", booksStatuses);
+
+  const [displayedBooks, setDisplayedBooks] = useState<
+    BookType[] | BookTypePlusDate[]
+  >(books || []);
+
+  console.log("💛💙🤎 displayedBooks", displayedBooks);
+
+  const [currentUserId, setCurrentUserId] = useState<string | undefined>(
+    undefined
+  );
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch("/api/user");
+        const data = await res.json();
+        setCurrentUserId(data.user?.id);
+      } catch (error) {
+        console.error("Erreur user :", error);
+      }
+    };
+    fetchUser();
+  }, []);
+  // ...avant le return du composant
+  useEffect(() => {
+    if (bookIds && bookIds.length > 0 && displayedAppUserId) {
+      (async () => {
+        try {
+          const response = await fetch("/api/book/byIdsWithDate", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              bookIds,
+              displayedAppUserId,
+            }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            setDisplayedBooks(data);
+          }
+        } catch (error) {
+          console.error("Erreur lors de la récupération des livres :", error);
+        }
+      })();
+    }
+  }, [bookIds, displayedAppUserId]);
+
   useEffect(() => {
     const fetchBooksStatuses = async () => {
       try {
         // Création de bookIds à partir des livres
-        const bookIds = books.map((book) => book.id);
+        const bookIds = displayedBooks.map((book) => book.id);
+
+        console.log("💛xxx", currentUserId, bookIds);
 
         // Requête pour récupérer les statuts des livres
         const response = await fetch("/api/book/bookStatuses", {
@@ -52,8 +139,8 @@ const BooksWithSortControls = ({
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            userId,
-            bookIds, // Utilisation de bookIds
+            userId: currentUserId,
+            bookIds,
           }),
         });
 
@@ -66,12 +153,13 @@ const BooksWithSortControls = ({
       }
     };
 
-    if (userId) {
+    if (currentUserId) {
       fetchBooksStatuses();
     }
-  }, [userId, books]);
+  }, [currentUserId, displayedBooks]);
 
   const handleSort = (criteria: "title" | "date" | "note" | "reviews") => {
+    console.log("💛SortState💙 handleSort ❤️🤍🤎", criteria);
     //console.log("wwwx criteria", criteria);
     //console.log("wwwx activeTab", activeTab);
 
@@ -91,8 +179,17 @@ const BooksWithSortControls = ({
 
   useEffect(() => {
     //console.log("*-*- useEffect sortBookTypes sortState = ", sortState);
-    sortBook(books, sortState);
-  }, [sortState, books]);
+    //sortBook(displayedBooks, sortState);
+    // Pas boucle infinie...Bizarre ???
+    setDisplayedBooks(
+      sortBook(
+        displayedBooks,
+        sortState[displayBookStatus].criteria,
+        sortState[displayBookStatus].order,
+        sortState
+      )
+    );
+  }, [sortState, displayedBooks]);
 
   return (
     <div className="flex flex-col gap-4 items-center">
@@ -166,25 +263,19 @@ const BooksWithSortControls = ({
       </div>
 
       <ul>
-        {books.map((book: BookType) => {
-          const bookStatus = booksStatuses[book.id] || null;
+        {displayedBooks.map((book: BookType) => {
+          const bookStatus = booksStatuses[book.id] || "";
 
           return (
             <li key={book.id} className="mb-4 border-muted border-4 rounded-xl">
-              <Link
-                href={userId ? `/books/${book.id}` : "/auth/signin"}
-                // Créer un ClientLink pour pouvoir mettre le toast si non connecté ???
-                //onClick={handleLinkClick}
-              >
-                <p>
-                  Status du livre {book.title} = {bookStatus}{" "}
-                </p>
-                <BookInfos
-                  book={book}
-                  userId={userId}
-                  bookUserStatus={bookStatus}
-                />
-              </Link>
+              <p>
+                Status du livre {book.title} = {bookStatus}
+              </p>
+              <BookInfos
+                book={book}
+                userViewId={displayedAppUserId}
+                bookConnectedUserStatus={bookStatus}
+              />
             </li>
           );
         })}

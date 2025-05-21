@@ -1,11 +1,11 @@
+import { BookStatus } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import {
   BookType,
-  BookTypePlusUsersWhoRead,
+  BookTypePlusDate,
   MyInfoBookPlusTitleAndNote,
 } from "./types";
-import { BookStatus } from "@prisma/client";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -25,6 +25,7 @@ export const cleanDescription = (description: string) => {
   );
 };
 
+// UTILISé ???????????????
 export const sortBooksByStatus = (
   books: MyInfoBookPlusTitleAndNote[],
   bookStatus: BookStatus,
@@ -71,18 +72,30 @@ export const sortBooksByStatus = (
   });
 };
 
-export const sortBook = <T extends BookTypePlusUsersWhoRead | BookType>(
-  books: T[],
+export const sortBook = (
+  books: (BookType | BookTypePlusDate)[],
+  criteria: string,
+  order: string,
   sortState: { [key in BookStatus]: { criteria: string; order: string } }
-): T[] => {
+  //withDateOption = false
+): (BookType | BookTypePlusDate)[] => {
   if (books.length <= 1) {
     return books;
   }
+  // export const sortBook = <T extends BookTypePlusUsersWhoRead | BookType>(
+  //   books: T[],
+  //   sortState: { [key in BookStatus]: { criteria: string; order: string } }
+  //   //withDateOption = false
+  // ): T[] => {
+  //   if (books.length <= 1) {
+  //     return books;
+  //   }
 
-  // console.log("sortBookTypes sortState", sortState);
+  console.log("💙🤎 sortBook books", books);
+  console.log("💙🤎 sortBook sortState", sortState);
 
   //const { criteria, order } = sortState;
-  const { criteria, order } = sortState[BookStatus.READ];
+  //const { criteria, order } = sortState[BookStatus.IN_PROGRESS];
 
   // console.log("*-*-sortBook", books, criteria, order);
 
@@ -102,6 +115,20 @@ export const sortBook = <T extends BookTypePlusUsersWhoRead | BookType>(
       case "reviews":
         // console.log("REVIEW", a.rating?.count, b.rating?.count);
         comparison = (a.countRating ?? 0) - (b.countRating ?? 0);
+        break;
+      case "date":
+        const aYear = "year" in a && typeof a.year === "number" ? a.year : 0;
+        const bYear = "year" in b && typeof b.year === "number" ? b.year : 0;
+        let yearComparison = aYear - bYear;
+        if (yearComparison !== 0) {
+          comparison = yearComparison;
+        } else {
+          const aMonth =
+            "month" in a && typeof a.month === "number" ? a.month : 0;
+          const bMonth =
+            "month" in b && typeof b.month === "number" ? b.month : 0;
+          comparison = aMonth - bMonth;
+        }
         break;
     }
 

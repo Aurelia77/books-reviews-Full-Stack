@@ -1,6 +1,6 @@
 "use client";
 
-import { UserType } from "@/lib/types";
+import { UserType, UserTypePlusIsMyFriend } from "@/lib/types";
 import { X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -9,9 +9,10 @@ import FriendSparkles from "./FriendSparkles";
 import Title from "./Title";
 import { Avatar, AvatarImage } from "./ui/avatar";
 import { Input } from "./ui/input";
+import UsersListView from "./UsersListView";
 
 type UsersSearchProps = {
-  users: UserType[];
+  users: UserTypePlusIsMyFriend[];
 };
 
 const UsersSearch = ({ users }: UsersSearchProps) => {
@@ -39,44 +40,9 @@ const UsersSearch = ({ users }: UsersSearchProps) => {
           />
         </div>
       </div>
+
       {filteredUsers.length > 0 ? (
-        <ul className="flex flex-col gap-8">
-          {filteredUsers.map((user: UserType) => (
-            <li key={user.id} className="flex items-center gap-6">
-              <Link
-                href={`/users/${user.id}`}
-                className="relative flex items-center gap-3 p-3"
-              >
-                {user.imgURL !== "" ? (
-                  <Avatar>
-                    <AvatarImage src={user.imgURL} className="object-cover" />
-                  </Avatar>
-                ) : (
-                  <Avatar className="flex items-center justify-center bg-secondary">
-                    {user.userName.charAt(0).toUpperCase()}
-                  </Avatar>
-                )}
-                <p className="font-semibold text-muted">{user.userName}</p>
-              </Link>
-
-              {/* /////////////////////////////////////////////// */}
-              {user.isMyFriend ? (
-                <p>Ami</p>
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  NON !!! (à supp)
-                </p>
-              )}
-
-              {user.isMyFriend && user.isMyFriend && (
-                <div className="flex items-center gap-4">
-                  <FriendSparkles />
-                  <p>Ami</p>
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
+        <UsersListView userInfoList={filteredUsers} />
       ) : (
         <FeedbackMessage
           message="Aucun membre trouvé !"

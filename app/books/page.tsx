@@ -53,6 +53,10 @@ const SearchBooksPage = async (props: {
   const searchParams = await props.searchParams;
   const currentUser = await getUser();
 
+  // const [sortState, setSortState] = useState<any>({
+  //   [BookStatus]: { criteria: "title", order: "asc" },
+  // });
+
   // Simulation pour loading / error
   // const delay = (ms: number) =>
   //   new Promise((resolve) => setTimeout(resolve, ms));
@@ -204,15 +208,15 @@ const SearchBooksPage = async (props: {
       // console.log("9+++++-uniqueApiBooks", uniqueApiBooks);
       // return uniqueApiBooks;
 
-      console.log("💛1");
+      //console.log("💛1");
       return (
         apiBooks
           // on ne veut pas les livres qui sont déjà dans la BDD
           .filter((book: BookAPIType) => {
-            console.log("💛2");
+            //console.log("💛2");
             return !filteredDbBooks.some((dbBook) => {
-              console.log("💛3", dbBook.title, dbBook.id === book.id);
-              console.log("💛💙💚❤️🤍🤎 == ??", dbBook.id, book.id);
+              //console.log("💛3", dbBook.title, dbBook.id === book.id);
+              //console.log("💛💙💚❤️🤍🤎 == ??", dbBook.id, book.id);
 
               return dbBook.id === book.id;
             });
@@ -278,8 +282,10 @@ const SearchBooksPage = async (props: {
       {filteredDbAndApiBooks?.length > 0 ? (
         <BooksWithSortControls
           displayBookStatus={BookStatus.READ}
-          userId={currentUser?.id}
+          //displayedAppUserId={currentUser?.id}
           books={filteredDbAndApiBooks}
+          // sortState={sortState}
+          // setSortState={setSortState}
         />
       ) : (
         <FeedbackMessage message="Aucun livre trouvé" type="info" />

@@ -14,7 +14,7 @@ datasource db {
 }
 
 model Book {
-  id            String   @id @default(ulid())
+  id            String         @id @default(ulid())
   title         String
   authors       String[]
   description   String
@@ -27,6 +27,7 @@ model Book {
   isFromAPI     Boolean
   totalRating   Int
   countRating   Int
+  UserInfoBook  UserInfoBook[]
 }
 
 model AppUser {
@@ -36,7 +37,6 @@ model AppUser {
   imgURL       String
   description  String
   friends      String[]
-  isMyFriend   Boolean?
   isAdmin      Boolean
   UserInfoBook UserInfoBook[]
 }
@@ -46,6 +46,7 @@ model UserInfoBook {
   user     AppUser    @relation(fields: [userId], references: [id])
   userId   String
   bookId   String
+  book     Book       @relation(fields: [bookId], references: [id])
   year     Int?
   month    Int?
   note     Int?

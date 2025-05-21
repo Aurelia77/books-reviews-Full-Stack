@@ -54,25 +54,14 @@ const accountFormSchema = z.object({
 
 // remplacer any !!!!!!!!!!
 const MyAccount = ({
-  currentUser,
-  currentUserInfo,
+  currentAppUser,
+  myFriends,
 }: {
-  currentUser: any;
-  currentUserInfo: UserType;
+  currentAppUser: UserType;
+  myFriends: UserType[];
 }) => {
-  // const [currentUserInfo, setCurrentUserInfo] = useState<UserType | null>(null);
-  const [friendsInfo, setFriendsInfo] = useState<UserType[]>([]);
-
   // Voir si on vt utiliser useToast !!!
   // const { toast } = useToast();
-
-  console.log("💛💙", currentUser.id);
-
-  console.log("🤡🤡MY ACCOUNT friendsInfo", friendsInfo);
-  console.log(
-    "🤡🤡MY ACCOUNT friendsInfo[0] isMyFriend ?",
-    friendsInfo[0]?.isMyFriend ?? "non"
-  );
 
   const [imageUpload, setImageUpload] = useState<File | null>(null);
   console.log("💛💙💚❤️🤍🤎imageUpload", imageUpload);
@@ -111,14 +100,14 @@ const MyAccount = ({
   const { reset } = form;
 
   useEffect(() => {
-    if (currentUserInfo) {
+    if (currentAppUser) {
       reset({
-        userName: currentUserInfo.userName,
-        imgURL: currentUserInfo.imgURL,
-        description: currentUserInfo.description,
+        userName: currentAppUser.userName,
+        imgURL: currentAppUser.imgURL,
+        description: currentAppUser.description,
       });
     }
-  }, [currentUserInfo, reset]);
+  }, [currentAppUser, reset]);
 
   const onSubmit: SubmitHandler<AccountFormType> = async (formData) => {
     console.log("data💛", formData);
@@ -131,7 +120,7 @@ const MyAccount = ({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          currentUserId: currentUser.id,
+          currentUserId: currentAppUser.id,
           data: formData,
         }),
       });
@@ -184,7 +173,7 @@ const MyAccount = ({
   return (
     <div className="min-h-screen max-w-3xl sm:p-2 md:m-auto md:mt-8">
       <Title>Mon compte</Title>
-      <Title level={2}>{`Identifiant : ${currentUser?.email ?? ""}`}</Title>
+      <Title level={2}>{`Identifiant : ${currentAppUser?.email ?? ""}`}</Title>
       <Form {...form}>
         <form
           className="mb-12 flex flex-col gap-3"
@@ -275,24 +264,9 @@ const MyAccount = ({
           color="black"
         />
       </div>
-      {friendsInfo.length > 0 ? (
-        <UsersListView userInfoList={friendsInfo} />
+      {myFriends.length > 0 ? (
+        <UsersListView userInfoList={myFriends} />
       ) : (
-        // friendsInfo.map((friendInfo, index) => (
-
-        // <Link
-        //   key={index}
-        //   to={`/account/${friendInfo.id}`}
-        //   className="font-semibold text-muted"
-        // >
-        //   <div className="flex items-center gap-2">
-        //     <Avatar>
-        //       <AvatarImage src={friendInfo.imgURL} />
-        //     </Avatar>
-        //     <p>{friendInfo.userName}</p>
-        //   </div>
-        // </Link>
-        // ))
         <FeedbackMessage message="Aucun ami pour l'instant" />
       )}
 

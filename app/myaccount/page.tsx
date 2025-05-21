@@ -9,22 +9,26 @@ const MyAccountPage = async () => {
 
   console.log("💛💙💚❤️🤍🤎", process.env.NEXT_PUBLIC_BASE_URL);
 
-  // const res = await fetch(`/api/appUser/getOne?userId=${currentUser?.id}`, {
-  //   next: { revalidate: 60 },
-  // });
-  const currentUserInfo = await prisma.appUser.findUnique({
+  const currentAppUser = await prisma.appUser.findUnique({
     where: { id: currentUser?.id },
   });
 
-  if (!currentUserInfo) {
+  if (!currentAppUser) {
     throw new Error("User not found");
   }
 
-  console.log("💛💙💚❤️currentUserInfo", currentUserInfo);
+  const myFriends = await prisma.appUser.findMany({
+    where: {
+      id: {
+        in: currentAppUser?.friends || [],
+      },
+    },
+  });
+  console.log("💛💙💚❤️🤍🤎", myFriends);
 
-  return (
-    <MyAccount currentUser={currentUser} currentUserInfo={currentUserInfo} />
-  );
+  console.log("💛💙💚❤️currentUserInfo", currentAppUser);
+
+  return <MyAccount currentAppUser={currentAppUser} myFriends={myFriends} />;
 };
 
 export default MyAccountPage;

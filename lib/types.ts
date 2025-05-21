@@ -17,6 +17,11 @@ export type BookType = {
   countRating: number;
 };
 
+export type BookTypePlusDate = BookType & {
+  year?: number | null;
+  month?: number | null;
+};
+
 // export type BookRatingType = {
 //   totalRating: number;
 //   count: number;
@@ -70,8 +75,11 @@ export type UserType = {
   imgURL: string;
   description: string;
   friends: string[];
-  isMyFriend?: boolean | null;
   isAdmin: boolean;
+};
+
+export type UserTypePlusIsMyFriend = UserType & {
+  isMyFriend: boolean;
 };
 
 export type UserTypePlusBooksTitleAndNote = UserType & {
@@ -125,6 +133,7 @@ export type UsersBooksReadType = {
   usersWhoReadBook: UsersWhoReadBookType[];
 };
 
+// pas utilisé ???
 export type BookTypePlusUsersWhoRead = BookType & {
   usersWhoRead: UsersWhoReadBookType[];
 };

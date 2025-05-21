@@ -1,3 +1,5 @@
+import AllBooksLists from "@/components/AllBooksLists";
+import FeedbackMessage from "@/components/FeedbackMessage";
 import UserAccount from "@/components/UserAccount";
 import { getUser } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
@@ -12,7 +14,7 @@ export default async function Post({
 
   const currentUser = await getUser();
 
-  const user = await prisma.appUser.findUnique({
+  const displayedAppUser = await prisma.appUser.findUnique({
     where: { id: id },
   });
 
@@ -20,52 +22,38 @@ export default async function Post({
     where: { id: currentUser?.id },
   });
 
-  return (
-    user && (
-      <UserAccount currentUser={currentAppUser} userInfo={user} />
-      // <div
-      //   className={cn("min-h-screen max-w-3xl sm:p-2 md:m-auto md:mt-8", {
-      //     //"bg-friend/20": isFriend,
-      //   })}
-      //   //key={userInUrl.userId}
-      // >
-      //   <Card className="mb-6">
-      //     <div className="mr-2 flex items-center justify-between gap-10 pl-2 max-w-md">
-      //       <Title>{user?.userName ?? ""}</Title>
-      //       <CardDescription>
-      //         {/* {isFriend ? (
-      //           <div className="flex gap-4 items-center">
-      //             <FriendSparkles />
-      //             <p>Ami</p>
-      //             <Button onClick={deleteFriendHandler}>Supprimer</Button>
-      //           </div>
-      //         ) : (
-      //           <div className="flex gap-4 items-center">
-      //             <p>Non ami</p>
-      //             <Button onClick={addFriendHandler}>Ajouter</Button>
-      //           </div>
-      //         )} */}
-      //       </CardDescription>
-      //     </div>
-      //     <div className="m-4 flex gap-4">
-      //       {user?.imgURL && (
-      //         <img
-      //           src={user?.imgURL}
-      //           alt={`Image de profil de ${user?.userName}`}
-      //           width="150"
-      //           height="150"
-      //           className="rounded-xl"
-      //         />
-      //       )}
-      //       <CardDescription className="m-2 whitespace-pre-wrap">
-      //         {user?.description || "Aucune description"}
-      //       </CardDescription>
-      //     </div>
-      //   </Card>
+  const livres = await prisma.userInfoBook.findMany({
+    where: {
+      userId: id,
+      status: "READ",
+    },
+    include: {
+      book: true, // inclut les infos du livre
+    },
+  });
 
-      //   {/* <Title level={2}>Livres du membre</Title>
-      //   {user && userInUrl.userId && <AllBooksLists user={user} />} */}
-      // </div>
+  console.log("💛💙💚❤️🤍🤎livres", livres);
+  console.log("💛💙💚❤️🤍🤎livres", livres[0]);
+  console.log(
+    "💛💙💚❤️🤍🤎livres",
+    livres.map((l) => l.book)
+  );
+
+  return (
+    displayedAppUser && (
+      <div className="flex flex-col gap-6">
+        <UserAccount currentUser={currentAppUser} userInfo={displayedAppUser} />
+        {livres?.length > 0 && currentAppUser ? (
+          <AllBooksLists displayedAppUser={displayedAppUser} />
+        ) : (
+          // <BooksWithSortControls
+          //   displayBookStatus={BookStatus.READ}
+          //   userId={currentUser?.id}
+          //   books={livres.map((l) => l.book)} // ????????
+          // />
+          <FeedbackMessage message="Aucun livre trouvé" type="info" />
+        )}
+      </div>
     )
   );
 }

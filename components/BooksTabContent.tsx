@@ -1,33 +1,41 @@
 import { SortStateType } from "@/lib/types";
+import { BookStatus } from "@prisma/client";
 import React from "react";
-import BookInfos from "./BookInfos";
-import BooksSortControls from "./BooksSortControls";
+import BooksWithSortControls from "./BooksWithSortControls";
 import FeedbackMessage from "./FeedbackMessage";
 import { TabsContent } from "./ui/tabs";
-import { BookStatus } from "@prisma/client";
 
 type BooksTabContentProps = {
   value: BookStatus | string;
   activeTab: BookStatus;
-  sortState: SortStateType;
-  setSortState: React.Dispatch<React.SetStateAction<SortStateType>>;
-  displayedBooksIds: string[];
-  userId: string;
+  // sortState: SortStateType;
+  // setSortState: React.Dispatch<React.SetStateAction<SortStateType>>;
+  displayedBookIds: string[];
+  displayedAppUserId: string;
 };
 
 const BooksTabContent = ({
   value,
   activeTab,
-  sortState,
-  setSortState,
-  displayedBooksIds,
-  userId,
+  // A SUPP !!!!!!!!!!!
+  // sortState,
+  // setSortState,
+  displayedBookIds,
+  displayedAppUserId,
 }: BooksTabContentProps) => (
   <TabsContent value={value}>
-    {displayedBooksIds.length > 0 ? (
+    {displayedBookIds.length > 0 ? (
       <div className="flex flex-col items-center gap-1 md:gap-4">
-        <p>{displayedBooksIds.length} livres</p>
-        {displayedBooksIds.length > 1 && (
+        <p>{displayedBookIds.length} livres</p>
+        <BooksWithSortControls
+          displayBookStatus={activeTab}
+          bookIds={displayedBookIds}
+          // sortState={sortState}
+          // setSortState={setSortState}
+          displayedAppUserId={displayedAppUserId}
+          withDateOption={true}
+        />
+        {/* {displayedBookIds.length > 1 && (
           <BooksSortControls
             booksStatus={activeTab}
             sortState={sortState}
@@ -36,18 +44,17 @@ const BooksTabContent = ({
           />
         )}
         <ul>
-          {displayedBooksIds.map((bookId: string) => (
+          {displayedBookIds.map((bookId: string) => (
             <li className="mb-4" key={bookId}>
-              {/* j'ai ajouté bookUserStatus={BookStatus.READ} */}
-              {/* ???????? */}
               <BookInfos
                 bookId={bookId}
                 userViewId={userId}
                 bookUserStatus={BookStatus.READ}
-              />
+                />
             </li>
           ))}
-        </ul>
+        </ul> */}
+        {/* j'ai ajouté bookUserStatus={BookStatus.READ} */}
       </div>
     ) : (
       <FeedbackMessage message="Aucun livre pour l'instant" className="mt-8" />

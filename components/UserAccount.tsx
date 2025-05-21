@@ -93,7 +93,8 @@ const UserAccount = ({
 
   return (
     <div
-      className={cn("min-h-screen max-w-3xl sm:p-2 md:m-auto md:mt-8", {
+      // min-h-screen
+      className={cn("max-w-3xl sm:p-2 md:m-auto md:mt-8", {
         //"bg-friend/20": isFriend,
       })}
       //key={userInUrl.userId}
@@ -137,7 +138,9 @@ const UserAccount = ({
         </div>
       </Card>
 
-      <Title level={2}>Livres du membre</Title>
+      <Title level={2}>
+        Livres du membre (!!!!!!!!mettre ce titre ailleurs ?????????)
+      </Title>
       {/* {userInfo && userInUrl.userId && <AllBooksLists userInfo={userInfo} />} */}
     </div>
   );

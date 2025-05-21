@@ -1,10 +1,14 @@
-import { UserType } from "@/lib/types";
+import { UserType, UserTypePlusIsMyFriend } from "@/lib/types";
 import Link from "next/link";
 import FeedbackMessage from "./FeedbackMessage";
 import FriendSparkles from "./FriendSparkles";
 import { Avatar, AvatarImage } from "./ui/avatar";
 
-const UsersListView = ({ userInfoList }: { userInfoList: UserType[] }) => {
+const UsersListView = ({
+  userInfoList,
+}: {
+  userInfoList: (UserType | UserTypePlusIsMyFriend)[];
+}) => {
   ////////////////////////////////////////
   ////////////////////////////////////////
   userInfoList.map((friend: UserType) => {
@@ -22,7 +26,7 @@ const UsersListView = ({ userInfoList }: { userInfoList: UserType[] }) => {
         {userInfoList.map((friend: UserType) => (
           <li key={friend.id} className="flex items-center gap-6">
             <Link
-              href={`/account/${friend.id}`}
+              href={`/users/${friend.id}`}
               className="relative flex items-center gap-3 p-3"
             >
               {friend.imgURL !== "" ? (
@@ -37,19 +41,12 @@ const UsersListView = ({ userInfoList }: { userInfoList: UserType[] }) => {
               <p className="font-semibold text-muted">{friend.userName}</p>
             </Link>
 
-            {/* /////////////////////////////////////////////// */}
-            {friend.isMyFriend ? (
-              <p>Ami</p>
-            ) : (
-              <p className="text-sm text-muted-foreground">NON</p>
-            )}
-
-            {friend.isMyFriend && friend.isMyFriend && (
+            {"isMyFriend" in friend && friend.isMyFriend ? (
               <div className="flex items-center gap-4">
                 <FriendSparkles />
                 <p>Ami</p>
               </div>
-            )}
+            ) : null}
           </li>
         ))}
       </ul>

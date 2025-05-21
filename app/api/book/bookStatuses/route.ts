@@ -5,6 +5,8 @@ export async function POST(req: Request) {
   // Remplacez cette ligne pour récupérer un tableau d'IDs
   const { userId, bookIds } = body; // Avant : const { userId, bookId } = body;
 
+  console.log("💛💙💚 userId bookIds", userId, bookIds);
+
   // Ajoutez une vérification pour bookIds
   if (!userId || !bookIds || !Array.isArray(bookIds)) {
     return new Response(

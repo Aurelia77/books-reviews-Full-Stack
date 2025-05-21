@@ -17,8 +17,11 @@ import { BookType } from "@/lib/types";
 import { cleanDescription, cn } from "@/lib/utils";
 import { BookStatus } from "@prisma/client";
 import { Check, Ellipsis, Quote, Smile } from "lucide-react";
-import { useState } from "react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import AverageBookRating from "./AverageBookRating";
 import BookUserInfo from "./BookUserInfo";
+import FriendsWhoReadBook from "./FriendsWhoReadBook";
 //import useSWR from "swr";
 // import AverageBookRating from "./AverageBookRating";
 // import BookUserInfo from "./BookUserInfo";
@@ -33,23 +36,23 @@ type BookInfosProps =
       book: BookType;
       bookId?: never;
       userViewId?: string;
-      userId?: string | undefined;
-      bookUserStatus: BookStatus | null;
+      // userId?: string | undefined;
+      bookConnectedUserStatus: BookStatus | "";
     }
   | {
       book?: never;
       bookId: string;
       userViewId?: string;
-      userId?: string | undefined;
-      bookUserStatus: BookStatus | null;
+      // userId?: string | undefined;
+      bookConnectedUserStatus: BookStatus | "";
     };
 
 const BookInfos = ({
   book,
   bookId,
   userViewId,
-  userId,
-  bookUserStatus,
+  // userId,
+  bookConnectedUserStatus = "",
 }: BookInfosProps) => {
   //console.log("❤️", book);
   ////console.log("bookId", bookId);
@@ -62,14 +65,36 @@ const BookInfos = ({
   // console.log("book", book);
 
   const [bookInfos, setBookInfos] = useState<BookType | null>(book || null);
-  // console.log("bookInfos", bookInfos);
   // console.log("bookInfos description", bookInfos?.description);
 
   // const [bookStatus, setBookStatus] = useState<BookStatus | "">("");
   // console.log("💛 bookinmylist", bookStatus);
-  // const [bookInFriendList, setBookInFriendList] = useState<BookStatusEnum | "">(
-  //   ""
-  // );
+  const [bookInFriendList, setBookInFriendList] = useState<BookStatus | "">("");
+
+  const [currentUserId, setCurrentUserId] = useState<string | undefined>(
+    undefined
+  );
+
+  console.log(
+    "❤️💛💚🤍❤️ bookInfos.title",
+    bookInfos?.title,
+    bookConnectedUserStatus,
+    bookInFriendList,
+    currentUserId
+  );
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch("/api/user");
+        const data = await res.json();
+        setCurrentUserId(data.user?.id);
+      } catch (error) {
+        console.error("Erreur user :", error);
+      }
+    };
+    fetchUser();
+  }, []);
 
   //const { currentUser } = useUserStore();
 
@@ -115,7 +140,7 @@ const BookInfos = ({
   //   );
   //   //ou gérer le undefined dans fonction bookInMyBooksFirebase ??????????
   //   if (userId && bookInfos) {
-  //     fetch("/api/book/bookStatus", {
+  //     fetch("/api/books/bookStatus", {
   //       method: "POST",
   //       headers: {
   //         "Content-Type": "application/json",
@@ -162,84 +187,112 @@ const BookInfos = ({
     <div>
       {book && (
         <Card className="relative">
-          <CardDescription className="absolute right-2 top-2 rounded-full bg-secondary/60 px-3 py-1 text-secondary-foreground shadow-sm shadow-foreground">
-            {book.language}
-          </CardDescription>
-          <div>
-            <div className="relative flex items-start gap-5 p-5 pt-10 shadow-md shadow-secondary/60">
-              <img
-                src={book.imageLink || DEFAULT_BOOK_IMAGE}
-                // à voir mettre dans un client
-                //onError={(e) => (e.currentTarget.src = DEFAULT_BOOK_IMAGE)}
-                className="w-32 rounded-sm border border-border object-contain shadow-md shadow-foreground/70"
-                alt={`Image de couverture du livre ${book?.title}`}
-              />
-              <CardHeader className="gap-3 overflow-hidden">
-                <CardTitle className="line-clamp-4">{book.title}</CardTitle>
-                <CardDescription className="line-clamp-2 text-muted">
-                  {book?.authors?.join(", ")}
-                </CardDescription>
-                <CardDescription className="overflow-hidden">
-                  {book.categories &&
-                    book.categories.map((cat: string, index: number) => (
-                      <span key={index}>{index > 0 ? ` / ${cat}` : cat}</span>
-                    ))}
-                </CardDescription>
-                {book.description ? (
-                  <CardDescription className="relative flex gap-2">
-                    <Quote className="absolute -top-1" />
-                    <span className="line-clamp-3 max-w-[90%] text-foreground">
-                      &ensp;&ensp;&ensp;&ensp;
-                      {cleanDescription(book.description)}
-                    </span>
+          <Link
+            href={currentUserId ? `/books/${book.id}` : "/auth/signin"}
+            // Créer un ClientLink pour pouvoir mettre le toast si non connecté ???
+            //onClick={handleLinkClick}
+          >
+            <CardDescription className="absolute right-2 top-2 rounded-full bg-secondary/60 px-3 py-1 text-secondary-foreground shadow-sm shadow-foreground">
+              {book.language}
+            </CardDescription>
+            <div>
+              <div className="relative flex items-start gap-5 p-5 pt-10 shadow-md shadow-secondary/60">
+                <img
+                  src={book.imageLink || DEFAULT_BOOK_IMAGE}
+                  // à voir mettre dans un client
+                  //onError={(e) => (e.currentTarget.src = DEFAULT_BOOK_IMAGE)}
+                  className="w-32 rounded-sm border border-border object-contain shadow-md shadow-foreground/70"
+                  alt={`Image de couverture du livre ${book?.title}`}
+                />
+                <CardHeader className="gap-3 overflow-hidden">
+                  <CardTitle className="line-clamp-4">{book.title}</CardTitle>
+                  <CardDescription className="line-clamp-2 text-muted">
+                    {book?.authors?.join(", ")}
                   </CardDescription>
-                ) : (
-                  <p className="italic">{NO_DESCRIPTION} </p>
-                )}
-                {/* <AverageBookRating bookInfos={book} /> */}
-              </CardHeader>
+                  <CardDescription className="overflow-hidden">
+                    {book.categories &&
+                      book.categories.map((cat: string, index: number) => (
+                        <span key={index}>{index > 0 ? ` / ${cat}` : cat}</span>
+                      ))}
+                  </CardDescription>
+                  {book.description ? (
+                    <CardDescription className="relative flex gap-2">
+                      <Quote className="absolute -top-1" />
+                      <span className="line-clamp-3 max-w-[90%] text-foreground">
+                        &ensp;&ensp;&ensp;&ensp;
+                        {cleanDescription(book.description)}
+                      </span>
+                    </CardDescription>
+                  ) : (
+                    <p className="italic">{NO_DESCRIPTION} </p>
+                  )}
+                  <AverageBookRating bookInfos={book} />
+                </CardHeader>
 
-              {bookUserStatus && (
-                <div
-                  className={cn(
-                    "absolute -bottom-16 right-2 rounded-full bg-primary/50 p-1 shadow-sm shadow-foreground",
-                    bookUserStatus === BookStatus.READ && "bg-green-500/40",
-                    bookUserStatus === BookStatus.IN_PROGRESS &&
-                      "bg-blue-500/40",
-                    bookUserStatus === BookStatus.TO_READ && "bg-pink-500/40"
-                  )}
-                >
-                  {bookUserStatus === BookStatus.READ && (
-                    <div className="flex flex-col items-center p-1 text-xs">
-                      J'ai lu
-                      <Check />
-                    </div>
-                  )}
-                  {bookUserStatus === BookStatus.IN_PROGRESS && (
-                    <div className="flex flex-col items-center p-1 text-xs">
-                      Je lis...
-                      <Ellipsis />
-                    </div>
-                  )}
-                  {bookUserStatus === BookStatus.TO_READ && (
-                    <div className="flex flex-col items-center p-1 text-xs">
-                      A lire !
-                      <Smile />
-                    </div>
-                  )}
-                </div>
-              )}
+                {bookConnectedUserStatus && (
+                  <div
+                    className={cn(
+                      "absolute -bottom-16 right-2 rounded-full bg-primary/50 p-1 shadow-sm shadow-foreground",
+                      bookConnectedUserStatus === BookStatus.READ &&
+                        "bg-green-500/40",
+                      bookConnectedUserStatus === BookStatus.IN_PROGRESS &&
+                        "bg-blue-500/40",
+                      bookConnectedUserStatus === BookStatus.TO_READ &&
+                        "bg-pink-500/40"
+                    )}
+                  >
+                    {bookConnectedUserStatus === BookStatus.READ && (
+                      <div className="flex flex-col items-center p-1 text-xs">
+                        J'ai lu
+                        <Check />
+                      </div>
+                    )}
+                    {bookConnectedUserStatus === BookStatus.IN_PROGRESS && (
+                      <div className="flex flex-col items-center p-1 text-xs">
+                        Je lis...
+                        <Ellipsis />
+                      </div>
+                    )}
+                    {bookConnectedUserStatus === BookStatus.TO_READ && (
+                      <div className="flex flex-col items-center p-1 text-xs">
+                        A lire !
+                        <Smile />
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+              <div className="bg-pink-500">
+                <p>BookUserInfo (on est ds composant BookInfo)</p>
+                <p>bookConnectedUserStatus = {bookConnectedUserStatus} </p>
+                <p>title = {bookInfos?.title} </p>
+                <p>bookInFriendList = {bookInFriendList} </p>
+                <p>userViewId = {userViewId} </p>
+                <p>currentUserId = {currentUserId} </p>
+              </div>
+              {(bookConnectedUserStatus || userViewId) &&
+                // pk j'avais mis bookInFriendList ???
+                // {(bookUserStatus || bookInFriendList !== "") &&
+                bookInfos &&
+                currentUserId && (
+                  <BookUserInfo
+                    userId={userViewId || currentUserId}
+                    currentUserId={currentUserId}
+                    bookId={bookInfos.id}
+                    bookStatus={bookConnectedUserStatus}
+                    userViewId={userViewId}
+                    // friendBookStatus={bookInFriendList}
+                  />
+                )}
             </div>
-            {/* {(bookUserStatus || bookInFriendList !== "") && (
-              <BookUserInfo
-                userId={userViewId || currentUser?.uid}
-                bookInfosId={bookInfos.id}
-                bookStatus={bookUserStatus}
-                friendBookStatus={bookInFriendList}
-              />
-            )} */}
-          </div>
-          {/* <FriendsWhoReadBook bookId={bookInfos.id} userViewId={userViewId} /> */}
+          </Link>
+          {bookInfos && currentUserId && (
+            <FriendsWhoReadBook
+              bookId={bookInfos.id}
+              userViewId={userViewId}
+              currentUserId={currentUserId}
+            />
+          )}
         </Card>
       )}
     </div>

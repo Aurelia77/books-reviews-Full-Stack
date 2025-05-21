@@ -1,6 +1,7 @@
 import AddOrUpdateBookOrBookStatus from "@/components/AddOrUpdateBookOrBookStatus";
 import AverageBookRating from "@/components/AverageBookRating";
 import FeedbackMessage from "@/components/FeedbackMessage";
+import FriendsWhoReadBook from "@/components/FriendsWhoReadBook";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,7 +10,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { DialogHeader } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { getUser } from "@/lib/auth-session";
 import {
   DEFAULT_BOOK_IMAGE,
@@ -20,12 +27,6 @@ import { prisma } from "@/lib/prisma";
 import { BookType } from "@/lib/types";
 import { cleanDescription } from "@/lib/utils";
 import { BookStatus } from "@prisma/client";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Quote } from "lucide-react";
 import Link from "next/link";
 
@@ -213,7 +214,9 @@ export default async function Post({
           )}
         </CardHeader>
       </div>
-      {/* <FriendsWhoReadBook bookId={book.id} /> */}
+      {currentUser && (
+        <FriendsWhoReadBook bookId={book.id} currentUserId={currentUser?.id} />
+      )}
 
       <CardContent className="relative bg-secondary/30 p-6 shadow-md shadow-primary/30">
         {currentUser && (
