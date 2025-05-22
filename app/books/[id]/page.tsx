@@ -17,6 +17,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import UserReview from "@/components/UserReview";
 import { getUser } from "@/lib/auth-session";
 import {
   DEFAULT_BOOK_IMAGE,
@@ -43,12 +44,41 @@ export default async function Post({
   params: Promise<{ id: string }>;
 }) {
   const currentUser = await getUser();
-
-  console.log("💙❤️🤎 currentUserId", currentUser?.id);
-
   const { id } = await params;
+  // console.log("💙❤️🤎 currentUserId", currentUser?.id);
+  // console.log("💛💙💚❤️🤍🤎id", id);
 
-  console.log("💛💙💚❤️🤍🤎id", id);
+  const usersInfoWhoReadBook = await prisma.userInfoBook.findMany({
+    where: {
+      bookId: id,
+      status: BookStatus.READ,
+    },
+    include: {
+      // comments: true,
+      // userNote: true,
+      user: {
+        select: {
+          id: true,
+          userName: true,
+          imgURL: true,
+        },
+      },
+    },
+  });
+  console.log("💚💚💚💙userCommentsAndNote", usersInfoWhoReadBook);
+
+  const usersWhoReadBookCommentsAndNotes = usersInfoWhoReadBook.map((item) => ({
+    userName: item.user.userName,
+    imgURL: item.user.imgURL,
+    userId: item.user.id,
+    userComments: item.comments ?? "",
+    userNote: item.note ?? undefined,
+  }));
+
+  console.log(
+    "💛💙💚💚💚 usersWhoReadBookCommentsAndNotes",
+    usersWhoReadBookCommentsAndNotes
+  );
 
   // 1-On recherche si le livre est dans notre BDD
   let book: BookType | null = await prisma.book.findUnique({
@@ -185,21 +215,24 @@ export default async function Post({
                       <DialogTitle>{book?.title}</DialogTitle>
                     </DialogHeader>
                     <ul>
-                      {/* {usersWhoReadBookCommentsAndNotes.map(
-                        (userCommentsAndNote) => {
+                      {usersWhoReadBookCommentsAndNotes.map(
+                        (userWhoReadBookCommentsAndNotes) => {
                           return (
                             <li
-                              key={userCommentsAndNote.userId}
+                              key={userWhoReadBookCommentsAndNotes.userId}
                               className="m-1 rounded-md bg-primary/50 p-1"
                             >
                               <UserReview
-                                userCommentsAndNote={userCommentsAndNote}
+                                currentUserId={currentUser?.id}
+                                userCommentsAndNote={
+                                  userWhoReadBookCommentsAndNotes
+                                }
                               />
                             </li>
                           );
-                          <p>{userCommentsAndNote.userNote} </p>;
+                          <p>{userWhoReadBookCommentsAndNotes.userNote} </p>;
                         }
-                      )} */}
+                      )}
                     </ul>
 
                     <div className="grid gap-4 py-4"></div>

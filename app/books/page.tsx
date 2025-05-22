@@ -78,34 +78,45 @@ const SearchBooksPage = async (props: {
   // console.log("🤎🤎🤎🤎query", query);
 
   // 1- On va d'abord chercher les livres de la BDD
-  const filteredDbBooks: BookType[] = await prisma.book
-    .findMany()
-    .then((books) => {
-      if (books.length > 0) {
-        if (!query.title && !query.author && !query.lang) {
-          return books;
-        }
-        return books.filter((book) => {
-          const matchesTitle = query.title
-            ? book.title.toLowerCase().includes(query.title.toLowerCase())
-            : true;
-          const matchesAuthor = query.author
-            ? book.authors?.some((author) =>
-                author.toLowerCase().includes(query.author.toLowerCase())
-              )
-            : true;
-          const matchesLang = query.lang
-            ? book.language?.toLowerCase() === query.lang.toLowerCase()
-            : true;
+  const dbBooks: BookType[] = await prisma.book.findMany();
 
-          return matchesTitle && matchesAuthor && matchesLang;
-        });
-      } else {
-        return [];
-      }
-    });
+  const filteredDbBooks: BookType[] = dbBooks.filter((book) => {
+    const matchesTitle = query.title
+      ? book.title.toLowerCase().includes(query.title.toLowerCase())
+      : true;
+    const matchesAuthor = query.author
+      ? book.authors?.some((author) =>
+          author.toLowerCase().includes(query.author.toLowerCase())
+        )
+      : true;
+    const matchesLang = query.lang
+      ? book.language?.toLowerCase() === query.lang.toLowerCase()
+      : true;
+    return matchesTitle && matchesAuthor && matchesLang;
+  });
+  //   if (books.length > 0) {
+  //     if (!query.title && !query.author && !query.lang) {
+  //       return books;
+  //     }
+  //     return books.filter((book) => {
+  //       const matchesTitle = query.title
+  //         ? book.title.toLowerCase().includes(query.title.toLowerCase())
+  //         : true;
+  //       const matchesAuthor = query.author
+  //         ? book.authors?.some((author) =>
+  //             author.toLowerCase().includes(query.author.toLowerCase())
+  //           )
+  //         : true;
+  //       const matchesLang = query.lang
+  //         ? book.language?.toLowerCase() === query.lang.toLowerCase()
+  //         : true;
 
-  console.log("💛💙💚 filteredDbBooks", filteredDbBooks);
+  //       return matchesTitle && matchesAuthor && matchesLang;
+  //     });
+  //   } else {
+  //     return [];
+  //   }
+  // });
 
   // 2- Puis on va chercher les livres de l'API Google Books
 
@@ -251,10 +262,15 @@ const SearchBooksPage = async (props: {
       return [];
     });
 
+  // const filteredDbAndApiBooks = filteredDbBooks;
   const filteredDbAndApiBooks = shuffle2ArraysPreserveOrder(
     filteredDbBooks,
     filteredApiBooks
   );
+
+  console.log("💛💙💚 filteredDbBooks", filteredDbBooks);
+  console.log("💛💙💚 filteredApiBooks", filteredApiBooks);
+  console.log("💛💙💚 filteredDbAndApiBooks", filteredDbAndApiBooks);
 
   return (
     <div className="flex flex-col gap-6">

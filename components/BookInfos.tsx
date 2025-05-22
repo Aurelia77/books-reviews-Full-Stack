@@ -276,7 +276,7 @@ const BookInfos = ({
                 bookInfos &&
                 currentUserId && (
                   <BookUserInfo
-                    userId={userViewId || currentUserId}
+                    // userId={userViewId || currentUserId}
                     currentUserId={currentUserId}
                     bookId={bookInfos.id}
                     bookStatus={bookConnectedUserStatus}

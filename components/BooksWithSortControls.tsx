@@ -38,6 +38,7 @@ const BooksWithSortControls = ({
   withDateOption = false,
 }: BooksSortControlsType) => {
   console.log("❤️🤍🤎 displayBookStatus", displayBookStatus);
+  console.log("❤️🤍🤎 BooksWithSortControls books", books);
 
   // console.log("*-*-sortState", sortState);
   // console.log("*-*-sortState", sortState[displayBookStatus]);
@@ -123,6 +124,11 @@ const BooksWithSortControls = ({
       })();
     }
   }, [bookIds, displayedAppUserId]);
+
+  // Pour actualiser le composant lorsque books (donc la recherche de livres) change
+  useEffect(() => {
+    setDisplayedBooks(books || []);
+  }, [books]);
 
   useEffect(() => {
     const fetchBooksStatuses = async () => {
@@ -273,7 +279,8 @@ const BooksWithSortControls = ({
               </p>
               <BookInfos
                 book={book}
-                userViewId={displayedAppUserId}
+                // Soit on est sur le compte d'un user, soit sur la page de recherche du livre (donc displayAppUserId = undefined)
+                userViewId={displayedAppUserId || currentUserId}
                 bookConnectedUserStatus={bookStatus}
               />
             </li>

@@ -6,23 +6,25 @@ import { BookStatus } from "@prisma/client";
 import { useEffect, useState } from "react";
 import StarRating from "./StarRating";
 
-const BookUserInfo = ({
-  userId,
-  currentUserId,
-  bookId,
-  bookStatus,
-  userViewId,
-}: // friendBookStatus,
-//currentUserId,
-{
-  userId: string | undefined;
+type BookUserInfoProps = {
+  // userId: string | undefined;
   currentUserId: string | undefined;
   bookId: string;
   bookStatus: BookStatus | "";
   userViewId: string | undefined;
   // friendBookStatus?: BookStatus | "";
   //currentUserId: string;
-}) => {
+};
+
+const BookUserInfo = ({
+  // userId,
+  currentUserId,
+  bookId,
+  bookStatus,
+  userViewId,
+}: // friendBookStatus,
+//currentUserId,
+BookUserInfoProps) => {
   //console.log("555 userId", userId);
   //console.log("555 bookInfosId", bookInfosId);
   //console.log("555 bookStatus", bookStatus);
@@ -30,11 +32,12 @@ const BookUserInfo = ({
 
   const [userBookInfos, setUserBookInfos] = useState<UserInfoBookType>();
 
-  // console.log("💛💚🤍 userBookInfos", userBookInfos);
-  console.log("💛💚🤍 userBookInfos.bookId", userBookInfos?.bookId);
-  console.log("💛💚 userId", userId);
-  console.log("💛💚 userViewId", userViewId);
-  console.log("💛💚 bookStatus", bookStatus);
+  // // console.log("💛💚🤍 userBookInfos", userBookInfos);
+  // console.log("💛💚❤️🤍 userBookInfos.bookId", userBookInfos?.bookId);
+  // // console.log("💛💚❤️ userId", userId);
+  // console.log("💛💚❤️ currentUserId", currentUserId);
+  // console.log("💛💚❤️ userViewId", userViewId);
+  // console.log("💛💚 bookStatus", bookStatus);
 
   //console.log("789", userBookInfos?.month);
 
@@ -44,18 +47,19 @@ const BookUserInfo = ({
 
   // Récupérer les infos données par l'utilisateur (soit le user visité si friendBookStatus !== "" soit le user connecté)
   useEffect(() => {
-    if (userViewId || bookStatus !== "") {
+    if (userViewId && bookStatus !== "") {
       (async () => {
         try {
           const response = await fetch(
-            `/api/userInfoBook/getOne?userId=${userId}&bookId=${bookId}`
+            `/api/userInfoBook/getOne?userId=${userViewId}&bookId=${bookId}`
           );
           if (response.ok) {
             const myBook = await response.json();
             setUserBookInfos(myBook);
           } else {
             console.error(
-              "Failed to fetch user book info:",
+              `Failed to fetch user book info of userViewId=${userViewId} and bookId= ${bookId}. Error: `,
+              response.status,
               response.statusText
             );
           }
@@ -69,44 +73,42 @@ const BookUserInfo = ({
     //     if (myBook) setUserBookInfos(myBook);
     //   });
     // }
-  }, [bookId, bookStatus, userViewId, userId, status]);
-  //}, [bookInfos?.id]);  // pbm info autre membre ne s'affichaient pas, ms j'ai l'impression que maintenant ça marche même qd il manque des dépendances ??????
-
-  useEffect(() => {
-    if (!userId) return;
-    (async () => {
-      try {
-        const res = await fetch(`/api/appUser/${userId}`);
-
-        if (res.ok) {
-          const user = await res.json();
-          setUserName(user.userName);
-        } else {
+    // Récupère le nom de l'utilisateur
+    if (userViewId) {
+      (async () => {
+        try {
+          const res = await fetch(`/api/appUser/${userViewId}`);
+          if (res.ok) {
+            const user = await res.json();
+            setUserName(user.userName);
+          } else {
+            setUserName(null);
+          }
+        } catch (err) {
           setUserName(null);
         }
-      } catch (err) {
-        setUserName(null);
-      }
-    })();
-    // getDocsByQueryFirebase<UserType>("users", "id", userId).then((user) => {
+      })();
+    }
+    // getDocsByQueryFirebase<UserType>("users", "id", userViewId).then((user) => {
     //   if (user) {
     //     setUserName(user[0].userName);
     //   }
     // });
-  }, [userId]);
+  }, [bookId, bookStatus, userViewId]);
+  //}, [bookInfos?.id]);  // pbm info autre membre ne s'affichaient pas, ms j'ai l'impression que maintenant ça marche même qd il manque des dépendances ??????
 
   return (
     userBookInfos && (
       <div>
         <p className="bg-cyan-500">On est dans BookUserInfo</p>
-        <p className="bg-cyan-500">userId {userId} </p>
+        <p className="bg-cyan-500">userViewId {userViewId} </p>
         <p className="bg-cyan-500">currentUserId {currentUserId} </p>
         {/* Pour les livres lus on a des info en plus :
                      - Livre lu par moi => on affiche mes info données sur ce livre,
                      - Livre lu par le user visité => on affiche ses info */}
         <div className="flex flex-col gap-3 rounded-sm bg-background/50 p-2 md:p-3 pr-6">
           <h2 className="font-semibold text-muted">
-            {currentUserId !== userId
+            {currentUserId !== userViewId
               ? "Info et Avis de " + userName + "\u00A0:"
               : "Mes Infos et Avis :"}
           </h2>

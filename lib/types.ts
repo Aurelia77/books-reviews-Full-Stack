@@ -88,13 +88,13 @@ export type UserTypePlusBooksTitleAndNote = UserType & {
   booksToRead: MyInfoBookPlusTitleAndNote[];
 };
 
-// export type UserBookInfoType = {
-//   userName: string;
-//   imgURL: string;
-//   userId: string;
-//   userComments: string;
-//   userNote?: number;
-// };
+export type UserBookInfoType = {
+  userName: string;
+  imgURL: string;
+  userId: string;
+  userComments: string;
+  userNote?: number;
+};
 
 export type AccountFormType = {
   userName: string;

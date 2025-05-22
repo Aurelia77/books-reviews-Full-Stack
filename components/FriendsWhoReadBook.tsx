@@ -24,7 +24,7 @@ const FriendsWhoReadBook = ({
       userName: string;
     }[]
   >([]);
-  console.log("***friendsWhoReadBook", friendsWhoReadBook);
+  // console.log("***friendsWhoReadBook", friendsWhoReadBook);
 
   // useEffect(() => {
   //   if (userBookStatusState === BookStatus.READ) {
