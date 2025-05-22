@@ -3,7 +3,7 @@ import FeedbackMessage from "@/components/FeedbackMessage";
 import UserAccount from "@/components/UserAccount";
 import { getUser } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
-import { UserType } from "@/lib/types";
+import { AppUserType } from "@/lib/types";
 
 export default async function Post({
   params,
@@ -18,7 +18,7 @@ export default async function Post({
     where: { id: id },
   });
 
-  const currentAppUser: UserType | null = await prisma.appUser.findUnique({
+  const currentAppUser: AppUserType | null = await prisma.appUser.findUnique({
     where: { id: currentUser?.id },
   });
 

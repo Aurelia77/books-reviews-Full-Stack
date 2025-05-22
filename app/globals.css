@@ -86,7 +86,6 @@ h1.form-sticky-active {
   --input: hsl(192.9, 22.7%, 83.9%);
   --ring: hsl(197.9, 87.4%, 7.7%);
   --radius: 0.5rem;
-  --friend: hsl(54, 100%, 45%);
 }
 
 .dark {
@@ -110,7 +109,6 @@ h1.form-sticky-active {
   --border: hsl(268, 60%, 45%);
   --input: hsl(268, 60%, 45%);
   --ring: hsl(279.2, 74.7%, 69.8%);
-  --friend: hsl(54, 100%, 50%);
 }
 
 @layer base {

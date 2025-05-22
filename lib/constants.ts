@@ -1,8 +1,8 @@
-import { BookType, UserType } from "./types";
+import { AppUserType, BookType } from "./types";
 
 export const APP_NAME = "Book Reviews";
 
-export const EMPTY_USER: UserType = {
+export const EMPTY_USER: AppUserType = {
   id: "",
   email: "",
   userName: "",

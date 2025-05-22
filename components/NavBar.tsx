@@ -12,6 +12,7 @@ import Link from "next/link";
 import LogOutButton from "./LogOutButton";
 // import { signoutFirebase } from "@/firebase/firestore";
 // import useUserStore from "@/hooks/useUserStore";
+import { prisma } from "@/lib/prisma";
 import { cn } from "@/lib/utils";
 import { BookOpen, House, LogIn, Search } from "lucide-react";
 import BackArrow from "./BackArrow";
@@ -26,7 +27,16 @@ const NavBar = async () => {
   // const router = useRouter();
 
   // A VOIR !!!!!!!
-  const profileImage = false;
+  const profileImage = await prisma.appUser.findUnique({
+    where: {
+      id: currentUser?.id,
+    },
+    select: {
+      imgURL: true,
+    },
+  });
+
+  console.log("💛💙💚❤️🤍🤎 profileImage", profileImage);
 
   return (
     <div className="sticky top-0 z-20 flex h-12 items-center bg-primary/70 p-1 text-muted shadow-md">
@@ -57,7 +67,7 @@ const NavBar = async () => {
                 {profileImage ? (
                   <Avatar className="flex items-center justify-center">
                     <AvatarImage
-                      src={profileImage}
+                      src={profileImage.imgURL}
                       className="w-8 h-8 object-cover rounded-full"
                     />
                   </Avatar>

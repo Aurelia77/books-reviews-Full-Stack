@@ -3,12 +3,11 @@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // import { getDocsByQueryFirebase } from "@/firebase/firestore";
 import {
+  AppUserType,
   MyInfoBookPlusTitleAndNote,
-  SortStateType,
-  UserType,
   UserTypePlusBooksTitleAndNote,
 } from "@/lib/types";
-import { cn, sortBooksByStatus } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { BookStatus } from "@prisma/client";
 import { BookOpenCheck, Ellipsis, Smile } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -17,7 +16,7 @@ import BooksTabContent from "./BooksTabContent";
 const DEFAULT_TAB = BookStatus.READ;
 
 type AllBooksListsProps = {
-  displayedAppUser: UserType;
+  displayedAppUser: AppUserType;
 };
 
 const AllBooksLists = ({ displayedAppUser }: AllBooksListsProps) => {

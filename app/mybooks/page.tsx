@@ -3,7 +3,7 @@ import CustomLinkButton from "@/components/CustomLinkButton";
 import Title from "@/components/Title";
 import { getUser } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
-import { UserType } from "@/lib/types";
+import { AppUserType } from "@/lib/types";
 
 // const fetcher = async (uid: string) => {
 //   const users = await getDocsByQueryFirebase<UserType>("users", "id", uid);
@@ -15,7 +15,7 @@ const MyBooksPage = async () => {
 
   const currentUser = await getUser();
 
-  const currentAppUser: UserType | null = await prisma.appUser.findUnique({
+  const currentAppUser: AppUserType | null = await prisma.appUser.findUnique({
     where: { id: currentUser?.id },
   });
 

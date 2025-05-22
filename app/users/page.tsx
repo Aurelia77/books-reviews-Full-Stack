@@ -9,7 +9,7 @@ import { prisma } from "@/lib/prisma";
 import FeedbackMessage from "@/components/FeedbackMessage";
 import UsersSearch from "@/components/UsersSearch";
 import { getUser } from "@/lib/auth-session";
-import { UserType, UserTypePlusIsMyFriend } from "@/lib/types";
+import { AppUserType, UserTypePlusIsMyFriend } from "@/lib/types";
 //import useSWR from "swr";
 
 const UsersPage = async () => {
@@ -21,7 +21,7 @@ const UsersPage = async () => {
 
   // throw new Error("Erreur simulée pour tester le fichier error.tsx");
 
-  const otherUsers: UserType[] = await prisma.appUser.findMany({
+  const otherUsers: AppUserType[] = await prisma.appUser.findMany({
     where: {
       id: { not: currentUser?.id },
     },

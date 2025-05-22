@@ -23,10 +23,11 @@ import UsersListView from "@/components/UsersListView";
 // } from "@/firebase/firestore";
 // import { useToast } from "@/hooks/use-toast";
 // import useUserStore from "@/hooks/useUserStore";
-import { AccountFormType, UserType } from "@/lib/types";
+import { AccountFormType, AppUserType } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronsRight, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -57,32 +58,70 @@ const MyAccount = ({
   currentAppUser,
   myFriends,
 }: {
-  currentAppUser: UserType;
-  myFriends: UserType[];
+  currentAppUser: AppUserType;
+  myFriends: AppUserType[];
 }) => {
   // Voir si on vt utiliser useToast !!!
   // const { toast } = useToast();
+  const router = useRouter();
 
   const [imageUpload, setImageUpload] = useState<File | null>(null);
   console.log("💛💙💚❤️🤍🤎imageUpload", imageUpload);
 
   const [isImageLoading, setIsImageLoading] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const [progress, setProgress] = useState<number>();
 
+  // const uploadImage = async () => {
+  //   if (!imageUpload) return;
+
+  //   setIsImageLoading(true);
+  //   const data = new FormData();
+  //   data.append("file", imageUpload);
+  //   const res = await fetch("/api/upload", {
+  //     method: "POST",
+  //     body: data,
+  //   });
+  //   const result = await res.json();
+  //   if (result.url) {
+  //     form.setValue("imgURL", result.url);
+  //   }
+  //   setIsImageLoading(false);
+  // };
   const uploadImage = async () => {
     if (!imageUpload) return;
+
     setIsImageLoading(true);
+    setProgress(0);
+
     const data = new FormData();
     data.append("file", imageUpload);
-    const res = await fetch("/api/upload", {
-      method: "POST",
-      body: data,
-    });
-    const result = await res.json();
-    if (result.url) {
-      form.setValue("imgURL", result.url);
-    }
-    setIsImageLoading(false);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "/api/upload", true);
+
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) {
+        const percent = Math.round((event.loaded / event.total) * 100);
+        setProgress(percent);
+      }
+    };
+
+    xhr.onload = () => {
+      setIsImageLoading(false);
+      if (xhr.status === 200) {
+        const result = JSON.parse(xhr.responseText);
+        if (result.url) {
+          form.setValue("imgURL", result.url);
+        }
+      }
+    };
+
+    xhr.onerror = () => {
+      setIsImageLoading(false);
+      // Gérer l'erreur ici si besoin
+    };
+
+    xhr.send(data);
   };
 
   const form = useForm<AccountFormType>({
@@ -140,6 +179,7 @@ const MyAccount = ({
         );
       } else {
         toast.success("Profil mis à jour avec succès !");
+        router.refresh(); // pour mettre à jour la navBar avec l'img
       }
     } catch (error) {
       console.error("Erreur lors de l'appel à l'API /appUser/update :", error);
@@ -217,7 +257,7 @@ const MyAccount = ({
                             setImageUpload(e.target.files[0]);
                           }
                         }}
-                        className="cursor-pointer text-muted"
+                        className="cursor-pointer text-muted mb-1"
                       />
                       {isImageLoading ? (
                         <Progress value={progress} />
@@ -259,7 +299,7 @@ const MyAccount = ({
       <div className="flex items-center gap-2">
         <Title level={2}>Mes amis</Title>
         <Sparkles
-          className="rounded-full bg-friend p-2"
+          className="rounded-full bg-yellow-400 p-2"
           size={40}
           color="black"
         />

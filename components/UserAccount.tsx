@@ -11,7 +11,7 @@ import { Card, CardDescription } from "@/components/ui/card";
 //   isUserMyFriendFirebase,
 // } from "@/firebase/firestore";
 // import useUserStore from "@/hooks/useUserStore";
-import { UserType } from "@/lib/types";
+import { AppUserType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -21,8 +21,8 @@ const UserAccount = ({
   currentUser,
   userInfo,
 }: {
-  currentUser: UserType | null;
-  userInfo: UserType;
+  currentUser: AppUserType | null;
+  userInfo: AppUserType;
 }) => {
   // const [userInfo, setUserInfo] = useState<UserType>();
   const [isFriend, setIsFriend] = useState<boolean>();
@@ -95,7 +95,7 @@ const UserAccount = ({
     <div
       // min-h-screen
       className={cn("max-w-3xl sm:p-2 md:m-auto md:mt-8", {
-        //"bg-friend/20": isFriend,
+        //"bg-yellow-400/20": isFriend,
       })}
       //key={userInUrl.userId}
     >

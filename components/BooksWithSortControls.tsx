@@ -38,6 +38,7 @@ const BooksWithSortControls = ({
   withDateOption = false,
 }: BooksSortControlsType) => {
   console.log("❤️🤍🤎 displayBookStatus", displayBookStatus);
+  console.log("❤️🤍🤎 displayedAppUserId", displayedAppUserId);
   console.log("❤️🤍🤎 BooksWithSortControls books", books);
 
   // console.log("*-*-sortState", sortState);
@@ -100,23 +101,36 @@ const BooksWithSortControls = ({
   }, []);
   // ...avant le return du composant
   useEffect(() => {
-    if (bookIds && bookIds.length > 0 && displayedAppUserId) {
+    if (bookIds && bookIds.length > 0) {
       (async () => {
         try {
-          const response = await fetch("/api/book/byIdsWithDate", {
+          // const response = await fetch("/api/book/byIdsWithDate", {
+          //   method: "POST",
+          //   headers: {
+          //     "Content-Type": "application/json",
+          //   },
+          //   body: JSON.stringify({
+          //     bookIds,
+          //     displayedAppUserId,
+          //   }),
+          // });
+          const endpoint = displayedAppUserId
+            ? "/api/book/byIdsWithDate"
+            : "/api/book/byIds";
+          const body = displayedAppUserId
+            ? { bookIds, displayedAppUserId }
+            : { bookIds };
+          const response = await fetch(endpoint, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-              bookIds,
-              displayedAppUserId,
-            }),
+            body: JSON.stringify(body),
           });
 
           if (response.ok) {
             const data = await response.json();
-            setDisplayedBooks(data);
+            setDisplayedBooks(data.books);
           }
         } catch (error) {
           console.error("Erreur lors de la récupération des livres :", error);

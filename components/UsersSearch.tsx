@@ -1,13 +1,10 @@
 "use client";
 
-import { UserType, UserTypePlusIsMyFriend } from "@/lib/types";
+import { UserTypePlusIsMyFriend } from "@/lib/types";
 import { X } from "lucide-react";
-import Link from "next/link";
 import { useState } from "react";
 import FeedbackMessage from "./FeedbackMessage";
-import FriendSparkles from "./FriendSparkles";
 import Title from "./Title";
-import { Avatar, AvatarImage } from "./ui/avatar";
 import { Input } from "./ui/input";
 import UsersListView from "./UsersListView";
 

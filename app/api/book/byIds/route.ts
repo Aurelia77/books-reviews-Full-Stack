@@ -7,6 +7,8 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const bookIds: string[] = body.bookIds;
 
+    console.log("💛💙🤍🤎 bookIds", bookIds);
+
     if (!Array.isArray(bookIds) || bookIds.length === 0) {
       return NextResponse.json(
         { error: "bookIds is required and must be a non-empty array" },
@@ -21,6 +23,7 @@ export async function POST(req: NextRequest) {
         },
       },
     });
+    console.log("💛💙🤍🤎 books", books);
 
     return NextResponse.json({ books }, { status: 200 });
   } catch (error) {

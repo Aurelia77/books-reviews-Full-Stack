@@ -68,7 +68,7 @@ export type MyInfoBookFormType = {
   userComments: string;
 };
 
-export type UserType = {
+export type AppUserType = {
   id: string;
   email: string;
   userName: string;
@@ -78,11 +78,11 @@ export type UserType = {
   isAdmin: boolean;
 };
 
-export type UserTypePlusIsMyFriend = UserType & {
+export type UserTypePlusIsMyFriend = AppUserType & {
   isMyFriend: boolean;
 };
 
-export type UserTypePlusBooksTitleAndNote = UserType & {
+export type UserTypePlusBooksTitleAndNote = AppUserType & {
   booksRead: MyInfoBookPlusTitleAndNote[];
   booksInProgress: MyInfoBookPlusTitleAndNote[];
   booksToRead: MyInfoBookPlusTitleAndNote[];

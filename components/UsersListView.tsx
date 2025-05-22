@@ -1,4 +1,4 @@
-import { UserType, UserTypePlusIsMyFriend } from "@/lib/types";
+import { AppUserType, UserTypePlusIsMyFriend } from "@/lib/types";
 import Link from "next/link";
 import FeedbackMessage from "./FeedbackMessage";
 import FriendSparkles from "./FriendSparkles";
@@ -7,11 +7,11 @@ import { Avatar, AvatarImage } from "./ui/avatar";
 const UsersListView = ({
   userInfoList,
 }: {
-  userInfoList: (UserType | UserTypePlusIsMyFriend)[];
+  userInfoList: (AppUserType | UserTypePlusIsMyFriend)[];
 }) => {
   ////////////////////////////////////////
   ////////////////////////////////////////
-  userInfoList.map((friend: UserType) => {
+  userInfoList.map((friend: AppUserType) => {
     console.log(friend);
     console.log(friend.userName);
   });
@@ -23,25 +23,25 @@ const UsersListView = ({
 
     userInfoList.length > 0 ? (
       <ul className="flex flex-col gap-8">
-        {userInfoList.map((friend: UserType) => (
-          <li key={friend.id} className="flex items-center gap-6">
+        {userInfoList.map((user: AppUserType) => (
+          <li key={user.id} className="flex items-center gap-6">
             <Link
-              href={`/users/${friend.id}`}
+              href={`/users/${user.id}`}
               className="relative flex items-center gap-3 p-3"
             >
-              {friend.imgURL !== "" ? (
+              {user.imgURL !== "" ? (
                 <Avatar>
-                  <AvatarImage src={friend.imgURL} className="object-cover" />
+                  <AvatarImage src={user.imgURL} className="object-cover" />
                 </Avatar>
               ) : (
                 <Avatar className="flex items-center justify-center bg-secondary">
-                  {friend.userName.charAt(0).toUpperCase()}
+                  {user.userName.charAt(0).toUpperCase()}
                 </Avatar>
               )}
-              <p className="font-semibold text-muted">{friend.userName}</p>
+              <p className="font-semibold text-muted">{user.userName}</p>
             </Link>
 
-            {"isMyFriend" in friend && friend.isMyFriend ? (
+            {"isMyFriend" in user && user.isMyFriend ? (
               <div className="flex items-center gap-4">
                 <FriendSparkles />
                 <p>Ami</p>
