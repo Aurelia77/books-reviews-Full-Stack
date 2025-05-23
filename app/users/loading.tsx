@@ -1,13 +1,19 @@
 import UserViewSkeleton from "@/components/skeletons/UserViewSkeleton";
+import Title from "@/components/Title";
 
-export default function UsersLoading() {
+const UsersLoading = () => {
   return (
     <div>
-      <UserViewSkeleton />
-      <UserViewSkeleton />
-      <UserViewSkeleton />
-      <UserViewSkeleton />
-      <UserViewSkeleton />
+      <Title>Affichage d'un ou plusieurs membre(s)</Title>
+      <div className="mt-8">
+        <UserViewSkeleton />
+        <UserViewSkeleton />
+        <UserViewSkeleton />
+        <UserViewSkeleton />
+        <UserViewSkeleton />
+      </div>
     </div>
   );
-}
+};
+
+export default UsersLoading;

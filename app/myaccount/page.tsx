@@ -3,6 +3,13 @@ import { getUser } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
 
 const MyAccountPage = async () => {
+  // // Simulation pour loading / error
+  // const delay = (ms: number) =>
+  //   new Promise((resolve) => setTimeout(resolve, ms));
+  // await delay(3000);
+
+  // throw new Error("Erreur simulée pour tester le fichier error.tsx");
+
   const currentUser = await getUser();
 
   console.log("💛💙💚❤️🤍🤎", currentUser?.id);

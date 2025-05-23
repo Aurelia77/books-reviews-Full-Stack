@@ -2,7 +2,6 @@
 
 import CustomLinkButton from "@/components/CustomLinkButton";
 import FeedbackMessage from "@/components/FeedbackMessage";
-import Title from "@/components/Title";
 import { Switch } from "@/components/ui/switch";
 import { BookTypePlusUsersWhoRead } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -116,11 +115,11 @@ const UsersBooksRead = ({
   // }, [sortState, booksWithAllInfos]);
 
   return (
-    <div className="h-full min-h-screen max-w-3xl sm:p-2 md:m-auto md:mt-8">
-      <div className="flex h-full flex-col gap-6">
-        <div className="sticky top-10 z-10 flex flex-col gap-3 bg-background/70 duration-500">
+    <div>
+      <div className="flex h-full flex-col gap-6 mt-10">
+        {/* <div className="sticky top-10 z-10 flex flex-col gap-3 bg-background/70">
           <Title>Livres lus par les membres</Title>
-        </div>
+        </div> */}
         <div className="mb-4 flex items-center justify-center gap-4 text-center">
           <p className={isSearchOnFriendsBooks ? "p-1 text-gray-500" : "p-1"}>
             Tous les membres

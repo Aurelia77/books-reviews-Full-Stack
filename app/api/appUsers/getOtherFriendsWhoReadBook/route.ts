@@ -1,11 +1,22 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
+type GetFriendsWhoReadParams = {
+  connectedUserId: string | null;
+  bookId: string | null;
+  excludeUserId?: string | null;
+};
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const connectedUserId = searchParams.get("connectedUserId");
-  const bookId = searchParams.get("bookId");
-  const excludeUserId = searchParams.get("excludeUserId");
+
+  const params: GetFriendsWhoReadParams = {
+    connectedUserId: searchParams.get("connectedUserId"),
+    bookId: searchParams.get("bookId"),
+    excludeUserId: searchParams.get("excludeUserId"),
+  };
+
+  const { connectedUserId, bookId, excludeUserId } = params;
 
   if (!connectedUserId || !bookId) {
     return NextResponse.json(

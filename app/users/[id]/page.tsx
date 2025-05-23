@@ -5,14 +5,16 @@ import { getUser } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
 import { AppUserType } from "@/lib/types";
 
-export default async function Post({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+const User = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
 
   const currentUser = await getUser();
+
+  // const delay = (ms: number) =>
+  //   new Promise((resolve) => setTimeout(resolve, ms));
+  // await delay(3000);
+
+  // throw new Error("Erreur simulée pour tester le fichier error.tsx");
 
   const displayedAppUser = await prisma.appUser.findUnique({
     where: { id: id },
@@ -56,4 +58,6 @@ export default async function Post({
       </div>
     )
   );
-}
+};
+
+export default User;

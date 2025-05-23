@@ -11,6 +11,13 @@ import { AppUserType } from "@/lib/types";
 // };
 
 const MyBooksPage = async () => {
+  // // Simulation pour loading / error
+  // const delay = (ms: number) =>
+  //   new Promise((resolve) => setTimeout(resolve, ms));
+  // await delay(3000);
+
+  // throw new Error("Erreur simulée pour tester le fichier error.tsx");
+
   // const { currentUser } = useUserStore();
 
   const currentUser = await getUser();
@@ -39,11 +46,10 @@ const MyBooksPage = async () => {
   //   <FeedbackMessage message={message} type="error" />
   // ) :
   return (
-    <div className="min-h-screen max-w-3xl md:m-auto md:mt-8">
-      <Title level={2}>Mes Livres</Title>
+    <div>
       {currentAppUser && <AllBooksLists displayedAppUser={currentAppUser} />}
       <CustomLinkButton className="bg-primary/80" linkTo="/books">
-        Recherche de livre
+        Recherche de livres
       </CustomLinkButton>
     </div>
   );

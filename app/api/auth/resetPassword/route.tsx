@@ -1,9 +1,8 @@
-import { auth } from "@/lib/auth";
 import { authClient } from "@/lib/auth-client";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-  const { email } = await req.json();
+  const { email }: { email: string } = await req.json();
   try {
     await authClient.forgetPassword({
       email,

@@ -10,7 +10,6 @@ import {
   Search,
   Users,
 } from "lucide-react";
-import Link from "next/link";
 
 const HomePage = async () => {
   // const { currentUser: user } = useUserStore();
@@ -64,7 +63,7 @@ const HomePage = async () => {
       )}
       {/* <CustomLinkButton className="bg-primary/50">Suggestions</CustomLinkButton> */}
       <CustomLinkButton className="bg-primary/50" linkTo="/books">
-        Recherche de livre
+        Recherche de livres
         <Search size={40} className="rounded-full bg-foreground/10 p-2" />
       </CustomLinkButton>
     </div>

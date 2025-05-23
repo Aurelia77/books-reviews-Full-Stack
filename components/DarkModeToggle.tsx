@@ -5,7 +5,7 @@ import { Moon, Sun } from "lucide-react";
 import { useTheme } from "@/components/Theme-provider";
 import { Button } from "@/components/ui/button";
 
-export function DarkModeToggle() {
+const DarkModeToggle = () => {
   const { theme, setTheme } = useTheme();
 
   const inverseTheme = () =>
@@ -18,4 +18,6 @@ export function DarkModeToggle() {
       {/* <span className="sr-only">Toggle theme</span> */}
     </Button>
   );
-}
+};
+
+export default DarkModeToggle;

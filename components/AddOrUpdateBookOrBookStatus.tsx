@@ -19,22 +19,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { MONTHS } from "@/lib/constants";
 import { BookType, MyInfoBookFormType, UserInfoBookType } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -42,7 +29,7 @@ import { BookStatus } from "@prisma/client";
 import { Check, Ellipsis, Smile, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { memo, useEffect, useState } from "react";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { Controller, SubmitHandler, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import BookUserInfo from "./BookUserInfo";
@@ -50,27 +37,51 @@ import CustomLinkButton from "./CustomLinkButton";
 import FeedbackMessage from "./FeedbackMessage";
 import StarRating from "./StarRating";
 import { Button } from "./ui/button";
+import { FormControl, FormField, FormItem, FormMessage } from "./ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 import { Textarea } from "./ui/textarea";
 
+const MemoizedTextarea = memo(function MemoizedTextarea({
+  control,
+}: {
+  control: any;
+}) {
+  return (
+    <Controller
+      name="userComments"
+      control={control}
+      render={({ field }) => (
+        <Textarea placeholder="Mes commentaires" {...field} />
+      )}
+    />
+  );
+});
 // Pour éviter les re-renders inutiles (sinon très long à chaque ajout de caractère)
 // const MemoizedTextarea = memo(({ field }: { field: any }) => (
 //   <Textarea placeholder="Mes commentaires" {...field} />
 // ));
-const MemoizedTextarea = memo(
-  ({
-    value,
-    onChange,
-  }: {
-    value: string;
-    onChange: (value: string) => void;
-  }) => (
-    <Textarea
-      placeholder="Mes commentaires"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-    />
-  )
-);
+
+// const MemoizedTextarea = memo(
+//   ({
+//     value,
+//     onChange,
+//   }: {
+//     value: string;
+//     onChange: (value: string) => void;
+//   }) => (
+//     <Textarea
+//       placeholder="Mes commentaires"
+//       value={value}
+//       onChange={(e) => onChange(e.target.value)}
+//     />
+//   )
+// );
 
 const currentYear = new Date().getFullYear();
 
@@ -123,10 +134,31 @@ AddOrUpdateBookProps) => {
 
   //console.log("refreshKey", refreshKey);
 
+  const defaultValues = {
+    bookStatus: userBookStatusState || BookStatus.READ,
+    year: userBookInfos?.year || currentYear,
+    month: userBookInfos?.month || 0,
+    userNote: userBookInfos?.note || 0,
+    userComments: userBookInfos?.comments || "",
+  };
+
+  const form = useForm<MyInfoBookFormType>({
+    resolver: zodResolver(bookFormSchema),
+    defaultValues: defaultValues,
+  });
+
+  const [localComments, setLocalComments] = useState(
+    form.getValues("userComments") || ""
+  );
+
+  const year = useWatch({ control: form.control, name: "year" });
+  const month = useWatch({ control: form.control, name: "month" });
+  const userNote = useWatch({ control: form.control, name: "userNote" });
+
   const handleUpdate = async () => {
     // Logique de mise à jour existante...
 
-    // Appeler l'API pour revalider la page
+    // Appeler l'API pour actualiser la page (pour mettre à jour les infos du livre)
     await fetch("/api/revalidate", {
       method: "POST",
       headers: {
@@ -169,19 +201,6 @@ AddOrUpdateBookProps) => {
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [userBookInfos]);
 
-  const defaultValues = {
-    bookStatus: userBookStatusState || BookStatus.READ,
-    year: userBookInfos?.year || currentYear,
-    month: userBookInfos?.month || 0,
-    userNote: userBookInfos?.note || 0,
-    userComments: userBookInfos?.comments || "",
-  };
-
-  const form = useForm<MyInfoBookFormType>({
-    resolver: zodResolver(bookFormSchema),
-    defaultValues: defaultValues,
-  });
-
   const updateUserBookInfos = () => {
     // console.log("updateUserBookInfos");
     if (userBookStatusState && bookInfos) {
@@ -221,9 +240,8 @@ AddOrUpdateBookProps) => {
     updateUserBookInfos();
   };
 
-  // ici j'utilise async/await car le .then ne fonctionne pas, pourtant normalement ça fait exactement la même chose !!!
-
   const onSubmit: SubmitHandler<MyInfoBookFormType> = async (formData) => {
+    formData.userComments = localComments;
     try {
       const response = await fetch("/api/books/new-or-update", {
         method: "POST",
@@ -456,17 +474,38 @@ AddOrUpdateBookProps) => {
                     render={({ field }) => (
                       <FormItem>
                         <div>
+                          {/* <MemoizedTextarea control={form.control} /> */}
+
                           {/* <Textarea placeholder="Mes commentaires" {...field} /> */}
-                          <MemoizedTextarea
+                          <Textarea
+                            //{...field}
+                            value={localComments}
+                            onChange={(e) => setLocalComments(e.target.value)}
+                            placeholder="Mes commentaires"
+                          />
+                          {/* <MemoizedTextarea
                             value={field.value}
                             onChange={field.onChange}
-                          />
+                          /> */}
                         </div>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                   {form.watch().bookStatus === BookStatus.READ && (
+                    // ??? SUPPRIMER le composant MemoizedFormFields ???
+                    // ??? SUPPRIMER le composant MemoizedFormFields ???
+                    // ??? SUPPRIMER le composant MemoizedFormFields ???
+                    // <MemoizedFormFields
+                    //   year={year}
+                    //   month={month}
+                    //   userNote={userNote}
+                    //   setValue={form.setValue}
+                    //   control={form.control}
+                    //   //form={form}
+                    //   // currentYear={currentYear}
+                    //   // MONTHS={MONTHS}
+                    // />
                     <div className="flex items-center justify-around">
                       <FormField
                         control={form.control}

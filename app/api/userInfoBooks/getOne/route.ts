@@ -1,10 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+type UserInfoBookType = {
+  userId: string | null;
+  bookId: string | null;
+};
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const userId = searchParams.get("userId");
-  const bookId = searchParams.get("bookId");
+
+  const params: UserInfoBookType = {
+    userId: searchParams.get("userId"),
+    bookId: searchParams.get("bookId"),
+  };
+
+  const { userId, bookId } = params;
 
   if (!userId || !bookId) {
     return NextResponse.json(

@@ -2,9 +2,13 @@ import { prisma } from "@/lib/prisma";
 import { BookTypePlusDate } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 
+type ByIdsWithDateType = {
+  bookIds: string[];
+  displayedAppUserId: string;
+};
+
 export async function POST(req: NextRequest) {
-  // Récupère les données du body
-  const { bookIds, displayedAppUserId } = await req.json();
+  const { bookIds, displayedAppUserId }: ByIdsWithDateType = await req.json();
 
   console.log("💛🤎 bookIds, displayedAppUserId", bookIds, displayedAppUserId);
 

@@ -2,9 +2,14 @@ import { prisma } from "@/lib/prisma";
 import { BookStatus } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
+export type UserStatusParams = {
+  userId: string;
+  status: BookStatus;
+};
+
 export async function GET(
   req: NextRequest,
-  context: { params: Promise<{ userId: string; status: string }> }
+  context: { params: Promise<UserStatusParams> }
 ) {
   const { userId, status } = await context.params;
 

@@ -4,6 +4,12 @@ import { prisma } from "@/lib/prisma";
 import { BookStatus } from "@prisma/client";
 
 const UsersBooksReadPage = async () => {
+  // const delay = (ms: number) =>
+  //   new Promise((resolve) => setTimeout(resolve, ms));
+  // await delay(3000);
+
+  // throw new Error("Erreur simulée pour tester le fichier error.tsx");
+
   const currentUser = await getUser();
 
   const friendsOfCurrentAppUser = await prisma.appUser.findUnique({

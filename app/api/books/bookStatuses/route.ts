@@ -1,10 +1,15 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
+type BookStatusesType = {
+  userId: string;
+  bookIds: string[];
+};
+
 export async function POST(req: Request) {
-  const body = await req.json(); // Remplace la récupération de req.body
+  const { userId, bookIds }: BookStatusesType = await req.json(); // Remplace la récupération de req.body
   // Remplacez cette ligne pour récupérer un tableau d'IDs
-  const { userId, bookIds } = body; // Avant : const { userId, bookId } = body;
+  // const { userId, bookIds } = body; // Avant : const { userId, bookId } = body;
 
   console.log("💛💙💚 userId bookIds", userId, bookIds);
 

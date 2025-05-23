@@ -18,7 +18,8 @@ import { cleanDescription, cn } from "@/lib/utils";
 import { BookStatus } from "@prisma/client";
 import { Check, Ellipsis, Quote, Smile } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { toast } from "sonner";
 import AverageBookRating from "./AverageBookRating";
 import BookUserInfo from "./BookUserInfo";
 import FriendsWhoReadBook from "./FriendsWhoReadBook";
@@ -167,13 +168,9 @@ const BookInfos = ({
   ////////// AJOUTER LES dépendance là c'était car boucle infinie !!!!!!!!!!!!!
   // }, [bookInfos?.id, userId, userViewId]);
 
-  // const handleLinkClick = () => {
-  //   if (!currentUser?.uid) {
-  //     toast({
-  //       title: "Veuillez vous connecter pour accéder à cette page.",
-  //     });
-  //   }
-  // };
+  const handleLinkClick = () => {
+    toast.error("Veuillez vous connecter pour accéder à cette page.");
+  };
 
   {
     /* {isLoading ? (
@@ -189,7 +186,7 @@ const BookInfos = ({
           <Link
             href={currentUserId ? `/books/${book.id}` : "/auth/signin"}
             // Créer un ClientLink pour pouvoir mettre le toast si non connecté ???
-            //onClick={handleLinkClick}
+            onClick={!currentUserId ? handleLinkClick : undefined}
           >
             <CardDescription className="absolute right-2 top-2 rounded-full bg-secondary/60 px-3 py-1 text-secondary-foreground shadow-sm shadow-foreground">
               {book.language}

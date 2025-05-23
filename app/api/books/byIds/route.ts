@@ -1,11 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
-// PAS UTILE ???
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const bookIds: string[] = body.bookIds;
+    const { bookIds }: { bookIds: string[] } = await req.json();
 
     console.log("💛💙🤍🤎 bookIds", bookIds);
 

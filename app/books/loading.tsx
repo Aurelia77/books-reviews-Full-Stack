@@ -1,13 +1,19 @@
-import UserViewSkeleton from "@/components/skeletons/UserViewSkeleton";
+import BookSkeleton from "@/components/skeletons/BookSkeleton";
+import Title from "@/components/Title";
 
-export default function UsersLoading() {
+const BooksLoading = () => {
   return (
     <div>
-      <UserViewSkeleton />
-      <UserViewSkeleton />
-      <UserViewSkeleton />
-      <UserViewSkeleton />
-      <UserViewSkeleton />
+      <Title>Affichage d'un ou plusieurs livre(s)</Title>
+      <div className="mt-8">
+        <BookSkeleton />
+        <BookSkeleton />
+        <BookSkeleton />
+        <BookSkeleton />
+        <BookSkeleton />
+      </div>
     </div>
   );
-}
+};
+
+export default BooksLoading;

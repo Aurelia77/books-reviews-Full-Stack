@@ -38,11 +38,14 @@ const addLineBreaks = (description: string) => {
   );
 };
 
-export default async function Post({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+const Book = async ({ params }: { params: Promise<{ id: string }> }) => {
+  // // Simulation pour loading
+  // const delay = (ms: number) =>
+  //   new Promise((resolve) => setTimeout(resolve, ms));
+  // await delay(3000);
+  // //  Simuler error :
+  // throw new Error("Erreur simulée pour tester le fichier error.tsx");
+
   const currentUser = await getUser();
   const { id } = await params;
   // console.log("💙❤️🤎 currentUserId", currentUser?.id);
@@ -265,4 +268,6 @@ export default async function Post({
   ) : (
     <FeedbackMessage message="Livre introuvable." />
   );
-}
+};
+
+export default Book;

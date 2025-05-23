@@ -16,7 +16,7 @@ import { prisma } from "@/lib/prisma";
 import { cn } from "@/lib/utils";
 import { BookOpen, House, LogIn, Search } from "lucide-react";
 import BackArrow from "./BackArrow";
-import { DarkModeToggle } from "./DarkModeToggle";
+import DarkModeToggle from "./DarkModeToggle";
 import NavItem from "./NavItem";
 import { Avatar, AvatarImage } from "./ui/avatar";
 // import { Link, useLocation, useNavigate } from "react-router-dom";

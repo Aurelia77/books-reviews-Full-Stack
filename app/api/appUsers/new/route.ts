@@ -2,9 +2,14 @@ import { EMPTY_USER } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
+export type NewUserType = {
+  id: string;
+  email: string;
+  userName: string;
+};
+
 export async function POST(req: Request) {
-  const body = await req.json();
-  const { id, email, userName } = body;
+  const { id, email, userName }: NewUserType = await req.json();
 
   console.log("💛💙 id", id);
   console.log("💛💙 email", email);

@@ -1,30 +1,25 @@
 import { EMPTY_BOOK } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
-import { BookType } from "@/lib/types";
-import { BookStatus } from "@prisma/client";
+import { BookType, MyInfoBookFormType } from "@/lib/types";
 import { NextResponse } from "next/server";
+
+type NewOrUpdateBookType = {
+  currentUserId: string;
+  bookInfos: BookType;
+  formData: MyInfoBookFormType;
+  previousNote: number;
+};
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    //console.log("Données reçues💚💚💚 :", body);
     const {
       currentUserId,
       bookInfos,
       formData,
       previousNote,
-    }: {
-      currentUserId: string;
-      bookInfos: BookType;
-      formData: {
-        year: number;
-        month: number;
-        userNote: number;
-        userComments: string;
-        bookStatus: BookStatus;
-      };
-      previousNote: number;
-    } = body;
+    }: NewOrUpdateBookType = await req.json();
+    //console.log("Données reçues💚💚💚 :", body);
+
     // const { currentUserId, bookInfos, formData, previousNote } = body;
 
     console.log("🤎 userId", currentUserId);
@@ -49,7 +44,7 @@ export async function POST(req: Request) {
           data: {
             ...EMPTY_BOOK,
             ...bookInfos,
-            totalRating: formData.userNote,
+            totalRating: formData.userNote || 0,
             countRating: 1,
           },
         });
@@ -64,7 +59,7 @@ export async function POST(req: Request) {
         let newCountRating = existingBook.countRating;
 
         // Si on a une note => on l'ajoute
-        if (formData.userNote !== 0) {
+        if (formData.userNote && formData.userNote !== 0) {
           if (previousNote) {
             // On enlève la note précédente
             newTotalRating += formData.userNote - previousNote;

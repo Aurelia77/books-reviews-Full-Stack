@@ -1,20 +1,19 @@
 "use client";
 
 import FeedbackMessage from "@/components/FeedbackMessage";
+import Title from "@/components/Title";
 
-export default function ErrorUsers({
-  error,
-  reset,
-}: {
-  error: Error;
-  reset: () => void;
-}) {
+const UsersError = ({ error, reset }: { error: Error; reset: () => void }) => {
   return (
-    <div className="mt-32">
+    <div>
+      <Title>Affichage d'un ou plusieurs membre(s)</Title>
       <FeedbackMessage
         message={`Une erreur est survenue : ${error.message}`}
         type="error"
+        className="mt-26"
       />
     </div>
   );
-}
+};
+
+export default UsersError;

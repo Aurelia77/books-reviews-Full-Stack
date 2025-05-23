@@ -2,11 +2,14 @@ import { prisma } from "@/lib/prisma";
 import { AccountFormType } from "@/lib/types";
 import { NextResponse } from "next/server";
 
+export type UpdateUserType = {
+  currentUserId: string;
+  data: AccountFormType;
+};
+
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    //console.log("Données reçues💚💚💚 :", body);
-    const { currentUserId, data } = body;
+    const { currentUserId, data }: UpdateUserType = await req.json();
 
     console.log("💚💙💚 data", data);
 

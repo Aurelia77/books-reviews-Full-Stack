@@ -57,12 +57,12 @@ const SearchBooksPage = async (props: {
   //   [BookStatus]: { criteria: "title", order: "asc" },
   // });
 
-  // Simulation pour loading / error
-  // const delay = (ms: number) =>
-  //   new Promise((resolve) => setTimeout(resolve, ms));
-  // await delay(3000);
-
-  // throw new Error("Erreur simulée pour tester le fichier error.tsx");
+  //   // Simulation pour loading
+  //   const delay = (ms: number) =>
+  //     new Promise((resolve) => setTimeout(resolve, ms));
+  //   await delay(3000);
+  // //  Simuler error :
+  //   throw new Error("Erreur simulée pour tester le fichier error.tsx");
 
   // const searchParams = useSearchParams();
   const query: BooksSearchQueryType = {
