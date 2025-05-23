@@ -7,8 +7,6 @@ const MyAccountPage = async () => {
 
   console.log("💛💙💚❤️🤍🤎", currentUser?.id);
 
-  console.log("💛💙💚❤️🤍🤎", process.env.NEXT_PUBLIC_BASE_URL);
-
   const currentAppUser = await prisma.appUser.findUnique({
     where: { id: currentUser?.id },
   });

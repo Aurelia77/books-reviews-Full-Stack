@@ -65,7 +65,7 @@ const SignUpPage = () => {
 
   const addAppUser = async (id: string, email: string, userName: string) => {
     try {
-      const response = await fetch("/api/appUser/new", {
+      const response = await fetch("/api/appUsers/new", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

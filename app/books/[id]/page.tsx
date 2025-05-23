@@ -91,36 +91,20 @@ export default async function Post({
 
   let isBookInDb = false;
 
-  if (book) {
+  if (book && currentUser) {
     // 2-Si oui on recherche le statut du livre pour l'utilisateur connecté
 
     isBookInDb = true;
 
-    userBookStatus = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/book/bookStatus`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+    const userInfo = await prisma.userInfoBook.findUnique({
+      where: {
+        userId_bookId: {
           userId: currentUser?.id,
           bookId: id,
-        }),
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("💚💙userBookStatus", data);
-        return data.status;
-      })
-      .catch((error) => {
-        console.error(
-          "Erreur lors de la récupération du statut du livre depuis l'API :",
-          error
-        );
-        return null;
-      });
+        },
+      },
+    });
+    userBookStatus = userInfo?.status ?? null;
 
     console.log("💙❤️🤍 userBookStatus", userBookStatus);
 
@@ -166,7 +150,7 @@ export default async function Post({
 
   return book ? (
     <Card className="relative m-4">
-      <p> {isBookInDb ? "BDD" : "API"} </p>
+      {/* <p> {isBookInDb ? "BDD" : "API"} </p> */}
       <CardDescription className="absolute right-2 top-2 rounded-full bg-secondary/60 px-3 py-1 text-secondary-foreground shadow-sm shadow-foreground">
         {book.language}
       </CardDescription>

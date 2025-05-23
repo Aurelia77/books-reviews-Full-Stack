@@ -48,12 +48,12 @@ const AllBooksLists = ({ displayedAppUser }: AllBooksListsProps) => {
     // );
     // console.log(
     //   "USEEFFECT URL FETCH =",
-    //   `/api/book/${displayedAppUser.id}/${activeTab}`
+    //   `/api/books/${displayedAppUser.id}/${activeTab}`
     // );
 
     const fetchBooks = async () => {
-      // const res = await fetch(`/api/book/${userInfo.id}/` + `${activeTab}`);
-      const res = await fetch(`/api/book/${displayedAppUser.id}/${activeTab}`);
+      // const res = await fetch(`/api/books/${userInfo.id}/` + `${activeTab}`);
+      const res = await fetch(`/api/books/${displayedAppUser.id}/${activeTab}`);
 
       if (!res.ok) {
         throw new Error("Erreur lors de la récupération des livres");
@@ -76,7 +76,7 @@ const AllBooksLists = ({ displayedAppUser }: AllBooksListsProps) => {
   //   const booksInfoPlusTitle: MyInfoBookPlusTitleAndNote[] = [];
 
   //   const promises = booksInfo.map(async (bookInfo) => {
-  //     const res = await fetch(`/api/book/${bookInfo.id}`);
+  //     const res = await fetch(`/api/books/${bookInfo.id}`);
   //     const book = await res.json();
   //     return {
   //       ...bookInfo,

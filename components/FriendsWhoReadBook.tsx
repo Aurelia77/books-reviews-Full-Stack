@@ -2,8 +2,8 @@
 
 // import { getUsersWhoReadBookFirebase } from "@/firebase/firestore";
 // import useUserStore from "@/hooks/useUserStore";
-import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import FriendSparkles from "./FriendSparkles";
 import { CardFooter } from "./ui/card";
 
@@ -31,7 +31,7 @@ const FriendsWhoReadBook = ({
   //     (async () => {
   //       try {
   //         const response = await fetch(
-  //           `/api/userInfoBook/getOne?userId=${currentUserId}&bookId=${bookInfos.id}`
+  //           `/api/userInfoBooks/getOne?userId=${currentUserId}&bookId=${bookInfos.id}`
   //         );
   //         if (response.ok) {
   //           const myBook = await response.json();
@@ -49,7 +49,7 @@ const FriendsWhoReadBook = ({
     const fetchFriends = async () => {
       try {
         const res = await fetch(
-          "/api/appUser/getOtherFriendsWhoReadBook" +
+          "/api/appUsers/getOtherFriendsWhoReadBook" +
             "?connectedUserId=" +
             currentUserId +
             "&bookId=" +

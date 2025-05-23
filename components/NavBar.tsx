@@ -26,15 +26,25 @@ const NavBar = async () => {
   const currentUser = await getUser();
   // const router = useRouter();
 
-  // A VOIR !!!!!!!
-  const profileImage = await prisma.appUser.findUnique({
-    where: {
-      id: currentUser?.id,
-    },
-    select: {
-      imgURL: true,
-    },
-  });
+  let profileImage = null;
+
+  if (currentUser) {
+    try {
+      profileImage = await prisma.appUser.findUnique({
+        where: {
+          id: currentUser?.id,
+        },
+        select: {
+          imgURL: true,
+        },
+      });
+    } catch (error) {
+      console.error(
+        "Erreur lors de la récupération de l'image de profil :",
+        error
+      );
+    }
+  }
 
   console.log("💛💙💚❤️🤍🤎 profileImage", profileImage);
 
@@ -64,7 +74,7 @@ const NavBar = async () => {
 
               {/* MON COMPTE */}
               <NavItem href="/myaccount">
-                {profileImage ? (
+                {profileImage?.imgURL ? (
                   <Avatar className="flex items-center justify-center">
                     <AvatarImage
                       src={profileImage.imgURL}

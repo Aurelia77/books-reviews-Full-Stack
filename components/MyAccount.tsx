@@ -71,13 +71,15 @@ const MyAccount = ({
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [progress, setProgress] = useState<number>();
 
+  // SANS la gestion du progress
+
   // const uploadImage = async () => {
   //   if (!imageUpload) return;
 
   //   setIsImageLoading(true);
   //   const data = new FormData();
   //   data.append("file", imageUpload);
-  //   const res = await fetch("/api/upload", {
+  //   const res = await fetch("/api/uploads", {
   //     method: "POST",
   //     body: data,
   //   });
@@ -97,7 +99,7 @@ const MyAccount = ({
     data.append("file", imageUpload);
 
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "/api/upload", true);
+    xhr.open("POST", "/api/uploads", true);
 
     xhr.upload.onprogress = (event) => {
       if (event.lengthComputable) {
@@ -155,7 +157,7 @@ const MyAccount = ({
     // useUserStore.getState().setProfileImage(data.imgURL);
 
     try {
-      const response = await fetch("/api/appUser/update", {
+      const response = await fetch("/api/appUsers/update", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

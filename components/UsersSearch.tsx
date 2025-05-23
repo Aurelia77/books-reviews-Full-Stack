@@ -23,7 +23,7 @@ const UsersSearch = ({ users }: UsersSearchProps) => {
   return (
     <div className="flex h-full flex-col gap-6">
       <div className="sticky top-10 z-10 flex flex-col gap-3 bg-background/70 duration-500">
-        <Title level={2}>Recherche de membres</Title>
+        <Title>Recherche de membres</Title>
         <div className="relative">
           <Input
             value={userNameInput}

@@ -70,6 +70,8 @@ const SearchBooksPage = async (props: {
     author: searchParams.author ?? "",
     lang: searchParams.lang ?? "",
   };
+
+  console.log("🤍🤍🤍 query", query.lang);
   //const searchTerm = searchParams.get("search") || "";
 
   //let booksApiUrl = `${GOOGLE_BOOKS_API_URL}?q=subject:general&maxResults=${MAX_RESULTS}`;
@@ -148,6 +150,8 @@ const SearchBooksPage = async (props: {
   }
 
   const booksApiUrl = `${GOOGLE_BOOKS_API_URL}?q=${queryApi}&maxResults=${MAX_RESULTS}`;
+
+  console.log("🤍🤍🤍 booksApiUrl", booksApiUrl);
 
   // console.log("💚💚💚", queryApi);
   // console.log("💛💛💛", booksApiUrl);
@@ -268,7 +272,7 @@ const SearchBooksPage = async (props: {
     filteredApiBooks
   );
 
-  console.log("💛💙💚 filteredDbBooks", filteredDbBooks);
+  console.log("💛💙💚🤍🤍🤍 filteredDbBooks", filteredDbBooks);
   console.log("💛💙💚 filteredApiBooks", filteredApiBooks);
   console.log("💛💙💚 filteredDbAndApiBooks", filteredDbAndApiBooks);
 

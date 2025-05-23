@@ -51,7 +51,7 @@ BookUserInfoProps) => {
       (async () => {
         try {
           const response = await fetch(
-            `/api/userInfoBook/getOne?userId=${userViewId}&bookId=${bookId}`
+            `/api/userInfoBooks/getOne?userId=${userViewId}&bookId=${bookId}`
           );
           if (response.ok) {
             const myBook = await response.json();
@@ -77,7 +77,7 @@ BookUserInfoProps) => {
     if (userViewId) {
       (async () => {
         try {
-          const res = await fetch(`/api/appUser/${userViewId}`);
+          const res = await fetch(`/api/appUsers/${userViewId}`);
           if (res.ok) {
             const user = await res.json();
             setUserName(user.userName);

@@ -33,6 +33,7 @@ import FriendsWhoReadBook from "./FriendsWhoReadBook";
 // userViewId = id du user à ne pas compter dans les amis qui ont lu le livre (si on est sur UserAccountPage) + qd on est sur UserAccountPage => on voit ses info et non celles du user connecté
 type BookInfosProps =
   | {
+      currentUserId: string | undefined;
       book: BookType;
       bookId?: never;
       userViewId?: string;
@@ -40,6 +41,7 @@ type BookInfosProps =
       bookConnectedUserStatus: BookStatus | "";
     }
   | {
+      currentUserId: string | undefined;
       book?: never;
       bookId: string;
       userViewId?: string;
@@ -48,6 +50,7 @@ type BookInfosProps =
     };
 
 const BookInfos = ({
+  currentUserId,
   book,
   bookId,
   userViewId,
@@ -71,10 +74,6 @@ const BookInfos = ({
   // console.log("💛 bookinmylist", bookStatus);
   const [bookInFriendList, setBookInFriendList] = useState<BookStatus | "">("");
 
-  const [currentUserId, setCurrentUserId] = useState<string | undefined>(
-    undefined
-  );
-
   console.log(
     "❤️💛💚🤍❤️ bookInfos.title",
     bookInfos?.title,
@@ -83,18 +82,18 @@ const BookInfos = ({
     currentUserId
   );
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await fetch("/api/user");
-        const data = await res.json();
-        setCurrentUserId(data.user?.id);
-      } catch (error) {
-        console.error("Erreur user :", error);
-      }
-    };
-    fetchUser();
-  }, []);
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     try {
+  //       const res = await fetch("/api/user");
+  //       const data = await res.json();
+  //       setCurrentUserId(data.user?.id);
+  //     } catch (error) {
+  //       console.error("Erreur user :", error);
+  //     }
+  //   };
+  //   fetchUser();
+  // }, []);
 
   //const { currentUser } = useUserStore();
 
@@ -140,7 +139,7 @@ const BookInfos = ({
   //   );
   //   //ou gérer le undefined dans fonction bookInMyBooksFirebase ??????????
   //   if (userId && bookInfos) {
-  //     fetch("/api/books/bookStatus", {
+  //     fetch("/api/bookss/bookStatus", {
   //       method: "POST",
   //       headers: {
   //         "Content-Type": "application/json",

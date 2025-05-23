@@ -25,71 +25,15 @@ export const cleanDescription = (description: string) => {
   );
 };
 
-// UTILISé ???????????????
-export const sortBooksByStatus = (
-  books: MyInfoBookPlusTitleAndNote[],
-  bookStatus: BookStatus,
-  sortState: { [key in BookStatus]: { criteria: string; order: string } }
-): MyInfoBookPlusTitleAndNote[] => {
-  console.log("sortBooksByStatus");
-
-  if (books.length <= 1) {
-    return books;
-  }
-
-  const { criteria, order } = sortState[bookStatus];
-
-  console.log("*-*-sortBooksByStatus criteria", criteria);
-  console.log("*-*-sortBooksByStatus order", order);
-
-  return books.sort((a, b) => {
-    let comparison = 0;
-    let yearComparison = 0;
-    const ratingA = a.totalRating > 0 ? a.totalRating / a.countRating : 0;
-    const ratingB = b.totalRating > 0 ? b.totalRating / b.countRating : 0;
-
-    switch (criteria) {
-      case "title":
-        comparison = b.bookTitle.localeCompare(a.bookTitle);
-        break;
-      case "date":
-        yearComparison = (a.year ?? 0) - (b.year ?? 0);
-        if (yearComparison !== 0) {
-          comparison = yearComparison;
-        } else {
-          comparison = (a.month ?? 0) - (b.month ?? 0);
-        }
-        break;
-      case "note":
-        comparison = ratingA - ratingB;
-        break;
-      case "reviews":
-        // console.log("REVIEW", a.bookNote?.count, b.bookNote?.count);
-        comparison = (a.countRating ?? 0) - (b.countRating ?? 0);
-        break;
-    }
-    return order === "asc" ? comparison : -comparison;
-  });
-};
-
 export const sortBook = (
   books: (BookType | BookTypePlusDate)[],
   criteria: string,
   order: string,
   sortState: { [key in BookStatus]: { criteria: string; order: string } }
-  //withDateOption = false
 ): (BookType | BookTypePlusDate)[] => {
   if (books.length <= 1) {
     return books;
   }
-  // export const sortBook = <T extends BookTypePlusUsersWhoRead | BookType>(
-  //   books: T[],
-  //   sortState: { [key in BookStatus]: { criteria: string; order: string } }
-  //   //withDateOption = false
-  // ): T[] => {
-  //   if (books.length <= 1) {
-  //     return books;
-  //   }
 
   console.log("💙🤎 sortBook books", books);
   console.log("💙🤎 sortBook sortState", sortState);
@@ -109,12 +53,12 @@ export const sortBook = (
       case "note": {
         const ratingA = a.countRating ? a.totalRating / a.countRating : 0;
         const ratingB = b.countRating ? b.totalRating / b.countRating : 0;
-        comparison = ratingA - ratingB;
+        comparison = ratingB - ratingA;
         break;
       }
       case "reviews":
         // console.log("REVIEW", a.rating?.count, b.rating?.count);
-        comparison = (a.countRating ?? 0) - (b.countRating ?? 0);
+        comparison = (b.countRating ?? 0) - (a.countRating ?? 0);
         break;
       case "date":
         const aYear = "year" in a && typeof a.year === "number" ? a.year : 0;

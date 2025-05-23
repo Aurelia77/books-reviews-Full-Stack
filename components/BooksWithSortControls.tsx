@@ -1,12 +1,12 @@
 "use client";
 
 import { BookType, BookTypePlusDate, SortStateType } from "@/lib/types";
+import { sortBook } from "@/lib/utils";
 import { BookStatus } from "@prisma/client";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import BookInfos from "./BookInfos";
 import { Button } from "./ui/button";
-import { sortBook } from "@/lib/utils";
 
 type BooksSortControlsType =
   | {
@@ -90,7 +90,7 @@ const BooksWithSortControls = ({
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch("/api/user");
+        const res = await fetch("/api/users");
         const data = await res.json();
         setCurrentUserId(data.user?.id);
       } catch (error) {
@@ -104,7 +104,7 @@ const BooksWithSortControls = ({
     if (bookIds && bookIds.length > 0) {
       (async () => {
         try {
-          // const response = await fetch("/api/book/byIdsWithDate", {
+          // const response = await fetch("/api/books/byIdsWithDate", {
           //   method: "POST",
           //   headers: {
           //     "Content-Type": "application/json",
@@ -115,8 +115,8 @@ const BooksWithSortControls = ({
           //   }),
           // });
           const endpoint = displayedAppUserId
-            ? "/api/book/byIdsWithDate"
-            : "/api/book/byIds";
+            ? "/api/books/byIdsWithDate"
+            : "/api/books/byIds";
           const body = displayedAppUserId
             ? { bookIds, displayedAppUserId }
             : { bookIds };
@@ -153,7 +153,7 @@ const BooksWithSortControls = ({
         console.log("💛xxx", currentUserId, bookIds);
 
         // Requête pour récupérer les statuts des livres
-        const response = await fetch("/api/book/bookStatuses", {
+        const response = await fetch("/api/books/bookStatuses", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -292,6 +292,7 @@ const BooksWithSortControls = ({
                 Status du livre {book.title} = {bookStatus}
               </p>
               <BookInfos
+                currentUserId={currentUserId}
                 book={book}
                 // Soit on est sur le compte d'un user, soit sur la page de recherche du livre (donc displayAppUserId = undefined)
                 userViewId={displayedAppUserId || currentUserId}

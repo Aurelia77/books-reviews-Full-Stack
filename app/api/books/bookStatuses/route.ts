@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   const body = await req.json(); // Remplace la récupération de req.body
@@ -9,8 +10,8 @@ export async function POST(req: Request) {
 
   // Ajoutez une vérification pour bookIds
   if (!userId || !bookIds || !Array.isArray(bookIds)) {
-    return new Response(
-      JSON.stringify({ error: "Missing userId or bookIds" }),
+    return NextResponse.json(
+      { error: "Missing userId or bookIds" },
       { status: 400 }
     );
   }
@@ -32,5 +33,5 @@ export async function POST(req: Request) {
   );
 
   // Retournez les statuts pour chaque livre
-  return new Response(JSON.stringify({ statuses }), { status: 200 });
+  return NextResponse.json({ statuses }, { status: 200 });
 }

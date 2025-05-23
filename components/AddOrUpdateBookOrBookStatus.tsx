@@ -144,7 +144,7 @@ AddOrUpdateBookProps) => {
       (async () => {
         try {
           const response = await fetch(
-            `/api/userInfoBook/getOne?userId=${currentUserId}&bookId=${bookInfos.id}`
+            `/api/userInfoBooks/getOne?userId=${currentUserId}&bookId=${bookInfos.id}`
           );
           if (response.ok) {
             const myBook = await response.json();
@@ -225,7 +225,7 @@ AddOrUpdateBookProps) => {
 
   const onSubmit: SubmitHandler<MyInfoBookFormType> = async (formData) => {
     try {
-      const response = await fetch("/api/book/new-or-update", {
+      const response = await fetch("/api/books/new-or-update", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

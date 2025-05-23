@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ books }, { status: 200 });
   } catch (error) {
-    console.error("Error fetching books in /api/books/byIds:", error);
+    console.error("Error fetching books in /api/bookss/byIds:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

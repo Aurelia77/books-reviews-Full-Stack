@@ -56,7 +56,7 @@ const UserAccount = ({
           : currentUser.friends.filter((friendId) => friendId !== userInfo.id);
 
       try {
-        const response = await fetch("/api/appUser/update", {
+        const response = await fetch("/api/appUsers/update", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
