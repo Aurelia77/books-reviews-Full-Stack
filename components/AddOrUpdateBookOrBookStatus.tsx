@@ -420,7 +420,7 @@ AddOrUpdateBookProps) => {
         </DialogTrigger>
       )}
       <DialogContent className="sm:max-w-[425px]">
-        {currentUserId ? (
+        {currentUserId && (
           <>
             <DialogHeader>
               {userBookStatusState ? (
@@ -610,22 +610,6 @@ AddOrUpdateBookProps) => {
                 </form>
               </Form>
             </div>
-          </>
-        ) : (
-          <>
-            <DialogHeader>
-              <DialogTitle>
-                <FeedbackMessage
-                  message="Vous devez être connecté pour ajouter un livre"
-                  type="error"
-                />
-              </DialogTitle>
-              <DialogDescription>
-                <CustomLinkButton linkTo="/login">
-                  Se connecter
-                </CustomLinkButton>
-              </DialogDescription>
-            </DialogHeader>
           </>
         )}
       </DialogContent>

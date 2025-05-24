@@ -1,6 +1,6 @@
 import { Skeleton } from "../ui/skeleton";
 
-const BookSkeleton = (): JSX.Element => {
+const BookSkeleton = () => {
   return (
     <div className="flex gap-4 p-5 pt-10">
       <Skeleton className="h-48 w-32 rounded-md" />

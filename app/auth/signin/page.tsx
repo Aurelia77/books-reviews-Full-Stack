@@ -13,8 +13,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -34,7 +34,6 @@ const loginFormSchema = z.object({
 });
 
 const SignInPage = () => {
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const form = useForm<LoginFormType>({
@@ -44,6 +43,14 @@ const SignInPage = () => {
       password: "",
     },
   });
+
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get("unauthorized") === "1") {
+      toast.error("Vous devez être connecté pour accéder à cette page.");
+    }
+  }, [searchParams]);
 
   // const onSubmit: SubmitHandler<LoginFormType> = (data) => {
   //   loginFirebase(data.email, data.password)
@@ -67,7 +74,7 @@ const SignInPage = () => {
       },
       {
         onRequest: () => {
-          setIsLoading(true);
+          //setIsLoading(true);
         },
         onSuccess: () => {
           router.push("/");
@@ -76,7 +83,7 @@ const SignInPage = () => {
         onError: (ctx: { error: { message: string } }) => {
           console.error("Erreur côté client :", ctx.error);
           toast.error(ctx.error.message);
-          setIsLoading(false);
+          //setIsLoading(false);
         },
       }
     );
