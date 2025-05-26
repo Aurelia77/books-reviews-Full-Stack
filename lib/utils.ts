@@ -80,9 +80,9 @@ export const sortBook = (
 
 export const getStatusColor = (status: BookStatus): string =>
   status === BookStatus.READ
-    ? "bg-green-400/40"
+    ? "bg-green-400/30"
     : status === BookStatus.IN_PROGRESS
-    ? "bg-blue-400/40"
+    ? "bg-blue-400/30"
     : status === BookStatus.TO_READ
-    ? "bg-pink-400/40"
+    ? "bg-pink-400/30"
     : "";

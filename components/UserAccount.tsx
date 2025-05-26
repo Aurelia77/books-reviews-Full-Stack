@@ -93,13 +93,13 @@ const UserAccount = ({
   return (
     <div
       // min-h-screen
-      className={cn("max-w-3xl sm:p-2 md:m-auto md:mt-8", {
+      className={cn("max-w-3xl sm:p-2 md:m-auto md:mt-8 w-full", {
         //"bg-yellow-400/20": isFriend,
       })}
       //key={userInUrl.userId}
     >
       <Card className="mb-6">
-        <div className="mr-2 flex items-center justify-between gap-10 p-4 max-w-md min-w-md">
+        <div className="mr-2 flex items-center justify-between gap-10 p-4 max-w-md min-w-md mb-10">
           {/* <div className="mr-2 flex items-center justify-between gap-10 pl-2 max-w-md"> */}
           {/* <Title>{userInfo?.userName ?? ""}</Title> */}
           {/* <CardDescription> */}

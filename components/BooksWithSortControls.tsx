@@ -37,6 +37,7 @@ const BooksWithSortControls = ({
   displayedAppUserId,
   withDateOption = false,
 }: BooksSortControlsType) => {
+  console.log("❤️🤍🤎 bookIds", bookIds);
   console.log("❤️🤍🤎 displayBookStatus", displayBookStatus);
   console.log("❤️🤍🤎 displayedAppUserId", displayedAppUserId);
   console.log("❤️🤍🤎 BooksWithSortControls books", books);
@@ -129,8 +130,9 @@ const BooksWithSortControls = ({
           });
 
           if (response.ok) {
-            const data = await response.json();
-            setDisplayedBooks(data.books);
+            const json = await response.json();
+            console.log("💛💙🤎 displayedBooks data books", json.data);
+            setDisplayedBooks(json.data || []);
           }
         } catch (error) {
           console.error("Erreur lors de la récupération des livres :", error);
@@ -198,7 +200,7 @@ const BooksWithSortControls = ({
   };
 
   useEffect(() => {
-    //console.log("*-*- useEffect sortBookTypes sortState = ", sortState);
+    console.log("useEffect sortBook displayedBooks");
     //sortBook(displayedBooks, sortState);
     // Pas boucle infinie...Bizarre ???
     setDisplayedBooks(
@@ -283,24 +285,28 @@ const BooksWithSortControls = ({
       </div>
 
       <ul>
-        {displayedBooks.map((book: BookType) => {
-          const bookStatus = booksStatuses[book.id] || "";
+        {displayedBooks &&
+          displayedBooks.map((book: BookType) => {
+            const bookStatus = booksStatuses[book.id] || "";
 
-          return (
-            <li key={book.id} className="mb-4 border-muted border-4 rounded-xl">
-              <p>
-                Status du livre {book.title} = {bookStatus}
-              </p>
-              <BookInfos
-                currentUserId={currentUserId}
-                book={book}
-                // Soit on est sur le compte d'un user, soit sur la page de recherche du livre (donc displayAppUserId = undefined)
-                userViewId={displayedAppUserId || currentUserId}
-                bookConnectedUserStatus={bookStatus}
-              />
-            </li>
-          );
-        })}
+            return (
+              <li
+                key={book.id}
+                className="mb-4 border-muted border-4 rounded-xl"
+              >
+                <p>
+                  Status du livre {book.title} = {bookStatus}
+                </p>
+                <BookInfos
+                  currentUserId={currentUserId}
+                  book={book}
+                  // Soit on est sur le compte d'un user, soit sur la page de recherche du livre (donc displayAppUserId = undefined)
+                  userViewId={displayedAppUserId || currentUserId}
+                  bookConnectedUserStatus={bookStatus}
+                />
+              </li>
+            );
+          })}
       </ul>
     </div>
   );

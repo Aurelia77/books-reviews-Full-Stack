@@ -60,7 +60,14 @@ export async function POST(req: NextRequest) {
 
     console.log("💛💙💚❤️🤍🤎 booksWithDate", booksWithDate);
 
-    return NextResponse.json({ books: booksWithDate }, { status: 200 });
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Livres récupérés avec succès",
+        data: booksWithDate,
+      },
+      { status: 200 }
+    );
   } catch (error) {
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
   }

@@ -253,7 +253,7 @@ const BookInfos = ({
                   </div>
                 )}
               </div>
-              <div className="bg-pink-500">
+              <div className="bg-pink-900">
                 <p>BookUserInfo (on est ds composant BookInfo)</p>
                 <p>bookConnectedUserStatus = {bookConnectedUserStatus} </p>
                 <p>title = {bookInfos?.title} </p>
