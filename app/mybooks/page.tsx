@@ -1,6 +1,5 @@
 import AllBooksLists from "@/components/AllBooksLists";
 import CustomLinkButton from "@/components/CustomLinkButton";
-import Title from "@/components/Title";
 import { getUser } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
 import { AppUserType } from "@/lib/types";
@@ -48,7 +47,7 @@ const MyBooksPage = async () => {
   return (
     <div>
       {currentAppUser && <AllBooksLists displayedAppUser={currentAppUser} />}
-      <CustomLinkButton className="bg-primary/80" linkTo="/books">
+      <CustomLinkButton className="bg-primary/80 mt-36" linkTo="/books">
         Recherche de livres
       </CustomLinkButton>
     </div>

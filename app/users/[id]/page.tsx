@@ -1,5 +1,6 @@
 import AllBooksLists from "@/components/AllBooksLists";
 import FeedbackMessage from "@/components/FeedbackMessage";
+import Title from "@/components/Title";
 import UserAccount from "@/components/UserAccount";
 import { getUser } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
@@ -44,7 +45,9 @@ const User = async ({ params }: { params: Promise<{ id: string }> }) => {
   return (
     displayedAppUser && (
       <div className="flex flex-col gap-6">
+        <Title>Profil de {displayedAppUser.userName}</Title>
         <UserAccount currentUser={currentAppUser} userInfo={displayedAppUser} />
+        <Title level={2}>Livre(s) du membre</Title>
         {livres?.length > 0 && currentAppUser ? (
           <AllBooksLists displayedAppUser={displayedAppUser} />
         ) : (
@@ -53,7 +56,7 @@ const User = async ({ params }: { params: Promise<{ id: string }> }) => {
           //   userId={currentUser?.id}
           //   books={livres.map((l) => l.book)} // ????????
           // />
-          <FeedbackMessage message="Aucun livre trouvé" type="info" />
+          <FeedbackMessage message="Aucun livre pour l'instant" type="info" />
         )}
       </div>
     )

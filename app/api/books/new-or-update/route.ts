@@ -28,7 +28,7 @@ export async function POST(req: Request) {
 
     if (!currentUserId || !formData) {
       return NextResponse.json(
-        { message: "Données manquantes ou invalides" },
+        { message: "Paramètres manquants ou invalides" },
         { status: 400 }
       );
     } else {

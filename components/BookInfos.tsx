@@ -14,7 +14,7 @@ import {
 // import useUserStore from "@/hooks/useUserStore";
 import { DEFAULT_BOOK_IMAGE, NO_DESCRIPTION } from "@/lib/constants";
 import { BookType } from "@/lib/types";
-import { cleanDescription, cn } from "@/lib/utils";
+import { cleanDescription, cn, getStatusColor } from "@/lib/utils";
 import { BookStatus } from "@prisma/client";
 import { Check, Ellipsis, Quote, Smile } from "lucide-react";
 import Link from "next/link";
@@ -229,12 +229,7 @@ const BookInfos = ({
                   <div
                     className={cn(
                       "absolute -bottom-16 right-2 rounded-full bg-primary/50 p-1 shadow-sm shadow-foreground",
-                      bookConnectedUserStatus === BookStatus.READ &&
-                        "bg-green-500/40",
-                      bookConnectedUserStatus === BookStatus.IN_PROGRESS &&
-                        "bg-blue-500/40",
-                      bookConnectedUserStatus === BookStatus.TO_READ &&
-                        "bg-pink-500/40"
+                      getStatusColor(bookConnectedUserStatus)
                     )}
                   >
                     {bookConnectedUserStatus === BookStatus.READ && (

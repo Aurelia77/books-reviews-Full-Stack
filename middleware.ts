@@ -11,7 +11,9 @@ const protectedRoutes = [
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const token = request.cookies.get("betterauth.session-token")?.value;
+  const token = request.cookies.get("better-auth.session_token")?.value;
+
+  console.log("💛💙💚 token", token);
 
   const isProtected = protectedRoutes.some((route) =>
     pathname.startsWith(route)

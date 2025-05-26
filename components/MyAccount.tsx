@@ -214,10 +214,10 @@ const MyAccount = ({
 
   return (
     <div>
-      <Title level={2}>{`Identifiant : ${currentAppUser?.email ?? ""}`}</Title>
+      <Title level={2}>{`Identifiant : ${currentAppUser.email}`}</Title>
       <Form {...form}>
         <form
-          className="mb-12 flex flex-col gap-3"
+          className="my-12 flex flex-col gap-7 mb-24"
           onSubmit={form.handleSubmit(onSubmit)}
         >
           <FormField
@@ -311,7 +311,7 @@ const MyAccount = ({
         <FeedbackMessage message="Aucun ami pour l'instant" />
       )}
 
-      <div className="my-12 flex flex-col gap-4">
+      <div className="my-24 flex flex-col gap-4">
         <CustomLinkButton className="bg-primary/60" linkTo="/users">
           Voir les Membres
         </CustomLinkButton>

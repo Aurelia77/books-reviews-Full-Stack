@@ -116,11 +116,11 @@ const UsersBooksRead = ({
 
   return (
     <div>
-      <div className="flex h-full flex-col gap-6 mt-10">
+      <div className="flex h-full flex-col gap-6 my-10">
         {/* <div className="sticky top-10 z-10 flex flex-col gap-3 bg-background/70">
           <Title>Livres lus par les membres</Title>
         </div> */}
-        <div className="mb-4 flex items-center justify-center gap-4 text-center">
+        <div className="mb-8 flex items-center justify-center gap-4 text-center">
           <p className={isSearchOnFriendsBooks ? "p-1 text-gray-500" : "p-1"}>
             Tous les membres
           </p>
@@ -156,60 +156,25 @@ const UsersBooksRead = ({
         ) :  */}
         {usersBooksReadIds && usersBooksReadIds.length > 0 ? (
           // {displayedSortedBooks && displayedSortedBooks.length > 0 ? (
-          <div className="flex flex-col items-center gap-4">
-            <BooksWithSortControls
-              displayBookStatus={BookStatus.READ}
-              bookIds={usersBooksReadIds}
-            />
-            {/* <BooksSortControls
-              booksStatus={BookStatus.READ}
-              sortState={sortState}
-              setSortState={setSortState}
-            />
-            <ul>
-              {displayedSortedBooks.map((book: BookTypePlusUsersWhoRead) => (
-                <li
-                  key={book.id}
-                  className="mb-4 rounded-xl border-4 border-foreground/60"
-                >
-                  {/* Ici on passe le book en props (et pas le bookId comme dans MyBooksPage) 
-                  <BookInfos
-                    bookId={book.id}
-                    // C bien ça ?????? ci dessous ???
-                    bookConnectedUserStatus={BookStatus.READ}
-                    //friendsWhoReadBook={friendsWhoReadBook(book.bookId)}
-                  />
-
-                  {book.usersWhoRead.map((friendBookInfo) => (
-                    <div
-                      className="border-4 border-primary/20 p-2"
-                      key={friendBookInfo.userId}
-                    >
-                      <BookUserInfo
-                        currentUserId={currentUserId}
-                        userViewId={friendBookInfo.userId}
-                        bookId={book.id}
-                        bookStatus={BookStatus.READ}
-                      />
-                    </div>
-                  ))}
-                </li>
-              ))}
-            </ul> */}
-          </div>
+          // <div className="flex flex-col items-center gap-4">
+          <BooksWithSortControls
+            displayBookStatus={BookStatus.READ}
+            bookIds={usersBooksReadIds}
+          />
         ) : (
+          // </div>
           <FeedbackMessage message="Aucun livre pour l'instant" type="info" />
         )}
       </div>
       {isSearchOnFriendsBooks && (
         <div>
-          <div className="mb-2 bg-yellow-400/35 p-2">
+          <div className="mb-3 bg-yellow-400/35 p-2">
             <p>
               Vous avez {friendsOfCurrentAppUser?.length || 0} amis, vous pouvez
               en ajouter ici :
             </p>
           </div>
-          <CustomLinkButton className="bg-secondary/60" linkTo="/searchusers">
+          <CustomLinkButton className="bg-secondary/60" linkTo="/users">
             Voir les Membres
           </CustomLinkButton>
         </div>

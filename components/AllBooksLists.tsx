@@ -7,7 +7,7 @@ import {
   MyInfoBookPlusTitleAndNote,
   UserTypePlusBooksTitleAndNote,
 } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import { cn, getStatusColor } from "@/lib/utils";
 import { BookStatus } from "@prisma/client";
 import { BookOpenCheck, Ellipsis, Smile } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -51,8 +51,9 @@ const AllBooksLists = ({ displayedAppUser }: AllBooksListsProps) => {
     //   `/api/books/${displayedAppUser.id}/${activeTab}`
     // );
 
-    const fetchBooks = async () => {
+    const fetchData = async () => {
       // const res = await fetch(`/api/books/${userInfo.id}/` + `${activeTab}`);
+
       const res = await fetch(
         `/api/userInfoBooks/${displayedAppUser.id}/${activeTab}`
       );
@@ -61,10 +62,11 @@ const AllBooksLists = ({ displayedAppUser }: AllBooksListsProps) => {
         throw new Error("Erreur lors de la récupération des livres");
       }
 
-      const data = await res.json();
-      setDisplayedBookIds(data);
+      const json = await res.json();
+      setDisplayedBookIds(json.data);
     };
-    fetchBooks();
+
+    fetchData();
   }, [activeTab, displayedAppUser.id]);
 
   console.log(
@@ -198,7 +200,10 @@ const AllBooksLists = ({ displayedAppUser }: AllBooksListsProps) => {
     <div>
       <Tabs
         defaultValue={DEFAULT_TAB}
-        className="mb-16 mt-4 flex flex-col gap-4"
+        className={cn(
+          "mb-16 mt-4 flex flex-col gap-4 md:rounded-lg",
+          getStatusColor(activeTab)
+        )}
         onValueChange={(value) => setActiveTab(value as BookStatus)}
       >
         {/* className={cn(
@@ -210,27 +215,42 @@ const AllBooksLists = ({ displayedAppUser }: AllBooksListsProps) => {
                                 bookInMyList === BookStatus.booksToReadList &&
                                   "bg-pink-500/50" */}
         <TabsList
-          className={cn(
-            "w-full",
-            activeTab === BookStatus.READ && "bg-green-500/40",
-            activeTab === BookStatus.IN_PROGRESS && "bg-blue-500/40",
-            activeTab === BookStatus.TO_READ && "bg-pink-500/40"
-          )}
+        // className={cn(
+        //   "w-full",
+        //   activeTab === BookStatus.READ && "bg-green-500/40",
+        //   activeTab === BookStatus.IN_PROGRESS && "bg-blue-500/40",
+        //   activeTab === BookStatus.TO_READ && "bg-pink-500/40"
+        // )}
         >
           <TabsTrigger value={BookStatus.READ} className="w-full flex gap-2">
             Lus
-            <BookOpenCheck className="rounded-full bg-green-500/40 p-1 shadow-sm shadow-foreground" />
+            <BookOpenCheck
+              className={cn(
+                "rounded-full p-1 shadow-sm shadow-foreground",
+                getStatusColor(BookStatus.READ)
+              )}
+            />
           </TabsTrigger>
           <TabsTrigger
             value={BookStatus.IN_PROGRESS}
             className="w-full flex gap-2"
           >
             En cours
-            <Ellipsis className="rounded-full bg-blue-500/40 p-1 shadow-sm shadow-foreground" />
+            <Ellipsis
+              className={cn(
+                "rounded-full p-1 shadow-sm shadow-foreground",
+                getStatusColor(BookStatus.IN_PROGRESS)
+              )}
+            />
           </TabsTrigger>
           <TabsTrigger value={BookStatus.TO_READ} className="w-full flex gap-2">
             À lire
-            <Smile className="rounded-full bg-pink-500/40 p-1 shadow-sm shadow-foreground" />
+            <Smile
+              className={cn(
+                "rounded-full p-1 shadow-sm shadow-foreground",
+                getStatusColor(BookStatus.TO_READ)
+              )}
+            />
           </TabsTrigger>
         </TabsList>
         {/* <BooksWithSortControls

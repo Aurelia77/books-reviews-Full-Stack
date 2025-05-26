@@ -6,6 +6,7 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
+  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -24,6 +25,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { MONTHS } from "@/lib/constants";
 import { BookType, MyInfoBookFormType, UserInfoBookType } from "@/lib/types";
+import { cn, getStatusColor } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { BookStatus } from "@prisma/client";
 import { Check, Ellipsis, Smile, X } from "lucide-react";
@@ -33,8 +35,6 @@ import { Controller, SubmitHandler, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import BookUserInfo from "./BookUserInfo";
-import CustomLinkButton from "./CustomLinkButton";
-import FeedbackMessage from "./FeedbackMessage";
 import StarRating from "./StarRating";
 import { Button } from "./ui/button";
 import { FormControl, FormField, FormItem, FormMessage } from "./ui/form";
@@ -172,7 +172,12 @@ AddOrUpdateBookProps) => {
   };
 
   useEffect(() => {
+    console.log("💛💛💛 getOne userBookStatusState", userBookStatusState);
     if (userBookStatusState === BookStatus.READ) {
+      console.log(
+        "💛💛💛 getOne userBookStatusState READ",
+        userBookStatusState
+      );
       (async () => {
         try {
           const response = await fetch(
@@ -201,18 +206,18 @@ AddOrUpdateBookProps) => {
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [userBookInfos]);
 
-  const updateUserBookInfos = () => {
-    // console.log("updateUserBookInfos");
-    if (userBookStatusState && bookInfos) {
-      // getUserInfosBookFirebase(userId, bookInfos.id, bookInMyBooks).then(
-      //   (myBook) => {
-      //     console.log("updateUserBookInfos !!!!!!!!!!! myBook", myBook);
-      //     setUserBookInfos(myBook);
-      //     // if (myBook) setUserBookInfos(myBook);
-      //   }
-      // );
-    }
-  };
+  // const updateUserBookInfos = () => {
+  //   // console.log("updateUserBookInfos");
+  //   if (userBookStatusState && bookInfos) {
+  //     // getUserInfosBookFirebase(userId, bookInfos.id, bookInMyBooks).then(
+  //     //   (myBook) => {
+  //     //     console.log("updateUserBookInfos !!!!!!!!!!! myBook", myBook);
+  //     //     setUserBookInfos(myBook);
+  //     //     // if (myBook) setUserBookInfos(myBook);
+  //     //   }
+  //     // );
+  //   }
+  // };
 
   useEffect(() => {
     // console.log("bookInMyBooks change ??? useEffect setUserBookInfos");
@@ -236,8 +241,22 @@ AddOrUpdateBookProps) => {
   // ici j'utilise async/await car le .then ne fonctionne pas, pourtant normalement ça fait exactement la même chose !!!
   const handleDeleteBook = async (bookId: string) => {
     // await deleteBookFromMyBooksFirebase(userId, bookId, bookInMyBooks);
+
+    console.log(
+      "0-💙❤️🤎handleDeleteBook ds composant AddOr... ",
+      currentUserId,
+      bookId,
+      userBookStatusState
+    );
+    await fetch(
+      `/api/booksAndUserInfoBooks/${currentUserId}/${bookId}/${userBookStatusState}`,
+      {
+        method: "DELETE",
+      }
+    );
     setUserBookStatusState(null);
-    updateUserBookInfos();
+    handleUpdate(); // pour mettre à jour le parent et donc la note moyenne du livre
+    //updateUserBookInfos();
   };
 
   const onSubmit: SubmitHandler<MyInfoBookFormType> = async (formData) => {
@@ -295,9 +314,19 @@ AddOrUpdateBookProps) => {
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       {/* <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}> */}
       {userBookStatusState ? (
-        <div className="relative flex flex-col">
+        <div
+          className={cn(
+            "relative flex flex-col p-1 rounded-sm mb-4",
+            getStatusColor(userBookStatusState)
+          )}
+        >
           <div className="flex items-center justify-between mb-2">
-            <div className="border border-border bg-secondary/60 p-2 shadow-md rounded-md shadow-foreground/70">
+            <div
+              className={cn(
+                "border border-border bg-secondary/60 p-4 shadow-md rounded-md shadow-foreground/70",
+                getStatusColor(userBookStatusState)
+              )}
+            >
               {userBookStatusState === BookStatus.READ && (
                 <div className="flex justify-center gap-2">
                   <p>Je l'ai lu !</p>
@@ -335,6 +364,10 @@ AddOrUpdateBookProps) => {
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
+                  <AlertDialogDescription>
+                    Cette action supprimera ce livre de votre bibliothèque.
+                    Cette action est irréversible.
+                  </AlertDialogDescription>
                   <AlertDialogTitle className="text-foreground">
                     Etes-vous sûrs de vouloir supprimer le livre de votre liste
                     de{" "}

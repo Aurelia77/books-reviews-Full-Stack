@@ -1,11 +1,7 @@
 import { BookStatus } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import {
-  BookType,
-  BookTypePlusDate,
-  MyInfoBookPlusTitleAndNote,
-} from "./types";
+import { BookType, BookTypePlusDate } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -81,3 +77,12 @@ export const sortBook = (
   // console.log("*-*- RETURN", sortedBooks);
   return sortedBooks;
 };
+
+export const getStatusColor = (status: BookStatus): string =>
+  status === BookStatus.READ
+    ? "bg-green-400/40"
+    : status === BookStatus.IN_PROGRESS
+    ? "bg-blue-400/40"
+    : status === BookStatus.TO_READ
+    ? "bg-pink-400/40"
+    : "";

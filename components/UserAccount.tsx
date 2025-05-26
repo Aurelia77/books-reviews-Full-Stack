@@ -1,7 +1,6 @@
 "use client";
 
 import FriendSparkles from "@/components/FriendSparkles";
-import Title from "@/components/Title";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription } from "@/components/ui/card";
 // import {
@@ -100,10 +99,11 @@ const UserAccount = ({
       //key={userInUrl.userId}
     >
       <Card className="mb-6">
-        <div className="mr-2 flex items-center justify-between gap-10 pl-2 max-w-md">
-          <Title>{userInfo?.userName ?? ""}</Title>
+        <div className="mr-2 flex items-center justify-between gap-10 p-4 max-w-md min-w-md">
+          {/* <div className="mr-2 flex items-center justify-between gap-10 pl-2 max-w-md"> */}
+          {/* <Title>{userInfo?.userName ?? ""}</Title> */}
           {/* <CardDescription> */}
-          <div>
+          <div className="flex justify-end w-full">
             {isFriend ? (
               <div className="flex gap-4 items-center">
                 <FriendSparkles />
@@ -138,9 +138,6 @@ const UserAccount = ({
         </div>
       </Card>
 
-      <Title level={2}>
-        Livres du membre (!!!!!!!!mettre ce titre ailleurs ?????????)
-      </Title>
       {/* {userInfo && userInUrl.userId && <AllBooksLists userInfo={userInfo} />} */}
     </div>
   );

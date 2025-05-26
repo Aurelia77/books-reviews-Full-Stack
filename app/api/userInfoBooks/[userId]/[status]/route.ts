@@ -13,22 +13,22 @@ export async function GET(
 ) {
   const { userId, status } = await context.params;
 
-  console.log("💛💙💚❤️🤍🤎 userId, status", userId, status);
+  console.log("1-💛💙💚❤️🤍🤎 userId, status", userId, status);
 
   if (!userId || !status) {
     return NextResponse.json(
       {
         success: false,
-        error: "Données manquantes ou invalides",
+        error: "Paramètres manquants ou invalides",
         code: "MISSING_PARAMS",
       },
       { status: 400 }
     );
   }
 
-  console.log("💛💙💚❤️🤍🤎 userId, status", userId, status);
-
   try {
+    console.log("2-💛💙💚");
+
     const books = await prisma.userInfoBook.findMany({
       where: {
         userId: userId,
@@ -39,6 +39,19 @@ export async function GET(
       },
     });
 
+    console.log(
+      "🤎🤍🤎🤍🤎🤍🤎 data",
+      JSON.stringify(
+        books.map((b) => b.bookId),
+        null,
+        2
+      )
+    );
+    console.log(
+      "🤎🤍🤎🤍🤎🤍data =",
+      books.map((b) => b.bookId)
+    );
+
     return NextResponse.json(
       {
         success: true,
@@ -48,6 +61,8 @@ export async function GET(
       { status: 200 }
     );
   } catch (error) {
+    console.log("3-error-💛💙💚");
+
     console.error(
       "Erreur lors de la récupération des info du livre de l'utilisateur (UserInfoBook) :",
       error

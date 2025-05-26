@@ -11,7 +11,7 @@ export async function GET(
     return NextResponse.json(
       {
         success: false,
-        error: "Données manquantes ou invalides",
+        error: "Paramètres manquants ou invalides",
         code: "MISSING_PARAMS",
       },
       { status: 400 }
