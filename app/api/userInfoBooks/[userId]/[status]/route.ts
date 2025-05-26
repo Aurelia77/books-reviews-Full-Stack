@@ -17,7 +17,11 @@ export async function GET(
 
   if (!userId || !status) {
     return NextResponse.json(
-      { error: "Missing userId or status" },
+      {
+        success: false,
+        error: "Données manquantes ou invalides",
+        code: "MISSING_PARAMS",
+      },
       { status: 400 }
     );
   }
@@ -35,11 +39,27 @@ export async function GET(
       },
     });
 
-    return NextResponse.json(books.map((b) => b.bookId));
-  } catch (error) {
-    console.error("Error fetching userInfoBook:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      {
+        success: true,
+        message: "Livres récupérés avec succès",
+        data: books.map((b) => b.bookId),
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error(
+      "Erreur lors de la récupération des info du livre de l'utilisateur (UserInfoBook) :",
+      error
+    );
+    return NextResponse.json(
+      {
+        success: false,
+        error:
+          "Erreur lors de la récupération des info du livre de l'utilisateur.",
+        code: "INTERNAL_SERVER_ERROR",
+        details: error instanceof Error ? error.message : String(error),
+      },
       { status: 500 }
     );
   }

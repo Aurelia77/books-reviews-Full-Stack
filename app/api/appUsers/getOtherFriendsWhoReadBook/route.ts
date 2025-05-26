@@ -20,7 +20,11 @@ export async function GET(req: NextRequest) {
 
   if (!connectedUserId || !bookId) {
     return NextResponse.json(
-      { error: "Missing userId or bookId" },
+      {
+        success: false,
+        error: "Données manquantes ou invalides",
+        code: "MISSING_PARAMS",
+      },
       { status: 400 }
     );
   }
@@ -50,8 +54,26 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    return NextResponse.json(friendsWhoRead, { status: 200 });
+    return NextResponse.json(
+      {
+        success: true,
+        data: friendsWhoRead,
+      },
+      { status: 200 }
+    );
   } catch (error) {
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+    console.error(
+      "Erreur lors de la récupération des utilisateurs (AppUser) :",
+      error
+    );
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Erreur lors de la récupération des utilisateurs.",
+        code: "INTERNAL_SERVER_ERROR",
+        details: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 }
+    );
   }
 }

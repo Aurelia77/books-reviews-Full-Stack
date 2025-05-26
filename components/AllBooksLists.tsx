@@ -53,7 +53,9 @@ const AllBooksLists = ({ displayedAppUser }: AllBooksListsProps) => {
 
     const fetchBooks = async () => {
       // const res = await fetch(`/api/books/${userInfo.id}/` + `${activeTab}`);
-      const res = await fetch(`/api/books/${displayedAppUser.id}/${activeTab}`);
+      const res = await fetch(
+        `/api/userInfoBooks/${displayedAppUser.id}/${activeTab}`
+      );
 
       if (!res.ok) {
         throw new Error("Erreur lors de la récupération des livres");

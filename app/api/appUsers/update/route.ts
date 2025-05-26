@@ -13,9 +13,13 @@ export async function POST(req: Request) {
 
     console.log("💚💙💚 data", data);
 
-    if (!data) {
+    if (!data || !currentUserId) {
       return NextResponse.json(
-        { message: "Données manquantes ou invalides" },
+        {
+          success: false,
+          error: "Données manquantes ou invalides",
+          code: "MISSING_PARAMS",
+        },
         { status: 400 }
       );
     } else {
@@ -27,14 +31,23 @@ export async function POST(req: Request) {
       });
 
       return NextResponse.json(
-        { message: "Utilisateur mis à jour avec succès", appUser },
+        {
+          success: true,
+          message: "Utilisateur mis à jour avec succès",
+          data: appUser,
+        },
         { status: 200 }
       );
     }
   } catch (error) {
     console.error("Erreur lors de la mise à jour de l'utilisateur :", error);
     return NextResponse.json(
-      { error: "Erreur interne du serveur" },
+      {
+        success: false,
+        error: "Erreur lors de la mise à jour de l'utilisateur.",
+        code: "INTERNAL_SERVER_ERROR",
+        details: error instanceof Error ? error.message : String(error),
+      },
       { status: 500 }
     );
   }

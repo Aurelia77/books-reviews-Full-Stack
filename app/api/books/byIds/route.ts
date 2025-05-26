@@ -9,7 +9,11 @@ export async function POST(req: NextRequest) {
 
     if (!Array.isArray(bookIds) || bookIds.length === 0) {
       return NextResponse.json(
-        { error: "bookIds is required and must be a non-empty array" },
+        {
+          success: false,
+          error: "Données manquantes ou invalides",
+          code: "MISSING_PARAMS",
+        },
         { status: 400 }
       );
     }
@@ -23,8 +27,26 @@ export async function POST(req: NextRequest) {
     });
     console.log("💛💙🤍🤎 books", books);
 
-    return NextResponse.json({ books }, { status: 200 });
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Livres récupérés avec succès",
+        data: books,
+      },
+      { status: 200 }
+    );
   } catch (error) {
+    console.error("Erreur lors de la récupération des livres :", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Erreur lors de la récupération d'un utilisateur.",
+        code: "INTERNAL_SERVER_ERROR",
+        details: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 }
+    );
+
     console.error("Error fetching books in /api/bookss/byIds:", error);
     return NextResponse.json(
       { error: "Internal server error" },

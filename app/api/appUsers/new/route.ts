@@ -19,7 +19,11 @@ export async function POST(req: Request) {
     // Vérification des données
     if (!email || !userName) {
       return NextResponse.json(
-        { error: "Tous les champs sont requis." },
+        {
+          success: false,
+        error: "Données manquantes ou invalides",
+          code: "MISSING_PARAMS",
+        },
         { status: 400 }
       );
     }
@@ -40,9 +44,17 @@ export async function POST(req: Request) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("Erreur lors de la création de l'utilisateur :", error);
+    console.error(
+      "Erreur lors de la création de l'utilisateur (AppUser) :",
+      error
+    );
     return NextResponse.json(
-      { error: "Erreur interne du serveur" },
+      {
+        success: false,
+        error: "Erreur lors de la création de l'utilisateur.",
+        code: "INTERNAL_SERVER_ERROR",
+        details: error instanceof Error ? error.message : String(error),
+      },
       { status: 500 }
     );
   }
