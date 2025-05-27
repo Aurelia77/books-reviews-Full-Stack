@@ -32,7 +32,7 @@ export async function GET(
     const books = await prisma.userInfoBook.findMany({
       where: {
         userId: userId,
-        status: status as BookStatus,
+        status: status as BookStatusType,
       },
       select: {
         bookId: true,
