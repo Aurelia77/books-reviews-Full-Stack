@@ -15,7 +15,8 @@ import {
 import { DEFAULT_BOOK_IMAGE, NO_DESCRIPTION } from "@/lib/constants";
 import { BookType } from "@/lib/types";
 import { cleanDescription, cn, getStatusColor } from "@/lib/utils";
-import { BookStatus } from "@prisma/client";
+import { BookStatusType } from "@/lib/types";
+import { BookStatusValues } from "@/lib/constants";
 import { Check, Ellipsis, Quote, Smile } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -39,7 +40,7 @@ type BookInfosProps =
       bookId?: never;
       userViewId?: string;
       // userId?: string | undefined;
-      bookConnectedUserStatus: BookStatus | "";
+      bookConnectedUserStatus: BookStatusType | "";
     }
   | {
       currentUserId: string | undefined;
@@ -47,7 +48,7 @@ type BookInfosProps =
       bookId: string;
       userViewId?: string;
       // userId?: string | undefined;
-      bookConnectedUserStatus: BookStatus | "";
+      bookConnectedUserStatus: BookStatusType | "";
     };
 
 const BookInfos = ({
@@ -73,15 +74,14 @@ const BookInfos = ({
 
   // const [bookStatus, setBookStatus] = useState<BookStatus | "">("");
   // console.log("💛 bookinmylist", bookStatus);
-  const [bookInFriendList, setBookInFriendList] = useState<BookStatus | "">("");
-
-  console.log(
-    "❤️💛💚🤍❤️ bookInfos.title",
-    bookInfos?.title,
-    bookConnectedUserStatus,
-    bookInFriendList,
-    currentUserId
+  const [bookInFriendList, setBookInFriendList] = useState<BookStatusType | "">(
+    ""
   );
+
+  console.log("❤️💛💚🤍❤️ bookInfos.title", bookInfos?.title);
+  console.log("❤️💛💚🤍❤️ bookConnectedUserStatus", bookConnectedUserStatus);
+  console.log("❤️💛💚🤍❤️ bookInFriendList", bookInFriendList);
+  console.log("❤️💛💚🤍❤️ currentUserId", currentUserId);
 
   // useEffect(() => {
   //   const fetchUser = async () => {
@@ -232,19 +232,20 @@ const BookInfos = ({
                       getStatusColor(bookConnectedUserStatus)
                     )}
                   >
-                    {bookConnectedUserStatus === BookStatus.READ && (
+                    {bookConnectedUserStatus === BookStatusValues.READ && (
                       <div className="flex flex-col items-center p-1 text-xs">
                         J'ai lu
                         <Check />
                       </div>
                     )}
-                    {bookConnectedUserStatus === BookStatus.IN_PROGRESS && (
+                    {bookConnectedUserStatus ===
+                      BookStatusValues.IN_PROGRESS && (
                       <div className="flex flex-col items-center p-1 text-xs">
                         Je lis...
                         <Ellipsis />
                       </div>
                     )}
-                    {bookConnectedUserStatus === BookStatus.TO_READ && (
+                    {bookConnectedUserStatus === BookStatusValues.TO_READ && (
                       <div className="flex flex-col items-center p-1 text-xs">
                         A lire !
                         <Smile />

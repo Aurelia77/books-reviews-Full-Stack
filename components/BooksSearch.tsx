@@ -14,7 +14,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import Title from "./Title";
 import { Input } from "./ui/input";
-import { BookStatus } from "@prisma/client";
+import { BookStatusType } from "@/lib/types";
+import { BookStatusValues } from "@/lib/constants";
 
 type BooksSearchProps = {
   bdAndApiBooks: BookType[];
@@ -76,7 +77,7 @@ const BooksSearch = (props: { query: BooksSearchQueryType }) => {
   // const [inApi, setInApi] = useState(true);
 
   const [sortState, setSortState] = useState<any>({
-    [BookStatus.READ]: { criteria: "title", order: "asc" },
+    [BookStatusValues.READ]: { criteria: "title", order: "asc" },
   });
 
   // DEBUT============================FAIRE HOOK PERSO !!!

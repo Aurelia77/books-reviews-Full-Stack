@@ -2,18 +2,19 @@
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // import { getDocsByQueryFirebase } from "@/firebase/firestore";
+import { BookStatusValues } from "@/lib/constants";
 import {
   AppUserType,
+  BookStatusType,
   MyInfoBookPlusTitleAndNote,
   UserTypePlusBooksTitleAndNote,
 } from "@/lib/types";
 import { cn, getStatusColor } from "@/lib/utils";
-import { BookStatus } from "@prisma/client";
 import { BookOpenCheck, Ellipsis, Smile } from "lucide-react";
 import { useEffect, useState } from "react";
 import BooksTabContent from "./BooksTabContent";
 
-const DEFAULT_TAB = BookStatus.READ;
+const DEFAULT_TAB = BookStatusValues.READ;
 
 type AllBooksListsProps = {
   displayedAppUser: AppUserType;
@@ -21,7 +22,7 @@ type AllBooksListsProps = {
 
 const AllBooksLists = ({ displayedAppUser }: AllBooksListsProps) => {
   //
-  const [activeTab, setActiveTab] = useState<BookStatus>(DEFAULT_TAB);
+  const [activeTab, setActiveTab] = useState<BookStatusType>(DEFAULT_TAB);
 
   //console.log("💛💙💚❤️ activeTab", activeTab);
 
@@ -204,7 +205,7 @@ const AllBooksLists = ({ displayedAppUser }: AllBooksListsProps) => {
           "mb-16 mt-4 flex flex-col gap-4 md:rounded-lg",
           getStatusColor(activeTab)
         )}
-        onValueChange={(value) => setActiveTab(value as BookStatus)}
+        onValueChange={(value) => setActiveTab(value as BookStatusType)}
       >
         {/* className={cn(
                                 "absolute bottom-10 right-2 rounded-full bg-primary/50 p-1 shadow-sm shadow-foreground",
@@ -222,33 +223,39 @@ const AllBooksLists = ({ displayedAppUser }: AllBooksListsProps) => {
         //   activeTab === BookStatus.TO_READ && "bg-pink-500/40"
         // )}
         >
-          <TabsTrigger value={BookStatus.READ} className="w-full flex gap-2">
+          <TabsTrigger
+            value={BookStatusValues.READ}
+            className="w-full flex gap-2"
+          >
             Lus
             <BookOpenCheck
               className={cn(
                 "rounded-full p-1 shadow-sm shadow-foreground",
-                getStatusColor(BookStatus.READ)
+                getStatusColor(BookStatusValues.READ)
               )}
             />
           </TabsTrigger>
           <TabsTrigger
-            value={BookStatus.IN_PROGRESS}
+            value={BookStatusValues.IN_PROGRESS}
             className="w-full flex gap-2"
           >
             En cours
             <Ellipsis
               className={cn(
                 "rounded-full p-1 shadow-sm shadow-foreground",
-                getStatusColor(BookStatus.IN_PROGRESS)
+                getStatusColor(BookStatusValues.IN_PROGRESS)
               )}
             />
           </TabsTrigger>
-          <TabsTrigger value={BookStatus.TO_READ} className="w-full flex gap-2">
+          <TabsTrigger
+            value={BookStatusValues.TO_READ}
+            className="w-full flex gap-2"
+          >
             À lire
             <Smile
               className={cn(
                 "rounded-full p-1 shadow-sm shadow-foreground",
-                getStatusColor(BookStatus.TO_READ)
+                getStatusColor(BookStatusValues.TO_READ)
               )}
             />
           </TabsTrigger>
@@ -266,7 +273,7 @@ const AllBooksLists = ({ displayedAppUser }: AllBooksListsProps) => {
           withDateOption={true}
         /> */}
         <BooksTabContent
-          value={BookStatus.READ}
+          value={BookStatusValues.READ}
           activeTab={activeTab}
           // sortState={sortState}
           // setSortState={setSortState}
@@ -274,7 +281,7 @@ const AllBooksLists = ({ displayedAppUser }: AllBooksListsProps) => {
           displayedAppUserId={displayedAppUser.id}
         />
         <BooksTabContent
-          value={BookStatus.IN_PROGRESS}
+          value={BookStatusValues.IN_PROGRESS}
           activeTab={activeTab}
           // sortState={sortState}
           // setSortState={setSortState}
@@ -282,7 +289,7 @@ const AllBooksLists = ({ displayedAppUser }: AllBooksListsProps) => {
           displayedAppUserId={displayedAppUser.id}
         />
         <BooksTabContent
-          value={BookStatus.TO_READ}
+          value={BookStatusValues.TO_READ}
           activeTab={activeTab}
           // sortState={sortState}
           // setSortState={setSortState}

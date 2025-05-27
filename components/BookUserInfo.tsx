@@ -1,8 +1,7 @@
 "use client";
 
 import { MONTHS } from "@/lib/constants";
-import { UserInfoBookType } from "@/lib/types";
-import { BookStatus } from "@prisma/client";
+import { BookStatusType, UserInfoBookType } from "@/lib/types";
 import { useEffect, useState } from "react";
 import StarRating from "./StarRating";
 
@@ -10,7 +9,7 @@ type BookUserInfoProps = {
   // userId: string | undefined;
   currentUserId: string | undefined;
   bookId: string;
-  bookStatus: BookStatus | "";
+  bookStatus: BookStatusType | "";
   userViewId: string | undefined;
   // friendBookStatus?: BookStatus | "";
   //currentUserId: string;
@@ -32,7 +31,7 @@ BookUserInfoProps) => {
 
   const [userBookInfos, setUserBookInfos] = useState<UserInfoBookType>();
 
-  // // console.log("💛💚🤍 userBookInfos", userBookInfos);
+  console.log("💛💚🤍 userBookInfos", userBookInfos);
   // console.log("💛💚❤️🤍 userBookInfos.bookId", userBookInfos?.bookId);
   // // console.log("💛💚❤️ userId", userId);
   // console.log("💛💚❤️ currentUserId", currentUserId);
@@ -79,8 +78,11 @@ BookUserInfoProps) => {
         try {
           const res = await fetch(`/api/appUsers/${userViewId}`);
           if (res.ok) {
-            const user = await res.json();
-            setUserName(user.userName);
+            const json = await res.json();
+
+            console.log("💛💙💚❤️🤍🤎json", json);
+            console.log("💛💙💚❤️🤍🤎json", json.data);
+            setUserName(json.data.userName);
           } else {
             setUserName(null);
           }
@@ -109,7 +111,7 @@ BookUserInfoProps) => {
         <div className="flex flex-col gap-3 rounded-sm bg-background/50 p-2 md:p-3 pr-6">
           <h2 className="font-semibold text-muted">
             {currentUserId !== userViewId
-              ? "Info et Avis de " + userName + "\u00A0:"
+              ? "Infos et Avis de " + userName + "\u00A0:"
               : "Mes Infos et Avis :"}
           </h2>
 

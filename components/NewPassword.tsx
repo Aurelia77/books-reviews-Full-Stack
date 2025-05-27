@@ -1,6 +1,5 @@
 "use client";
 
-import Title from "@/components/Title";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -78,7 +77,6 @@ const ResetPassword = () => {
       <button type="submit">Valider</button>
     </form> */}
 
-      <Title>Réinitialiser le mot de passe</Title>
       {/* {firebaseError && (
             <FeedbackMessage message={firebaseError} type="error" />
           )} */}

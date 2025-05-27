@@ -1,8 +1,13 @@
 "use client";
 
-import { BookType, BookTypePlusDate, SortStateType } from "@/lib/types";
+import { BookStatusValues } from "@/lib/constants";
+import {
+  BookStatusType,
+  BookType,
+  BookTypePlusDate,
+  SortStateType,
+} from "@/lib/types";
 import { sortBook } from "@/lib/utils";
-import { BookStatus } from "@prisma/client";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import BookInfos from "./BookInfos";
@@ -10,7 +15,7 @@ import { Button } from "./ui/button";
 
 type BooksSortControlsType =
   | {
-      displayBookStatus: BookStatus;
+      displayBookStatus: BookStatusType;
       // sortState: SortStateType;
       // setSortState: React.Dispatch<React.SetStateAction<SortStateType>>;
       books: BookType[];
@@ -19,7 +24,7 @@ type BooksSortControlsType =
       withDateOption?: boolean;
     }
   | {
-      displayBookStatus: BookStatus;
+      displayBookStatus: BookStatusType;
       //sortState: SortStateType;
       // setSortState: React.Dispatch<React.SetStateAction<SortStateType>>;
       books?: never;
@@ -73,7 +78,7 @@ const BooksWithSortControls = ({
   );
 
   const [booksStatuses, setBooksStatuses] = useState<
-    Record<string, BookStatus | null>
+    Record<string, BookStatusType | null>
   >({});
 
   console.log("💛💙💚❤️🤍🤎 booksStatuses", booksStatuses);
@@ -166,9 +171,12 @@ const BooksWithSortControls = ({
           }),
         });
 
-        const data = await response.json();
-        if (data.statuses) {
-          setBooksStatuses(data.statuses); // Mise à jour des statuts
+        const json = await response.json();
+
+        console.log("💛💙💚❤️🤍🤎 json", json.data);
+
+        if (json.data) {
+          setBooksStatuses(json.data); // Mise à jour des statuts
         }
       } catch (error) {
         console.error("Error fetching books statuses:", error);
@@ -232,7 +240,7 @@ const BooksWithSortControls = ({
               <ChevronDown />
             ))}
         </Button>
-        {displayBookStatus === BookStatus.READ && withDateOption && (
+        {displayBookStatus === BookStatusValues.READ && withDateOption && (
           <Button
             onClick={() => handleSort("date")}
             className={`flex w-1/4 gap-1 sm:gap-2 border border-foreground text-foreground ${

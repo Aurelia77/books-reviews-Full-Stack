@@ -22,6 +22,8 @@ export async function POST(req: Request) {
 
     // const { currentUserId, bookInfos, formData, previousNote } = body;
 
+    console.log("💛💙💚❤️🤍🤎 previousNote", previousNote);
+
     console.log("🤎 userId", currentUserId);
     console.log("💚 bookInfos", bookInfos);
     console.log("💚💙💚 formData", formData);

@@ -1,11 +1,11 @@
-import { BookStatus } from "@prisma/client";
-import BooksWithSortControls from "./BooksWithSortControls";
+import { BookStatusType } from "@/lib/types";
+import { BookStatusValues } from "@/lib/constants";import BooksWithSortControls from "./BooksWithSortControls";
 import FeedbackMessage from "./FeedbackMessage";
 import { TabsContent } from "./ui/tabs";
 
 type BooksTabContentProps = {
-  value: BookStatus | string;
-  activeTab: BookStatus;
+  value: BookStatusType | string;
+  activeTab: BookStatusType;
   // sortState: SortStateType;
   // setSortState: React.Dispatch<React.SetStateAction<SortStateType>>;
   displayedBookIds: string[];

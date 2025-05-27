@@ -217,7 +217,6 @@ const Book = async ({ params }: { params: Promise<{ id: string }> }) => {
                               />
                             </li>
                           );
-                          <p>{userWhoReadBookCommentsAndNotes.userNote} </p>;
                         }
                       )}
                     </ul>
