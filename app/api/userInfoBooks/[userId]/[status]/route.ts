@@ -39,24 +39,11 @@ export async function GET(
       },
     });
 
-    console.log(
-      "🤎🤍🤎🤍🤎🤍🤎 data",
-      JSON.stringify(
-        books.map((b) => b.bookId),
-        null,
-        2
-      )
-    );
-    console.log(
-      "🤎🤍🤎🤍🤎🤍data =",
-      books.map((b) => b.bookId)
-    );
-
     return NextResponse.json(
       {
         success: true,
         message: "Livres récupérés avec succès",
-        data: books.map((b) => b.bookId),
+        data: books.map((b: any) => b.bookId),
       },
       { status: 200 }
     );
