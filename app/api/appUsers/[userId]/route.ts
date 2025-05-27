@@ -1,11 +1,15 @@
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+
+export type AppUserParams = {
+  userId: string;
+};
 
 export async function GET(
-  req: Request,
-  { params }: { params: { userId: string } }
+  req: NextRequest,
+  context: { params: Promise<AppUserParams> }
 ) {
-  const { userId } = params;
+  const { userId } = await context.params;
 
   if (!userId) {
     return NextResponse.json(
