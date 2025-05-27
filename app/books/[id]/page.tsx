@@ -20,15 +20,16 @@ import {
 import UserReview from "@/components/UserReview";
 import { getUser } from "@/lib/auth-session";
 import {
+  BookStatusValues,
   DEFAULT_BOOK_IMAGE,
   GOOGLE_BOOKS_API_URL,
   NO_DESCRIPTION,
 } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
-import { BookType } from "@/lib/types";
+import { BookStatusType, BookType } from "@/lib/types";
 import { cleanDescription } from "@/lib/utils";
-import { BookStatus } from "@prisma/client";
 import { Quote } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 const addLineBreaks = (description: string) => {
@@ -54,7 +55,7 @@ const Book = async ({ params }: { params: Promise<{ id: string }> }) => {
   const usersInfoWhoReadBook = await prisma.userInfoBook.findMany({
     where: {
       bookId: id,
-      status: BookStatus.READ,
+      status: BookStatusValues.READ,
     },
     include: {
       // comments: true,
@@ -70,13 +71,15 @@ const Book = async ({ params }: { params: Promise<{ id: string }> }) => {
   });
   console.log("💚💚💚💙userCommentsAndNote", usersInfoWhoReadBook);
 
-  const usersWhoReadBookCommentsAndNotes = usersInfoWhoReadBook.map((item) => ({
-    userName: item.user.userName,
-    imgURL: item.user.imgURL,
-    userId: item.user.id,
-    userComments: item.comments ?? "",
-    userNote: item.note ?? undefined,
-  }));
+  const usersWhoReadBookCommentsAndNotes = usersInfoWhoReadBook.map(
+    (item: any) => ({
+      userName: item.user.userName,
+      imgURL: item.user.imgURL,
+      userId: item.user.id,
+      userComments: item.comments ?? "",
+      userNote: item.note ?? undefined,
+    })
+  );
 
   console.log(
     "💛💙💚💚💚 usersWhoReadBookCommentsAndNotes",
@@ -88,7 +91,7 @@ const Book = async ({ params }: { params: Promise<{ id: string }> }) => {
     where: { id: id },
   });
 
-  let userBookStatus: BookStatus | null = null;
+  let userBookStatus: BookStatusType | null = null;
 
   console.log("💛 userBookStatus", userBookStatus);
 
@@ -117,7 +120,7 @@ const Book = async ({ params }: { params: Promise<{ id: string }> }) => {
 
     book = await fetch(`${GOOGLE_BOOKS_API_URL}/${id}`)
       .then((res) => res.json())
-      .then((data) => {
+      .then((data: any) => {
         const bookFromAPI: BookType = {
           id: data.id,
           title: data.volumeInfo.title,
@@ -158,11 +161,13 @@ const Book = async ({ params }: { params: Promise<{ id: string }> }) => {
         {book.language}
       </CardDescription>
       <div className="flex items-start gap-5 p-5 py-10 shadow-xl shadow-primary/30">
-        <img
+        <Image
           src={book.imageLink || DEFAULT_BOOK_IMAGE}
           //onError={(e) => (e.currentTarget.src = DEFAULT_BOOK_IMAGE)}
           className="w-32 sm:w-40 md:w-48 rounded-sm border border-border  object-contain shadow-md shadow-foreground/70"
           alt={`Image de couverture du livre ${book?.title}`}
+          width={192}
+          height={288}
         />
         <CardHeader className="flex flex-col justify-between overflow-hidden gap-4">
           <CardTitle>{book?.title}</CardTitle>
@@ -203,7 +208,7 @@ const Book = async ({ params }: { params: Promise<{ id: string }> }) => {
                     </DialogHeader>
                     <ul>
                       {usersWhoReadBookCommentsAndNotes.map(
-                        (userWhoReadBookCommentsAndNotes) => {
+                        (userWhoReadBookCommentsAndNotes: any) => {
                           return (
                             <li
                               key={userWhoReadBookCommentsAndNotes.userId}

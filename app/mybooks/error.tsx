@@ -2,13 +2,7 @@
 
 import FeedbackMessage from "@/components/FeedbackMessage";
 
-const MyBooksError = ({
-  error,
-  reset,
-}: {
-  error: Error;
-  reset: () => void;
-}) => {
+const MyBooksError = ({ error }: { error: Error }) => {
   return (
     <FeedbackMessage
       message={`Une erreur est survenue : ${error.message}`}

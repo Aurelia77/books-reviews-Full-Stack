@@ -3,12 +3,7 @@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // import { getDocsByQueryFirebase } from "@/firebase/firestore";
 import { BookStatusValues } from "@/lib/constants";
-import {
-  AppUserType,
-  BookStatusType,
-  MyInfoBookPlusTitleAndNote,
-  UserTypePlusBooksTitleAndNote,
-} from "@/lib/types";
+import { AppUserType, BookStatusType } from "@/lib/types";
 import { cn, getStatusColor } from "@/lib/utils";
 import { BookOpenCheck, Ellipsis, Smile } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -26,11 +21,11 @@ const AllBooksLists = ({ displayedAppUser }: AllBooksListsProps) => {
 
   //console.log("💛💙💚❤️ activeTab", activeTab);
 
-  const [userInfoPlusTitleAndNote, setUserInfoPlusTitleAndNote] =
-    useState<UserTypePlusBooksTitleAndNote>();
-  const [displayedBooksUserInfo, setDisplayedBooksUserInfo] = useState<
-    MyInfoBookPlusTitleAndNote[]
-  >([]);
+  // const [userInfoPlusTitleAndNote, setUserInfoPlusTitleAndNote] =
+  //   useState<UserTypePlusBooksTitleAndNote>();
+  // const [displayedBooksUserInfo, setDisplayedBooksUserInfo] = useState<
+  //   MyInfoBookPlusTitleAndNote[]
+  // >([]);
   const [displayedBookIds, setDisplayedBookIds] = useState<string[]>([]);
 
   console.log("zzz123 displayedBookIds", displayedBookIds);
@@ -140,50 +135,50 @@ const AllBooksLists = ({ displayedAppUser }: AllBooksListsProps) => {
   //   // });
   // };
 
-  useEffect(() => {
-    console.log("ICI !!! USEEFFECT 11111");
+  // useEffect(() => {
+  //   console.log("ICI !!! USEEFFECT 11111");
 
-    let booksReadInfoPlusTitleAndNote: MyInfoBookPlusTitleAndNote[] = [];
-    let booksInProgressInfoPlusTitleAndNote: MyInfoBookPlusTitleAndNote[] = [];
-    let booksToReadInfoPlusTitleAndNote: MyInfoBookPlusTitleAndNote[] = [];
+  //   let booksReadInfoPlusTitleAndNote: MyInfoBookPlusTitleAndNote[] = [];
+  //   let booksInProgressInfoPlusTitleAndNote: MyInfoBookPlusTitleAndNote[] = [];
+  //   let booksToReadInfoPlusTitleAndNote: MyInfoBookPlusTitleAndNote[] = [];
 
-    // addTitleAndNoteToBooksInfo(userInfo.booksRead)
-    //   .then((resultBooksRead) => {
-    //     console.log("www booksInfoPlusTitle", resultBooksRead);
-    //     booksReadInfoPlusTitleAndNote = resultBooksRead;
-    //     return addTitleAndNoteToBooksInfo(userInfo.booksInProgress); // Retourner la promesse suivante
-    //   })
-    //   .then((resultBooksInProgress) => {
-    //     console.log("www booksInProgressInfoPlusTitle", resultBooksInProgress);
-    //     booksInProgressInfoPlusTitleAndNote = resultBooksInProgress;
-    //     return addTitleAndNoteToBooksInfo(userInfo.booksToRead); // Retourner la promesse suivante
-    //   })
-    //   .then((resultBooksToRead) => {
-    //     console.log("www booksToReadInfoPlusTitle", resultBooksToRead);
-    //     booksToReadInfoPlusTitleAndNote = resultBooksToRead;
+  //   // addTitleAndNoteToBooksInfo(userInfo.booksRead)
+  //   //   .then((resultBooksRead) => {
+  //   //     console.log("www booksInfoPlusTitle", resultBooksRead);
+  //   //     booksReadInfoPlusTitleAndNote = resultBooksRead;
+  //   //     return addTitleAndNoteToBooksInfo(userInfo.booksInProgress); // Retourner la promesse suivante
+  //   //   })
+  //   //   .then((resultBooksInProgress) => {
+  //   //     console.log("www booksInProgressInfoPlusTitle", resultBooksInProgress);
+  //   //     booksInProgressInfoPlusTitleAndNote = resultBooksInProgress;
+  //   //     return addTitleAndNoteToBooksInfo(userInfo.booksToRead); // Retourner la promesse suivante
+  //   //   })
+  //   //   .then((resultBooksToRead) => {
+  //   //     console.log("www booksToReadInfoPlusTitle", resultBooksToRead);
+  //   //     booksToReadInfoPlusTitleAndNote = resultBooksToRead;
 
-    //     // Mettre à jour l'état une fois que toutes les promesses sont résolues
-    //     setUserInfoPlusTitleAndNote({
-    //       ...userInfo,
-    //       booksRead: booksReadInfoPlusTitleAndNote,
-    //       booksInProgress: booksInProgressInfoPlusTitleAndNote,
-    //       booksToRead: booksToReadInfoPlusTitleAndNote,
-    //     });
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error fetching books info:", error);
-    //   });
-  }, [displayedAppUser]);
+  //   //     // Mettre à jour l'état une fois que toutes les promesses sont résolues
+  //   //     setUserInfoPlusTitleAndNote({
+  //   //       ...userInfo,
+  //   //       booksRead: booksReadInfoPlusTitleAndNote,
+  //   //       booksInProgress: booksInProgressInfoPlusTitleAndNote,
+  //   //       booksToRead: booksToReadInfoPlusTitleAndNote,
+  //   //     });
+  //   //   })
+  //   //   .catch((error) => {
+  //   //     console.error("Error fetching books info:", error);
+  //   //   });
+  // }, [displayedAppUser]);
 
-  useEffect(() => {
-    console.log("ICI !!! USEEFFECT 22222");
+  // useEffect(() => {
+  //   console.log("ICI !!! USEEFFECT 22222");
 
-    //  Expected an assignment or function call and instead saw an expression !!!!!!!!!!!!!!!!
-    //@typescript-eslint/no-unused-expressions
-    if (userInfoPlusTitleAndNote) {
-      //setDisplayedBooksUserInfo(userInfoPlusTitleAndNote[activeTab]);
-    }
-  }, [userInfoPlusTitleAndNote, activeTab]);
+  //   //  Expected an assignment or function call and instead saw an expression !!!!!!!!!!!!!!!!
+  //   //@typescript-eslint/no-unused-expressions
+  //   if (userInfoPlusTitleAndNote) {
+  //     //setDisplayedBooksUserInfo(userInfoPlusTitleAndNote[activeTab]);
+  //   }
+  // }, [userInfoPlusTitleAndNote, activeTab]);
   // }, [userInfoPlusTitle[activeTab], activeTab]);
 
   // UTILS ?????????????????????

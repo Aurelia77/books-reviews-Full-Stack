@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const booksWithDate: BookTypePlusDate[] = books.map((book) => {
+    const booksWithDate: BookTypePlusDate[] = books.map((book: any) => {
       const info = book.UserInfoBook?.[0];
 
       console.log("🤎🤎🤎🤎", {

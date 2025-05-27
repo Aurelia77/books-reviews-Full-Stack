@@ -1,20 +1,20 @@
 import { prisma } from "@/lib/prisma";
-import { BookStatus } from "@prisma/client";
+import { BookStatusType } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 
 export type DeleteBookParams = {
   userId: string;
   bookId: string;
-  bookStatus: BookStatus;
+  bookStatus: BookStatusType;
 };
 
 export async function DELETE(
   req: NextRequest,
-  context: { params: DeleteBookParams }
+  context: { params: Promise<DeleteBookParams> }
 ) {
   console.log("xxx-💙❤️🤎 userId, bookId, bookStatus", context.params);
 
-  const { userId, bookId, bookStatus } = context.params;
+  const { userId, bookId, bookStatus } = await context.params;
 
   console.log("1-💙❤️🤎 userId, bookId, status", userId, bookId, bookStatus);
 

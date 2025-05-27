@@ -1,7 +1,7 @@
 import UsersBooksRead from "@/components/UsersBooksRead";
 import { getUser } from "@/lib/auth-session";
+import { BookStatusValues } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
-import { BookStatus } from "@prisma/client";
 
 const UsersBooksReadPage = async () => {
   // const delay = (ms: number) =>
@@ -26,14 +26,14 @@ const UsersBooksReadPage = async () => {
     await prisma.userInfoBook
       .findMany({
         where: {
-          status: BookStatus.READ,
+          status: BookStatusValues.READ,
         },
         select: {
           bookId: true,
           userId: true,
         },
       })
-      .then((data) =>
+      .then((data: { userId: string; bookId: string }[]) =>
         data.reduce((acc, curr) => {
           if (!acc[curr.bookId]) {
             acc[curr.bookId] = [];

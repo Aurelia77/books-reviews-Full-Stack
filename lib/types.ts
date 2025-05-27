@@ -162,6 +162,7 @@ export type BookTypePlusUsersWhoRead = BookType & {
 //   order: "asc" | "desc";
 // };
 export type SortStateType = {
+  // eslint-disable-next-line no-unused-vars
   [key in BookStatusType]: {
     criteria: "title" | "date" | "note" | "reviews";
     order: "asc" | "desc";

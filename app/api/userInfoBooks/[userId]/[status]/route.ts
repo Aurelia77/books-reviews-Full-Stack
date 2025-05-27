@@ -1,10 +1,10 @@
 import { prisma } from "@/lib/prisma";
-import { BookStatus } from "@prisma/client";
+import { BookStatusType } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 
 export type UserStatusParams = {
   userId: string;
-  status: BookStatus;
+  status: BookStatusType;
 };
 
 export async function GET(
@@ -32,31 +32,18 @@ export async function GET(
     const books = await prisma.userInfoBook.findMany({
       where: {
         userId: userId,
-        status: status as BookStatus,
+        status: status as BookStatusType,
       },
       select: {
         bookId: true,
       },
     });
 
-    console.log(
-      "🤎🤍🤎🤍🤎🤍🤎 data",
-      JSON.stringify(
-        books.map((b) => b.bookId),
-        null,
-        2
-      )
-    );
-    console.log(
-      "🤎🤍🤎🤍🤎🤍data =",
-      books.map((b) => b.bookId)
-    );
-
     return NextResponse.json(
       {
         success: true,
         message: "Livres récupérés avec succès",
-        data: books.map((b) => b.bookId),
+        data: books.map((b: any) => b.bookId),
       },
       { status: 200 }
     );

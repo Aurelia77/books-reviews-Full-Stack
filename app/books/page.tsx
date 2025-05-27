@@ -1,11 +1,9 @@
 import BooksSearch from "@/components/BooksSearch";
 import BooksWithSortControls from "@/components/BooksWithSortControls";
 import FeedbackMessage from "@/components/FeedbackMessage";
-import { getUser } from "@/lib/auth-session";
-import { GOOGLE_BOOKS_API_URL } from "@/lib/constants";
+import { BookStatusValues, GOOGLE_BOOKS_API_URL } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
 import { BookAPIType, BooksSearchQueryType, BookType } from "@/lib/types";
-import { BookStatus } from "@prisma/client";
 
 const MAX_RESULTS = 4; // jusqu'à 40
 
@@ -14,8 +12,8 @@ const shuffle2ArraysPreserveOrder = <T, U>(
   array2: U[]
 ): (T | U)[] => {
   const combinedArray = [
-    ...array1.map((item) => ({ item, from: "array1" })),
-    ...array2.map((item) => ({ item, from: "array2" })),
+    ...array1.map((item: any) => ({ item, from: "array1" })),
+    ...array2.map((item: any) => ({ item, from: "array2" })),
   ];
 
   // Mélanger le tableau combiné
@@ -51,7 +49,6 @@ const SearchBooksPage = async (props: {
   //const books = await prisma.book.findMany(); // Récupération des données côté serveur
 
   const searchParams = await props.searchParams;
-  const currentUser = await getUser();
 
   // const [sortState, setSortState] = useState<any>({
   //   [BookStatus]: { criteria: "title", order: "asc" },
@@ -158,14 +155,14 @@ const SearchBooksPage = async (props: {
 
   const filteredApiBooks: BookType[] = await fetch(booksApiUrl)
     .then((res) => res.json())
-    .then((data) => {
+    .then((data: any) => {
       if (!data.items) {
         return [];
         //throw new Error("No items found in the response");
       }
       return data.items;
     })
-    .then((apiBooks) => {
+    .then((apiBooks: any) => {
       // console.log("💛", apiBooks);
       // // on récupère les id des livres de la base de données pour ne pas ajouter les livres de l'API qui ont les mêmes id
       // let dbBooksIds: string[] = [];
@@ -301,7 +298,7 @@ const SearchBooksPage = async (props: {
       )}
       {filteredDbAndApiBooks?.length > 0 ? (
         <BooksWithSortControls
-          displayBookStatus={BookStatus.READ}
+          displayBookStatus={BookStatusValues.READ}
           //displayedAppUserId={currentUser?.id}
           books={filteredDbAndApiBooks}
           // sortState={sortState}

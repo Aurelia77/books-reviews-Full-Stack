@@ -13,7 +13,7 @@ export const auth = betterAuth({
   appName: "book-reviews-fullstack",
   emailAndPassword: {
     enabled: true,
-    sendResetPassword: async ({ user, url, token }, request) => {
+    sendResetPassword: async ({ user, url }) => {
       try {
         await resend.emails.send({
           to: user.email,

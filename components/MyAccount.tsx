@@ -26,6 +26,7 @@ import UsersListView from "@/components/UsersListView";
 import { AccountFormType, AppUserType } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronsRight, Sparkles } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -234,7 +235,7 @@ const MyAccount = ({
           />
           <div className="m-2 flex items-center justify-around gap-3">
             {form.watch("imgURL") ? (
-              <img
+              <Image
                 src={form.watch("imgURL") ?? ""}
                 alt="Image sélectionnée"
                 width="150"

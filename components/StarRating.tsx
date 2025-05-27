@@ -1,9 +1,10 @@
 "use client";
 
-import { Star, StarHalf } from "lucide-react"; // Ajout de StarHalf
+import { Star, StarHalf } from "lucide-react"; 
 
 type StarRatingProps = {
   value: number;
+  // eslint-disable-next-line no-unused-vars
   onChange?: (value: string) => void;
   forReadBook?: boolean;
 };

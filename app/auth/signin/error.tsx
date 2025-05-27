@@ -2,7 +2,7 @@
 
 import FeedbackMessage from "@/components/FeedbackMessage";
 
-const BooksError = ({ error, reset }: { error: Error; reset: () => void }) => {
+const BooksError = ({ error }: { error: Error }) => {
   return (
     <div>
       <FeedbackMessage

@@ -33,14 +33,7 @@ const User = async ({ params }: { params: Promise<{ id: string }> }) => {
     include: {
       book: true, // inclut les infos du livre
     },
-  });
-
-  console.log("💛💙💚❤️🤍🤎livres", livres);
-  console.log("💛💙💚❤️🤍🤎livres", livres[0]);
-  console.log(
-    "💛💙💚❤️🤍🤎livres",
-    livres.map((l) => l.book)
-  );
+  }); 
 
   return (
     displayedAppUser && (
