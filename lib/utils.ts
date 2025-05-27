@@ -1,5 +1,6 @@
-import { BookStatus } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
+import { BookStatusType } from "./types";
+import { BookStatusValues } from "./constants";
 import { twMerge } from "tailwind-merge";
 import { BookType, BookTypePlusDate } from "./types";
 
@@ -25,7 +26,7 @@ export const sortBook = (
   books: (BookType | BookTypePlusDate)[],
   criteria: string,
   order: string,
-  sortState: { [key in BookStatus]: { criteria: string; order: string } }
+  sortState: { [key in BookStatusType]: { criteria: string; order: string } }
 ): (BookType | BookTypePlusDate)[] => {
   if (books.length <= 1) {
     return books;
@@ -78,11 +79,11 @@ export const sortBook = (
   return sortedBooks;
 };
 
-export const getStatusColor = (status: BookStatus): string =>
-  status === BookStatus.READ
+export const getStatusColor = (status: BookStatusType): string =>
+  status === BookStatusValues.READ
     ? "bg-green-400/30"
-    : status === BookStatus.IN_PROGRESS
+    : status === BookStatusValues.IN_PROGRESS
     ? "bg-blue-400/30"
-    : status === BookStatus.TO_READ
+    : status === BookStatusValues.TO_READ
     ? "bg-pink-400/30"
     : "";
