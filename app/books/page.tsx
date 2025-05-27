@@ -13,8 +13,8 @@ const shuffle2ArraysPreserveOrder = <T, U>(
   array2: U[]
 ): (T | U)[] => {
   const combinedArray = [
-    ...array1.map((item) => ({ item, from: "array1" })),
-    ...array2.map((item) => ({ item, from: "array2" })),
+    ...array1.map((item: any) => ({ item, from: "array1" })),
+    ...array2.map((item: any) => ({ item, from: "array2" })),
   ];
 
   // Mélanger le tableau combiné

@@ -92,7 +92,7 @@ const FriendsWhoReadBook = ({
         ) : (
           <p className="font-semibold">Ami qui a lu ce livre :</p>
         )}
-        {friendsWhoReadBook.map((friend) => (
+        {friendsWhoReadBook.map((friend: { id: string; userName: string }) => (
           <Link
             key={friend.id}
             href={`/users/${friend.id}`}

@@ -206,7 +206,7 @@ const Book = async ({ params }: { params: Promise<{ id: string }> }) => {
                     </DialogHeader>
                     <ul>
                       {usersWhoReadBookCommentsAndNotes.map(
-                        (userWhoReadBookCommentsAndNotes) => {
+                        (userWhoReadBookCommentsAndNotes: any) => {
                           return (
                             <li
                               key={userWhoReadBookCommentsAndNotes.userId}
