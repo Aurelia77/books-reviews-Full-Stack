@@ -35,7 +35,10 @@ export async function POST(req: Request) {
 
     // Transformez les résultats en un objet clé-valeur
     const statuses: Record<string, string | null> = userBooks.reduce(
-      (acc: Record<string, string | null>, userBook) => {
+      (
+        acc: Record<string, string | null>,
+        userBook: { bookId: string; status: string | null }
+      ) => {
         acc[userBook.bookId] = userBook.status;
         return acc;
       },
