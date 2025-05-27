@@ -71,13 +71,15 @@ const Book = async ({ params }: { params: Promise<{ id: string }> }) => {
   });
   console.log("💚💚💚💙userCommentsAndNote", usersInfoWhoReadBook);
 
-  const usersWhoReadBookCommentsAndNotes = usersInfoWhoReadBook.map((item) => ({
-    userName: item.user.userName,
-    imgURL: item.user.imgURL,
-    userId: item.user.id,
-    userComments: item.comments ?? "",
-    userNote: item.note ?? undefined,
-  }));
+  const usersWhoReadBookCommentsAndNotes = usersInfoWhoReadBook.map(
+    (item: any) => ({
+      userName: item.user.userName,
+      imgURL: item.user.imgURL,
+      userId: item.user.id,
+      userComments: item.comments ?? "",
+      userNote: item.note ?? undefined,
+    })
+  );
 
   console.log(
     "💛💙💚💚💚 usersWhoReadBookCommentsAndNotes",
