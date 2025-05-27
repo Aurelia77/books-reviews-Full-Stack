@@ -92,12 +92,12 @@ const Book = async ({ params }: { params: Promise<{ id: string }> }) => {
 
   console.log("💛 userBookStatus", userBookStatus);
 
-  let isBookInDb = false;
+  //let isBookInDb = false;
 
   if (book && currentUser) {
     // 2-Si oui on recherche le statut du livre pour l'utilisateur connecté
 
-    isBookInDb = true;
+    //isBookInDb = true;
 
     const userInfo = await prisma.userInfoBook.findUnique({
       where: {
@@ -113,7 +113,7 @@ const Book = async ({ params }: { params: Promise<{ id: string }> }) => {
 
     // 3-Si non, on va chercher le livre dans l'API Google Books
   } else {
-    isBookInDb = false;
+    //isBookInDb = false;
 
     book = await fetch(`${GOOGLE_BOOKS_API_URL}/${id}`)
       .then((res) => res.json())
@@ -145,11 +145,11 @@ const Book = async ({ params }: { params: Promise<{ id: string }> }) => {
       });
   }
 
-  const handleUpdate = () => {
-    //   console.log("handleUpdate BOOKDETAIL");
-    // To rerender this page when the user updates the component AddOrUpdateBookOrBookStatus
-    //mutate(bookId);
-  };
+  // const handleUpdate = () => {
+  //   //   console.log("handleUpdate BOOKDETAIL");
+  //   // To rerender this page when the user updates the component AddOrUpdateBookOrBookStatus
+  //   //mutate(bookId);
+  // };
 
   return book ? (
     <Card className="relative m-4">

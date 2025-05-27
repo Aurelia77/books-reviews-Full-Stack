@@ -60,7 +60,7 @@ export const sortBook = (
       case "date":
         const aYear = "year" in a && typeof a.year === "number" ? a.year : 0;
         const bYear = "year" in b && typeof b.year === "number" ? b.year : 0;
-        let yearComparison = aYear - bYear;
+        const yearComparison = aYear - bYear;
         if (yearComparison !== 0) {
           comparison = yearComparison;
         } else {
