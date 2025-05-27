@@ -20,12 +20,12 @@ import {
 import { BookStatusType, BookType } from "@/lib/types";
 import { cleanDescription, cn, getStatusColor } from "@/lib/utils";
 import { Check, Ellipsis, Quote, Smile } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
 import AverageBookRating from "./AverageBookRating";
 import BookUserInfo from "./BookUserInfo";
 import FriendsWhoReadBook from "./FriendsWhoReadBook";
-import Image from "next/image";
 //import useSWR from "swr";
 // import AverageBookRating from "./AverageBookRating";
 // import BookUserInfo from "./BookUserInfo";
@@ -202,6 +202,8 @@ const BookInfos = ({
                   //onError={(e) => (e.currentTarget.src = DEFAULT_BOOK_IMAGE)}
                   className="w-32 rounded-sm border border-border object-contain shadow-md shadow-foreground/70"
                   alt={`Image de couverture du livre ${book?.title}`}
+                  width={192}
+                  height={288}
                 />
                 <CardHeader className="gap-3 overflow-hidden">
                   <CardTitle className="line-clamp-4">{book.title}</CardTitle>
