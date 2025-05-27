@@ -220,7 +220,6 @@ const SearchBooksPage = async (props: {
       // console.log("9+++++-uniqueApiBooks", uniqueApiBooks);
       // return uniqueApiBooks;
 
-      //console.log("💛1");
       return (
         apiBooks
           // on ne veut pas les livres qui sont déjà dans la BDD
