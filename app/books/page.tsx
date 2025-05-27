@@ -1,10 +1,9 @@
 import BooksSearch from "@/components/BooksSearch";
 import BooksWithSortControls from "@/components/BooksWithSortControls";
 import FeedbackMessage from "@/components/FeedbackMessage";
-import { GOOGLE_BOOKS_API_URL } from "@/lib/constants";
+import { BookStatusValues, GOOGLE_BOOKS_API_URL } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
 import { BookAPIType, BooksSearchQueryType, BookType } from "@/lib/types";
-import { BookStatus } from "@prisma/client";
 
 const MAX_RESULTS = 4; // jusqu'à 40
 
@@ -299,7 +298,7 @@ const SearchBooksPage = async (props: {
       )}
       {filteredDbAndApiBooks?.length > 0 ? (
         <BooksWithSortControls
-          displayBookStatus={BookStatus.READ}
+          displayBookStatus={BookStatusValues.READ}
           //displayedAppUserId={currentUser?.id}
           books={filteredDbAndApiBooks}
           // sortState={sortState}
