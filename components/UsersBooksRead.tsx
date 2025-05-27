@@ -4,7 +4,7 @@ import CustomLinkButton from "@/components/CustomLinkButton";
 import FeedbackMessage from "@/components/FeedbackMessage";
 import { Switch } from "@/components/ui/switch";
 import { BookStatusValues } from "@/lib/constants";
-import { BookTypePlusUsersWhoRead } from "@/lib/types";
+// import { BookTypePlusUsersWhoRead } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import BooksWithSortControls from "./BooksWithSortControls";
@@ -25,23 +25,24 @@ const UsersBooksRead = ({
   console.log("💛💙💚❤️🤍🤎 usersBooksReadIds", usersBooksReadIds);
 
   const [isSearchOnFriendsBooks, setIsSearchOnFriendsBooks] = useState(false);
-  const [booksWithAllInfos, setBooksWithAllInfos] = useState<
-    BookTypePlusUsersWhoRead[]
-  >([]);
-  const [displayedSortedBooks, setDisplayedSortedBooks] = useState<
-    BookTypePlusUsersWhoRead[]
-  >([]);
+  // const [booksWithAllInfos, setBooksWithAllInfos] = useState<
+  //   BookTypePlusUsersWhoRead[]
+  // >([]);
+  // const [displayedSortedBooks, setDisplayedSortedBooks] = useState<
+  //   BookTypePlusUsersWhoRead[]
+  // >([]);
 
   // const [sortState, setSortState] = useState<{ [key in BookStatusEnum]: SortStateType }>({
-  const [sortState, setSortState] = useState<any>({
-    [BookStatusValues.READ]: { criteria: "title", order: "desc" },
-  });
+  // const [sortState, setSortState] = useState<any>({
+  //   [BookStatusValues.READ]: { criteria: "title", order: "desc" },
+  // });
 
-  console.log("*-*- sortState", sortState);
+  // console.log("*-*- sortState", sortState);
 
   useEffect(() => {
     const bookIds = Object.entries(booksAndUsersWhoReadGroupedById)
-      .filter(([_, userIds]) =>
+      .filter(([, userIds]) =>
+        // .filter(([_, userIds]) =>
         !isSearchOnFriendsBooks
           ? true
           : userIds.some((id) => friendsOfCurrentAppUser?.includes(id))

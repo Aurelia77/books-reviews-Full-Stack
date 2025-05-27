@@ -34,8 +34,8 @@ import { cn, getStatusColor } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, Ellipsis, Smile, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { memo, useEffect, useState } from "react";
-import { Controller, SubmitHandler, useForm, useWatch } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import BookUserInfo from "./BookUserInfo";
@@ -51,21 +51,21 @@ import {
 } from "./ui/select";
 import { Textarea } from "./ui/textarea";
 
-const MemoizedTextarea = memo(function MemoizedTextarea({
-  control,
-}: {
-  control: any;
-}) {
-  return (
-    <Controller
-      name="userComments"
-      control={control}
-      render={({ field }) => (
-        <Textarea placeholder="Mes commentaires" {...field} />
-      )}
-    />
-  );
-});
+// const MemoizedTextarea = memo(function MemoizedTextarea({
+//   control,
+// }: {
+//   control: any;
+// }) {
+//   return (
+//     <Controller
+//       name="userComments"
+//       control={control}
+//       render={({ field }) => (
+//         <Textarea placeholder="Mes commentaires" {...field} />
+//       )}
+//     />
+//   );
+// });
 // Pour éviter les re-renders inutiles (sinon très long à chaque ajout de caractère)
 // const MemoizedTextarea = memo(({ field }: { field: any }) => (
 //   <Textarea placeholder="Mes commentaires" {...field} />
@@ -155,9 +155,9 @@ AddOrUpdateBookProps) => {
     form.getValues("userComments") || ""
   );
 
-  const year = useWatch({ control: form.control, name: "year" });
-  const month = useWatch({ control: form.control, name: "month" });
-  const userNote = useWatch({ control: form.control, name: "userNote" });
+  // const year = useWatch({ control: form.control, name: "year" });
+  // const month = useWatch({ control: form.control, name: "month" });
+  // const userNote = useWatch({ control: form.control, name: "userNote" });
 
   const handleUpdate = async () => {
     // Logique de mise à jour existante...
@@ -524,7 +524,11 @@ AddOrUpdateBookProps) => {
                   <FormField
                     control={form.control}
                     name="userComments"
-                    render={({ field }) => (
+                    render={(
+                      {
+                        //field
+                      }
+                    ) => (
                       <FormItem>
                         <div>
                           {/* <MemoizedTextarea control={form.control} /> */}
