@@ -12,6 +12,7 @@ import { Card, CardDescription } from "@/components/ui/card";
 // import useUserStore from "@/hooks/useUserStore";
 import { AppUserType } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 // import { useParams } from "react-router-dom";
@@ -124,7 +125,7 @@ const UserAccount = ({
         </div>
         <div className="m-4 flex gap-4">
           {userInfo?.imgURL && (
-            <img
+            <Image
               src={userInfo?.imgURL}
               alt={`Image de profil de ${userInfo?.userName}`}
               width="150"
