@@ -8,42 +8,40 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { LANGUAGES } from "@/lib/constants";
-import { BooksSearchQueryType, BookType } from "@/lib/types";
+import { BooksSearchQueryType } from "@/lib/types";
 import { X } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import Title from "./Title";
 import { Input } from "./ui/input";
-import { BookStatusType } from "@/lib/types";
-import { BookStatusValues } from "@/lib/constants";
 
-type BooksSearchProps = {
-  bdAndApiBooks: BookType[];
-};
+// type BooksSearchProps = {
+//   bdAndApiBooks: BookType[];
+// };
 
-const useDebounceEffect = (
-  effect: () => void,
-  deps: (string | boolean)[],
-  delay: number
-) => {
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+// const useDebounceEffect = (
+//   effect: () => void,
+//   deps: (string | boolean)[],
+//   delay: number
+// ) => {
+//   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
+//   useEffect(() => {
+//     if (timeoutRef.current) {
+//       clearTimeout(timeoutRef.current);
+//     }
 
-    timeoutRef.current = setTimeout(() => {
-      effect();
-    }, delay);
+//     timeoutRef.current = setTimeout(() => {
+//       effect();
+//     }, delay);
 
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    }; // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [...deps, delay]);
-};
+//     return () => {
+//       if (timeoutRef.current) {
+//         clearTimeout(timeoutRef.current);
+//       }
+//     }; // eslint-disable-next-line react-hooks/exhaustive-deps
+//   }, [...deps, delay]);
+// };
 
 const BooksSearch = (props: { query: BooksSearchQueryType }) => {
   const [search, setSearch] = useState<BooksSearchQueryType>(props.query);
@@ -76,9 +74,9 @@ const BooksSearch = (props: { query: BooksSearchQueryType }) => {
   // const [inFriendsLists, setInFriendsLists] = useState(true);
   // const [inApi, setInApi] = useState(true);
 
-  const [sortState, setSortState] = useState<any>({
-    [BookStatusValues.READ]: { criteria: "title", order: "asc" },
-  });
+  // const [sortState, setSortState] = useState<any>({
+  //   [BookStatusValues.READ]: { criteria: "title", order: "asc" },
+  // });
 
   // DEBUT============================FAIRE HOOK PERSO !!!
   // const fetchAPIBooks = (booksApiUrl: string): Promise<BookType[]> => {
