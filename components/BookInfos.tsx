@@ -12,14 +12,15 @@ import {
 // } from "@/firebase/firestore";
 // import { toast } from "@/hooks/use-toast";
 // import useUserStore from "@/hooks/useUserStore";
-import { DEFAULT_BOOK_IMAGE, NO_DESCRIPTION } from "@/lib/constants";
-import { BookType } from "@/lib/types";
+import {
+  BookStatusValues,
+  DEFAULT_BOOK_IMAGE,
+  NO_DESCRIPTION,
+} from "@/lib/constants";
+import { BookStatusType, BookType } from "@/lib/types";
 import { cleanDescription, cn, getStatusColor } from "@/lib/utils";
-import { BookStatusType } from "@/lib/types";
-import { BookStatusValues } from "@/lib/constants";
 import { Check, Ellipsis, Quote, Smile } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
 import { toast } from "sonner";
 import AverageBookRating from "./AverageBookRating";
 import BookUserInfo from "./BookUserInfo";
@@ -29,6 +30,7 @@ import FriendsWhoReadBook from "./FriendsWhoReadBook";
 // import BookUserInfo from "./BookUserInfo";
 // import FriendsWhoReadBook from "./FriendsWhoReadBook";
 
+// Que BOOK !!!!!!!!
 // Soit à partir de BooksSearchPage => on passe un objet "book" en props car on a les info nécessaires
 // Soit à partir de MyBooksPage / UserAccountPage => on passe un bookId (et ensuite on va chercher les infos nécessaires dans la BDD avec useSWR)
 //// ou mettre avec hook perso.............
@@ -54,7 +56,7 @@ type BookInfosProps =
 const BookInfos = ({
   currentUserId,
   book,
-  bookId,
+  //bookId,
   userViewId,
   // userId,
   bookConnectedUserStatus = "",
@@ -69,19 +71,19 @@ const BookInfos = ({
   // console.log("💛💙💚❤️🤍🤎id", bookId);
   // console.log("book", book);
 
-  const [bookInfos, setBookInfos] = useState<BookType | null>(book || null);
+  //const [bookInfos, setBookInfos] = useState<BookType | null>(book || null);
   // console.log("bookInfos description", bookInfos?.description);
 
   // const [bookStatus, setBookStatus] = useState<BookStatus | "">("");
   // console.log("💛 bookinmylist", bookStatus);
-  const [bookInFriendList, setBookInFriendList] = useState<BookStatusType | "">(
-    ""
-  );
+  // const [bookInFriendList, setBookInFriendList] = useState<BookStatusType | "">(
+  //   ""
+  // );
 
-  console.log("❤️💛💚🤍❤️ bookInfos.title", bookInfos?.title);
-  console.log("❤️💛💚🤍❤️ bookConnectedUserStatus", bookConnectedUserStatus);
-  console.log("❤️💛💚🤍❤️ bookInFriendList", bookInFriendList);
-  console.log("❤️💛💚🤍❤️ currentUserId", currentUserId);
+  // console.log("❤️💛💚🤍❤️ bookInfos.title", bookInfos?.title);
+  // console.log("❤️💛💚🤍❤️ bookConnectedUserStatus", bookConnectedUserStatus);
+  // console.log("❤️💛💚🤍❤️ bookInFriendList", bookInFriendList);
+  // console.log("❤️💛💚🤍❤️ currentUserId", currentUserId);
 
   // useEffect(() => {
   //   const fetchUser = async () => {
@@ -254,23 +256,23 @@ const BookInfos = ({
                   </div>
                 )}
               </div>
-              <div className="bg-pink-900">
+              {/* <div className="bg-pink-900">
                 <p>BookUserInfo (on est ds composant BookInfo)</p>
                 <p>bookConnectedUserStatus = {bookConnectedUserStatus} </p>
                 <p>title = {bookInfos?.title} </p>
                 <p>bookInFriendList = {bookInFriendList} </p>
                 <p>userViewId = {userViewId} </p>
                 <p>currentUserId = {currentUserId} </p>
-              </div>
+              </div> */}
               {(bookConnectedUserStatus || userViewId) &&
                 // pk j'avais mis bookInFriendList ???
                 // {(bookUserStatus || bookInFriendList !== "") &&
-                bookInfos &&
+                book &&
                 currentUserId && (
                   <BookUserInfo
                     // userId={userViewId || currentUserId}
                     currentUserId={currentUserId}
-                    bookId={bookInfos.id}
+                    bookId={book.id}
                     bookStatus={bookConnectedUserStatus}
                     userViewId={userViewId}
                     // friendBookStatus={bookInFriendList}
@@ -278,9 +280,9 @@ const BookInfos = ({
                 )}
             </div>
           </Link>
-          {bookInfos && currentUserId && (
+          {book && currentUserId && (
             <FriendsWhoReadBook
-              bookId={bookInfos.id}
+              bookId={book.id}
               userViewId={userViewId}
               currentUserId={currentUserId}
             />

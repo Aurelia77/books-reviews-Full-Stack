@@ -2,13 +2,7 @@
 
 import FeedbackMessage from "@/components/FeedbackMessage";
 
-const ResetPasswordError = ({
-  error,
-  reset,
-}: {
-  error: Error;
-  reset: () => void;
-}) => {
+const ResetPasswordError = ({ error }: { error: Error }) => {
   return (
     <div className="mt-32">
       <FeedbackMessage

@@ -3,7 +3,7 @@
 import FeedbackMessage from "@/components/FeedbackMessage";
 import Title from "@/components/Title";
 
-const BooksError = ({ error, reset }: { error: Error; reset: () => void }) => {
+const BooksError = ({ error }: { error: Error }) => {
   return (
     <div>
       <Title>Affichage d'un ou plusieurs livre(s)</Title>

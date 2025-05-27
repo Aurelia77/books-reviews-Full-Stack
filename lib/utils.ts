@@ -1,8 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
-import { BookStatusType } from "./types";
-import { BookStatusValues } from "./constants";
 import { twMerge } from "tailwind-merge";
-import { BookType, BookTypePlusDate } from "./types";
+import { BookStatusValues } from "./constants";
+import { BookStatusType, BookType, BookTypePlusDate } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -26,6 +25,7 @@ export const sortBook = (
   books: (BookType | BookTypePlusDate)[],
   criteria: string,
   order: string,
+  // eslint-disable-next-line no-unused-vars
   sortState: { [key in BookStatusType]: { criteria: string; order: string } }
 ): (BookType | BookTypePlusDate)[] => {
   if (books.length <= 1) {
