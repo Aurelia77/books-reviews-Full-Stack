@@ -1,4 +1,4 @@
-import { AppUserType, BookStatusType, BookType } from "./types";
+import { AppUserType, BookType } from "./types";
 
 export const APP_NAME = "Book Reviews";
 
