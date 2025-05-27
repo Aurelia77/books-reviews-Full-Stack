@@ -3,9 +3,9 @@
 import CustomLinkButton from "@/components/CustomLinkButton";
 import FeedbackMessage from "@/components/FeedbackMessage";
 import { Switch } from "@/components/ui/switch";
+import { BookStatusValues } from "@/lib/constants";
 import { BookTypePlusUsersWhoRead } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { BookStatus } from "@prisma/client";
 import { useEffect, useState } from "react";
 import BooksWithSortControls from "./BooksWithSortControls";
 
@@ -34,7 +34,7 @@ const UsersBooksRead = ({
 
   // const [sortState, setSortState] = useState<{ [key in BookStatusEnum]: SortStateType }>({
   const [sortState, setSortState] = useState<any>({
-    [BookStatus.READ]: { criteria: "title", order: "desc" },
+    [BookStatusValues.READ]: { criteria: "title", order: "desc" },
   });
 
   console.log("*-*- sortState", sortState);
@@ -158,7 +158,7 @@ const UsersBooksRead = ({
           // {displayedSortedBooks && displayedSortedBooks.length > 0 ? (
           // <div className="flex flex-col items-center gap-4">
           <BooksWithSortControls
-            displayBookStatus={BookStatus.READ}
+            displayBookStatus={BookStatusValues.READ}
             bookIds={usersBooksReadIds}
           />
         ) : (

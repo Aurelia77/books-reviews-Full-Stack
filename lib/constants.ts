@@ -1,4 +1,4 @@
-import { AppUserType, BookType } from "./types";
+import { AppUserType, BookStatusType, BookType } from "./types";
 
 export const APP_NAME = "Book Reviews";
 
@@ -77,3 +77,9 @@ export const LANGUAGES = [
   //{ name: "Russe", code: "ru" },
   //{ name: "Turc", code: "tr" },
 ];
+
+export const BookStatusValues = {
+  READ: "READ",
+  IN_PROGRESS: "IN_PROGRESS",
+  TO_READ: "TO_READ",
+} as const; // transforme les valeurs en valeurs littérales ("READ" au lieu de string)

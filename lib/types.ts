@@ -1,4 +1,7 @@
-import { BookStatus } from "@prisma/client";
+import { BookStatusValues } from "./constants";
+
+export type BookStatusType =
+  (typeof BookStatusValues)[keyof typeof BookStatusValues];
 
 export type BookType = {
   id: string;
@@ -44,11 +47,11 @@ export type UserInfoBookType = {
   id: string; // Ajout de l'identifiant unique
   userId: string; // Ajout de la clé étrangère vers l'utilisateur
   bookId: string; // Ajout de la clé étrangère vers le livre
-  year?: number | null; // Année (optionnelle)
-  month?: number | null; // Mois (optionnel)
-  note?: number | null; // Note (optionnelle)
-  comments?: string | null; // Commentaires (optionnels)
-  status: BookStatus; // Statut du livre
+  year?: number | null;
+  month?: number | null;
+  note?: number | null;
+  comments?: string | null;
+  status: BookStatusType;
 };
 
 export type MyInfoBookPlusTitleAndNote = UserInfoBookType & {
@@ -59,7 +62,7 @@ export type MyInfoBookPlusTitleAndNote = UserInfoBookType & {
 };
 
 export type MyInfoBookFormType = {
-  bookStatus: BookStatus;
+  bookStatus: BookStatusType;
   // bookStatus: BookStatusEnum;
   year?: number;
   month?: number;
@@ -159,7 +162,7 @@ export type BookTypePlusUsersWhoRead = BookType & {
 //   order: "asc" | "desc";
 // };
 export type SortStateType = {
-  [key in BookStatus]: {
+  [key in BookStatusType]: {
     criteria: "title" | "date" | "note" | "reviews";
     order: "asc" | "desc";
   };

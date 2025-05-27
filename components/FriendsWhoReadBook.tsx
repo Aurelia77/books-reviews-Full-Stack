@@ -24,7 +24,7 @@ const FriendsWhoReadBook = ({
       userName: string;
     }[]
   >([]);
-  // console.log("***friendsWhoReadBook", friendsWhoReadBook);
+  console.log("***bookId friendsWhoReadBook", bookId, friendsWhoReadBook);
 
   // useEffect(() => {
   //   if (userBookStatusState === BookStatus.READ) {
@@ -60,8 +60,8 @@ const FriendsWhoReadBook = ({
         if (!res.ok) {
           throw new Error("Erreur serveur");
         }
-        const data = await res.json();
-        setFriendsWhoReadBook(data);
+        const json = await res.json();
+        setFriendsWhoReadBook(json.data);
       } catch (error) {
         setFriendsWhoReadBook([]);
       }

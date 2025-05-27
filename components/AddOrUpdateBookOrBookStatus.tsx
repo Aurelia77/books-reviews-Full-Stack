@@ -23,11 +23,15 @@ import {
 import { Form } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { MONTHS } from "@/lib/constants";
-import { BookType, MyInfoBookFormType, UserInfoBookType } from "@/lib/types";
+import { BookStatusValues, MONTHS } from "@/lib/constants";
+import {
+  BookStatusType,
+  BookType,
+  MyInfoBookFormType,
+  UserInfoBookType,
+} from "@/lib/types";
 import { cn, getStatusColor } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { BookStatus } from "@prisma/client";
 import { Check, Ellipsis, Smile, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { memo, useEffect, useState } from "react";
@@ -86,7 +90,7 @@ const MemoizedTextarea = memo(function MemoizedTextarea({
 const currentYear = new Date().getFullYear();
 
 const bookFormSchema = z.object({
-  bookStatus: z.nativeEnum(BookStatus),
+  bookStatus: z.nativeEnum(BookStatusValues),
   year: z
     .number()
     .int()
@@ -104,7 +108,7 @@ type AddOrUpdateBookProps = {
   currentUserId: string;
   bookInfos: BookType;
   //onUpdate: () => void;
-  userBookStatus?: BookStatus | null;
+  userBookStatus?: BookStatusType | null;
 };
 
 const AddOrUpdateBookOrBookStatus = ({
@@ -135,7 +139,7 @@ AddOrUpdateBookProps) => {
   //console.log("refreshKey", refreshKey);
 
   const defaultValues = {
-    bookStatus: userBookStatusState || BookStatus.READ,
+    bookStatus: userBookStatusState || BookStatusValues.READ,
     year: userBookInfos?.year || currentYear,
     month: userBookInfos?.month || 0,
     userNote: userBookInfos?.note || 0,
@@ -173,7 +177,7 @@ AddOrUpdateBookProps) => {
 
   useEffect(() => {
     console.log("💛💛💛 getOne userBookStatusState", userBookStatusState);
-    if (userBookStatusState === BookStatus.READ) {
+    if (userBookStatusState === BookStatusValues.READ) {
       console.log(
         "💛💛💛 getOne userBookStatusState READ",
         userBookStatusState
@@ -219,19 +223,19 @@ AddOrUpdateBookProps) => {
   //   }
   // };
 
-  useEffect(() => {
-    // console.log("bookInMyBooks change ??? useEffect setUserBookInfos");
-    if (userBookStatusState && bookInfos) {
-      // console.log("bookInMyBooks && bookInfos", bookInMyBooks, bookInfos);
-      // getUserInfosBookFirebase(userId, bookInfos.id, bookInMyBooks).then(
-      //   (myBook) => {
-      //     console.log("bookInMyBooks !!!!!!!!!!!!!!", myBook);
-      //     if (myBook) setUserBookInfos(myBook);
-      //   }
-      // );
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bookInfos?.id, userBookStatusState, currentUserId]);
+  // useEffect(() => {
+  //   // console.log("bookInMyBooks change ??? useEffect setUserBookInfos");
+  //   if (userBookStatusState && bookInfos) {
+  //     // console.log("bookInMyBooks && bookInfos", bookInMyBooks, bookInfos);
+  //     // getUserInfosBookFirebase(userId, bookInfos.id, bookInMyBooks).then(
+  //     //   (myBook) => {
+  //     //     console.log("bookInMyBooks !!!!!!!!!!!!!!", myBook);
+  //     //     if (myBook) setUserBookInfos(myBook);
+  //     //   }
+  //     // );
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [bookInfos?.id, userBookStatusState, currentUserId]);
 
   // Sinon valeurs par défaut du form sont vides
   useEffect(() => {
@@ -261,6 +265,9 @@ AddOrUpdateBookProps) => {
 
   const onSubmit: SubmitHandler<MyInfoBookFormType> = async (formData) => {
     formData.userComments = localComments;
+
+    console.log("💛💙💚❤️🤍🤎 previousNote", userBookInfos?.note);
+
     try {
       const response = await fetch("/api/books/new-or-update", {
         method: "POST",
@@ -273,7 +280,8 @@ AddOrUpdateBookProps) => {
         }),
       });
 
-      // console.log("💛💙💚❤️🤍🤎 response", response);
+      console.log("💛💙💚❤️🤍🤎 response", response);
+      console.log("💛💙💚❤️🤍🤎 response json", response.json());
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -286,6 +294,17 @@ AddOrUpdateBookProps) => {
         toast.error(
           "Impossible d'ajouter le livre ou les informations. Veuillez vérifier votre connexion ou réessayer plus tard."
         );
+        setUserBookInfos((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            year: formData.year ?? prev.year ?? null,
+            month: formData.month ?? prev.month ?? null,
+            note: formData.userNote ?? prev.note ?? null,
+            comments: formData.userComments ?? prev.comments ?? null,
+            status: formData.bookStatus ?? prev.status,
+          };
+        });
       }
     } catch (error) {
       console.error(
@@ -327,19 +346,19 @@ AddOrUpdateBookProps) => {
                 getStatusColor(userBookStatusState)
               )}
             >
-              {userBookStatusState === BookStatus.READ && (
+              {userBookStatusState === BookStatusValues.READ && (
                 <div className="flex justify-center gap-2">
                   <p>Je l'ai lu !</p>
                   <Check className="rounded-full bg-primary/50 p-1  shadow-sm shadow-foreground" />
                 </div>
               )}
-              {userBookStatusState === BookStatus.IN_PROGRESS && (
+              {userBookStatusState === BookStatusValues.IN_PROGRESS && (
                 <div className="flex justify-center gap-2 items-center">
                   <p>Je suis en train de le lire</p>
                   <Ellipsis className="rounded-full bg-primary/50 p-1  shadow-sm shadow-foreground" />
                 </div>
               )}
-              {userBookStatusState === BookStatus.TO_READ && (
+              {userBookStatusState === BookStatusValues.TO_READ && (
                 <div className="flex justify-center gap-2">
                   <p>J'aimerais le lire</p>
                   <Smile className="rounded-full bg-primary/50 p-1  shadow-sm shadow-foreground" />
@@ -372,10 +391,11 @@ AddOrUpdateBookProps) => {
                     Etes-vous sûrs de vouloir supprimer le livre de votre liste
                     de{" "}
                     <span className="font-bold text-muted">
-                      {userBookStatusState === BookStatus.READ && "livres lus"}
-                      {userBookStatusState === BookStatus.IN_PROGRESS &&
+                      {userBookStatusState === BookStatusValues.READ &&
+                        "livres lus"}
+                      {userBookStatusState === BookStatusValues.IN_PROGRESS &&
                         "livres en cours"}
-                      {userBookStatusState === BookStatus.TO_READ &&
+                      {userBookStatusState === BookStatusValues.TO_READ &&
                         "livres à lire"}
                     </span>{" "}
                     ?
@@ -479,21 +499,21 @@ AddOrUpdateBookProps) => {
                       >
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem
-                            value={BookStatus.READ}
+                            value={BookStatusValues.READ}
                             id="booksRead"
                           />
                           <Label htmlFor="read">Lu</Label>
                         </div>
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem
-                            value={BookStatus.IN_PROGRESS}
+                            value={BookStatusValues.IN_PROGRESS}
                             id="booksInProgress"
                           />
                           <Label htmlFor="booksInProgress">En cours</Label>
                         </div>
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem
-                            value={BookStatus.TO_READ}
+                            value={BookStatusValues.TO_READ}
                             id="toRead"
                           />
                           <Label htmlFor="toRead">À lire</Label>
@@ -525,7 +545,7 @@ AddOrUpdateBookProps) => {
                       </FormItem>
                     )}
                   />
-                  {form.watch().bookStatus === BookStatus.READ && (
+                  {form.watch().bookStatus === BookStatusValues.READ && (
                     // ??? SUPPRIMER le composant MemoizedFormFields ???
                     // ??? SUPPRIMER le composant MemoizedFormFields ???
                     // ??? SUPPRIMER le composant MemoizedFormFields ???
