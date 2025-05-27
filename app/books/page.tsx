@@ -155,14 +155,14 @@ const SearchBooksPage = async (props: {
 
   const filteredApiBooks: BookType[] = await fetch(booksApiUrl)
     .then((res) => res.json())
-    .then((data) => {
+    .then((data: any) => {
       if (!data.items) {
         return [];
         //throw new Error("No items found in the response");
       }
       return data.items;
     })
-    .then((apiBooks) => {
+    .then((apiBooks: any) => {
       // console.log("💛", apiBooks);
       // // on récupère les id des livres de la base de données pour ne pas ajouter les livres de l'API qui ont les mêmes id
       // let dbBooksIds: string[] = [];

@@ -120,7 +120,7 @@ const Book = async ({ params }: { params: Promise<{ id: string }> }) => {
 
     book = await fetch(`${GOOGLE_BOOKS_API_URL}/${id}`)
       .then((res) => res.json())
-      .then((data) => {
+      .then((data: any) => {
         const bookFromAPI: BookType = {
           id: data.id,
           title: data.volumeInfo.title,
@@ -166,6 +166,8 @@ const Book = async ({ params }: { params: Promise<{ id: string }> }) => {
           //onError={(e) => (e.currentTarget.src = DEFAULT_BOOK_IMAGE)}
           className="w-32 sm:w-40 md:w-48 rounded-sm border border-border  object-contain shadow-md shadow-foreground/70"
           alt={`Image de couverture du livre ${book?.title}`}
+          width={192}
+          height={288}
         />
         <CardHeader className="flex flex-col justify-between overflow-hidden gap-4">
           <CardTitle>{book?.title}</CardTitle>

@@ -33,7 +33,7 @@ const UsersBooksReadPage = async () => {
           userId: true,
         },
       })
-      .then((data) =>
+      .then((data: { userId: string; bookId: string }[]) =>
         data.reduce((acc, curr) => {
           if (!acc[curr.bookId]) {
             acc[curr.bookId] = [];
