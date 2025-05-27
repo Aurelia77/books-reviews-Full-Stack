@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { BookType, BookTypePlusDate } from "@/lib/types";
+import { BookTypePlusDate } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 
 type ByIdsWithDateType = {
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const books: BookType[] = await prisma.book.findMany({
+    const books = await prisma.book.findMany({
       where: {
         id: {
           in: bookIds,
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const booksWithDate: BookTypePlusDate[] = books.map((book) => {
+    const booksWithDate: BookTypePlusDate[] = books.map((book: any) => {
       const info = book.UserInfoBook?.[0];
 
       console.log("🤎🤎🤎🤎", {
