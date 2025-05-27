@@ -35,9 +35,7 @@ const LogOutButton = (props: ComponentPropsWithRef<"button">) => {
       {isLoading ? (
         <div className="w-7 h-7 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
       ) : (
-        <X
-        //color="#dd5a5a"
-        />
+        <X />
       )}
     </button>
   );

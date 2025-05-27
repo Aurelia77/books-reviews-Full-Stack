@@ -29,6 +29,7 @@ import { BookType } from "@/lib/types";
 import { cleanDescription } from "@/lib/utils";
 import { BookStatus } from "@prisma/client";
 import { Quote } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 const addLineBreaks = (description: string) => {
@@ -158,7 +159,7 @@ const Book = async ({ params }: { params: Promise<{ id: string }> }) => {
         {book.language}
       </CardDescription>
       <div className="flex items-start gap-5 p-5 py-10 shadow-xl shadow-primary/30">
-        <img
+        <Image
           src={book.imageLink || DEFAULT_BOOK_IMAGE}
           //onError={(e) => (e.currentTarget.src = DEFAULT_BOOK_IMAGE)}
           className="w-32 sm:w-40 md:w-48 rounded-sm border border-border  object-contain shadow-md shadow-foreground/70"

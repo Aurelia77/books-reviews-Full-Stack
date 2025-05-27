@@ -1,7 +1,6 @@
 import BooksSearch from "@/components/BooksSearch";
 import BooksWithSortControls from "@/components/BooksWithSortControls";
 import FeedbackMessage from "@/components/FeedbackMessage";
-import { getUser } from "@/lib/auth-session";
 import { GOOGLE_BOOKS_API_URL } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
 import { BookAPIType, BooksSearchQueryType, BookType } from "@/lib/types";
@@ -51,7 +50,6 @@ const SearchBooksPage = async (props: {
   //const books = await prisma.book.findMany(); // Récupération des données côté serveur
 
   const searchParams = await props.searchParams;
-  const currentUser = await getUser();
 
   // const [sortState, setSortState] = useState<any>({
   //   [BookStatus]: { criteria: "title", order: "asc" },

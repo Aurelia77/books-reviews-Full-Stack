@@ -67,7 +67,7 @@ const FriendsWhoReadBook = ({
       }
     };
     fetchFriends();
-  }, [bookId, currentUserId]);
+  }, [bookId, currentUserId, userViewId]);
 
   // useEffect(() => {
   //   getUsersWhoReadBookFirebase(bookId, currentUser?.uid, userViewId).then(

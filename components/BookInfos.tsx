@@ -25,6 +25,7 @@ import { toast } from "sonner";
 import AverageBookRating from "./AverageBookRating";
 import BookUserInfo from "./BookUserInfo";
 import FriendsWhoReadBook from "./FriendsWhoReadBook";
+import Image from "next/image";
 //import useSWR from "swr";
 // import AverageBookRating from "./AverageBookRating";
 // import BookUserInfo from "./BookUserInfo";
@@ -195,7 +196,7 @@ const BookInfos = ({
             </CardDescription>
             <div>
               <div className="relative flex items-start gap-5 p-5 pt-10 shadow-md shadow-secondary/60">
-                <img
+                <Image
                   src={book.imageLink || DEFAULT_BOOK_IMAGE}
                   // à voir mettre dans un client
                   //onError={(e) => (e.currentTarget.src = DEFAULT_BOOK_IMAGE)}
