@@ -1,11 +1,11 @@
 import { prisma } from "@/lib/prisma";
-import { BookStatus } from "@prisma/client";
+import { BookStatusType } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 
 export type DeleteBookParams = {
   userId: string;
   bookId: string;
-  bookStatus: BookStatus;
+  bookStatus: BookStatusType;
 };
 
 export async function DELETE(

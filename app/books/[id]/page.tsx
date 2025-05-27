@@ -20,14 +20,14 @@ import {
 import UserReview from "@/components/UserReview";
 import { getUser } from "@/lib/auth-session";
 import {
+  BookStatusValues,
   DEFAULT_BOOK_IMAGE,
   GOOGLE_BOOKS_API_URL,
   NO_DESCRIPTION,
 } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
-import { BookType } from "@/lib/types";
+import { BookStatusType, BookType } from "@/lib/types";
 import { cleanDescription } from "@/lib/utils";
-import { BookStatus } from "@prisma/client";
 import { Quote } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -55,7 +55,7 @@ const Book = async ({ params }: { params: Promise<{ id: string }> }) => {
   const usersInfoWhoReadBook = await prisma.userInfoBook.findMany({
     where: {
       bookId: id,
-      status: BookStatus.READ,
+      status: BookStatusValues.READ,
     },
     include: {
       // comments: true,
@@ -89,7 +89,7 @@ const Book = async ({ params }: { params: Promise<{ id: string }> }) => {
     where: { id: id },
   });
 
-  let userBookStatus: BookStatus | null = null;
+  let userBookStatus: BookStatusType | null = null;
 
   console.log("💛 userBookStatus", userBookStatus);
 

@@ -1,10 +1,10 @@
 import { prisma } from "@/lib/prisma";
-import { BookStatus } from "@prisma/client";
+import { BookStatusType } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 
 export type UserStatusParams = {
   userId: string;
-  status: BookStatus;
+  status: BookStatusType;
 };
 
 export async function GET(
