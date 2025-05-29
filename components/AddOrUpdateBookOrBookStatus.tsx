@@ -151,10 +151,6 @@ AddOrUpdateBookProps) => {
     defaultValues: defaultValues,
   });
 
-  const [localComments, setLocalComments] = useState(
-    form.getValues("userComments") || ""
-  );
-
   // const year = useWatch({ control: form.control, name: "year" });
   // const month = useWatch({ control: form.control, name: "month" });
   // const userNote = useWatch({ control: form.control, name: "userNote" });
@@ -264,8 +260,6 @@ AddOrUpdateBookProps) => {
   };
 
   const onSubmit: SubmitHandler<MyInfoBookFormType> = async (formData) => {
-    formData.userComments = localComments;
-
     console.log("💛💙💚❤️🤍🤎 previousNote", userBookInfos?.note);
 
     try {
@@ -524,27 +518,11 @@ AddOrUpdateBookProps) => {
                   <FormField
                     control={form.control}
                     name="userComments"
-                    render={(
-                      {
-                        //field
-                      }
-                    ) => (
+                    render={({ field }) => (
                       <FormItem>
-                        <div>
-                          {/* <MemoizedTextarea control={form.control} /> */}
-
-                          {/* <Textarea placeholder="Mes commentaires" {...field} /> */}
-                          <Textarea
-                            //{...field}
-                            value={localComments}
-                            onChange={(e) => setLocalComments(e.target.value)}
-                            placeholder="Mes commentaires"
-                          />
-                          {/* <MemoizedTextarea
-                            value={field.value}
-                            onChange={field.onChange}
-                          /> */}
-                        </div>
+                        <FormControl>
+                          <Textarea placeholder="Mes commentaires" {...field} />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}

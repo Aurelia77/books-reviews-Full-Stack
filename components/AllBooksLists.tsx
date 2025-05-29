@@ -181,11 +181,6 @@ const AllBooksLists = ({ displayedAppUser }: AllBooksListsProps) => {
   // }, [userInfoPlusTitleAndNote, activeTab]);
   // }, [userInfoPlusTitle[activeTab], activeTab]);
 
-  // UTILS ?????????????????????
-  // UTILS ?????????????????????
-  // UTILS ?????????????????????
-  // UTILS ?????????????????????
-  // UTILS ?????????????????????
   // useEffect(() => {
   //   sortBooksByStatus(displayedBooksUserInfo, activeTab, sortState);
   //   setDisplayedBookIds(displayedBooksUserInfo.map((book) => book.id));
@@ -258,14 +253,6 @@ const AllBooksLists = ({ displayedAppUser }: AllBooksListsProps) => {
         {/* <BooksWithSortControls
           displayBookStatus={BookStatus.READ}
           userId={userInfo.id}
-          /////////////// Ici gérer si on passe de id et non des BookType !!!!!!!!!
-          /////////////// Ici gérer si on passe de id et non des BookType !!!!!!!!!
-          /////////////// Ici gérer si on passe de id et non des BookType !!!!!!!!!
-          /////////////// Ici gérer si on passe de id et non des BookType !!!!!!!!!
-          /////////////// Ici gérer si on passe de id et non des BookType !!!!!!!!!
-          /////////////// Ici gérer si on passe de id et non des BookType !!!!!!!!!
-          books={displayedBookIds}
-          withDateOption={true}
         /> */}
         <BooksTabContent
           value={BookStatusValues.READ}

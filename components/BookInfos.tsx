@@ -204,6 +204,7 @@ const BookInfos = ({
                   alt={`Image de couverture du livre ${book?.title}`}
                   width={192}
                   height={288}
+                  unoptimized
                 />
                 <CardHeader className="gap-3 overflow-hidden">
                   <CardTitle className="line-clamp-4">{book.title}</CardTitle>

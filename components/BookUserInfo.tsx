@@ -1,6 +1,6 @@
 "use client";
 
-import { MONTHS } from "@/lib/constants";
+import { BookStatusValues, MONTHS } from "@/lib/constants";
 import { BookStatusType, UserInfoBookType } from "@/lib/types";
 import { useEffect, useState } from "react";
 import StarRating from "./StarRating";
@@ -31,7 +31,7 @@ BookUserInfoProps) => {
 
   const [userBookInfos, setUserBookInfos] = useState<UserInfoBookType>();
 
-  console.log("💛💚🤍 userBookInfos", userBookInfos);
+  //console.log("💛💚🤍 userBookInfos", userBookInfos);
   // console.log("💛💚❤️🤍 userBookInfos.bookId", userBookInfos?.bookId);
   // // console.log("💛💚❤️ userId", userId);
   // console.log("💛💚❤️ currentUserId", currentUserId);
@@ -80,8 +80,8 @@ BookUserInfoProps) => {
           if (res.ok) {
             const json = await res.json();
 
-            console.log("💛💙💚❤️🤍🤎json", json);
-            console.log("💛💙💚❤️🤍🤎json", json.data);
+            // console.log("💛💙💚❤️🤍🤎json", json);
+            // console.log("💛💙💚❤️🤍🤎json", json.data);
             setUserName(json.data.userName);
           } else {
             setUserName(null);
@@ -115,23 +115,23 @@ BookUserInfoProps) => {
               : "Mes Infos et Avis :"}
           </h2>
 
-          {/* {status === BookStatus.READ && ( */}
-          <div className="flex items-center justify-around">
-            <p>
-              {userBookInfos &&
-                userBookInfos.month !== undefined &&
-                userBookInfos.month !== null &&
-                userBookInfos.month !== 0 &&
-                `   ${MONTHS[userBookInfos?.month]} `}
-              {userBookInfos?.year}
-            </p>
-            {userBookInfos.note ? (
-              <StarRating value={userBookInfos.note} forReadBook />
-            ) : (
-              <p className="italic">Aucune note</p>
-            )}
-          </div>
-          {/* )} */}
+          {bookStatus === BookStatusValues.READ && (
+            <div className="flex items-center justify-around">
+              <p>
+                {userBookInfos &&
+                  userBookInfos.month !== undefined &&
+                  userBookInfos.month !== null &&
+                  userBookInfos.month !== 0 &&
+                  `   ${MONTHS[userBookInfos?.month]} `}
+                {userBookInfos?.year}
+              </p>
+              {userBookInfos.note ? (
+                <StarRating value={userBookInfos.note} forReadBook />
+              ) : (
+                <p className="italic">Aucune note</p>
+              )}
+            </div>
+          )}
 
           <p className="whitespace-pre-wrap">
             {userBookInfos?.comments ? (

@@ -15,19 +15,19 @@ export async function POST(req: Request) {
   console.log("💛💙 email", email);
   console.log("💛💙 userName", userName);
 
-  try {
-    // Vérification des données
-    if (!email || !userName) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Paramètres manquants ou invalides",
-          code: "MISSING_PARAMS",
-        },
-        { status: 400 }
-      );
-    }
+  // Vérification des données
+  if (!email || !userName) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Paramètres manquants ou invalides",
+        code: "MISSING_PARAMS",
+      },
+      { status: 400 }
+    );
+  }
 
+  try {
     // Création de l'utilisateur dans la base de données
     const newUser = await prisma.appUser.create({
       data: {

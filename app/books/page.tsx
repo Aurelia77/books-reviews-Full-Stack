@@ -5,7 +5,7 @@ import { BookStatusValues, GOOGLE_BOOKS_API_URL } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
 import { BookAPIType, BooksSearchQueryType, BookType } from "@/lib/types";
 
-const MAX_RESULTS = 4; // jusqu'à 40
+const MAX_RESULTS = 7; // jusqu'à 40
 
 const shuffle2ArraysPreserveOrder = <T, U>(
   array1: T[],

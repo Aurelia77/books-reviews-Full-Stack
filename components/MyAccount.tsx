@@ -12,7 +12,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import UsersListView from "@/components/UsersListView";
 // import {
@@ -33,6 +32,7 @@ import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { Progress } from "./ui/progress";
 
 const accountFormSchema = z.object({
   userName: z.string().min(2, {
@@ -72,8 +72,8 @@ const MyAccount = ({
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [progress, setProgress] = useState<number>();
 
-  // SANS la gestion du progress
-
+  // ********************************************************
+  // STOCKE LES IMAGES EN LOCALE SANS LE PROGRESS
   // const uploadImage = async () => {
   //   if (!imageUpload) return;
 
@@ -90,14 +90,83 @@ const MyAccount = ({
   //   }
   //   setIsImageLoading(false);
   // };
+
+  // ********************************************************
+  // STOCKE LES IMAGES EN LOCALE AVEC LE PROGRESS
+  // const uploadImage = async () => {
+  //   if (!imageUpload) return;
+
+  //   setIsImageLoading(true);
+  //   setProgress(0);
+
+  //   const data = new FormData();
+  //   data.append("file", imageUpload);
+
+  //   const xhr = new XMLHttpRequest();
+  //   xhr.open("POST", "/api/uploads", true);
+
+  //   xhr.upload.onprogress = (event) => {
+  //     if (event.lengthComputable) {
+  //       const percent = Math.round((event.loaded / event.total) * 100);
+  //       setProgress(percent);
+  //     }
+  //   };
+
+  //   xhr.onload = () => {
+  //     setIsImageLoading(false);
+  //     if (xhr.status === 200) {
+  //       const result = JSON.parse(xhr.responseText);
+  //       if (result.url) {
+  //         form.setValue("imgURL", result.url);
+  //       }
+  //     }
+  //   };
+
+  //   xhr.onerror = () => {
+  //     setIsImageLoading(false);
+  //     // Gérer l'erreur ici si besoin
+  //   };
+
+  //   xhr.send(data);
+  // };
+
+  // ********************************************************
+  // STOCKE LES IMAGES avec uploadthing
+  // PBM DE HEADER !!!!!!!!!!!!!!!! dc je dois exposer ma var d'env !!!
+  // const uploadImage = async () => {
+  //   if (!imageUpload) return;
+  //   setIsImageLoading(true);
+  //   const formProfileImgData = new FormData();
+  //   formProfileImgData.append("files", imageUpload);
+  //   try {
+  //     const res = await fetch("/api/uploads", {
+  //       method: "POST",
+  //       body: formProfileImgData,
+  //     });
+  //     setIsImageLoading(false);
+  //     if (res.ok) {
+  //       const result = await res.json();
+  //       // uploadthing retourne un tableau
+  //       if (result && result[0] && result[0].url) {
+  //         form.setValue("imgURL", result[0].url);
+  //       }
+  //     } else {
+  //       const errorData = await res.json();
+  //       console.error("Erreur upload image :", errorData);
+  //     }
+  //   } catch (error) {
+  //     setIsImageLoading(false);
+  //     console.error("Erreur upload image :", error);
+  //   }
+  // };
+
   const uploadImage = async () => {
     if (!imageUpload) return;
-
     setIsImageLoading(true);
     setProgress(0);
 
-    const data = new FormData();
-    data.append("file", imageUpload);
+    const formProfileImgData = new FormData();
+    formProfileImgData.append("file", imageUpload);
 
     const xhr = new XMLHttpRequest();
     xhr.open("POST", "/api/uploads", true);
@@ -113,19 +182,91 @@ const MyAccount = ({
       setIsImageLoading(false);
       if (xhr.status === 200) {
         const result = JSON.parse(xhr.responseText);
-        if (result.url) {
+        if (result && result.url) {
           form.setValue("imgURL", result.url);
+        }
+      } else {
+        try {
+          const errorData = JSON.parse(xhr.responseText);
+          console.error("Erreur upload image :", errorData);
+        } catch (e) {
+          console.error("Erreur upload image :", xhr.responseText);
         }
       }
     };
 
     xhr.onerror = () => {
       setIsImageLoading(false);
-      // Gérer l'erreur ici si besoin
+      console.error("Erreur upload image :", xhr.statusText);
     };
 
-    xhr.send(data);
+    xhr.send(formProfileImgData);
   };
+  // ...fin de la fonction...
+
+  // SANS l'utilisation d'un route API (moins bien car pas sécurisé)
+  // const uploadImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  // const uploadImage = async () => {
+  //   if (!imageUpload) return;
+  //   setIsImageLoading(true);
+  //   //setProgress(0);
+  //   const formData = new FormData();
+  //   formData.append("file", imageUpload);
+
+  //   // Impossible d'utiliser uploadthing V8 car non compatible avec React19, donc j'utilise la V7
+  //   // const xhr = new XMLHttpRequest();
+  //   // xhr.open("POST", "/api/uploadthing", true);
+
+  //   // xhr.upload.onprogress = (event) => {
+  //   //   if (event.lengthComputable) {
+  //   //     const percent = Math.round((event.loaded / event.total) * 100);
+  //   //     setProgress(percent);
+  //   //   }
+  //   // };
+
+  //   // xhr.onload = () => {
+  //   //   setIsImageLoading(false);
+  //   //   if (xhr.status === 200) {
+  //   //     const result = JSON.parse(xhr.responseText);
+  //   //     if (result.url) {
+  //   //       form.setValue("imgURL", result.url);
+  //   //     }
+  //   //   }
+  //   // };
+
+  //   // xhr.onerror = () => {
+  //   //   setIsImageLoading(false);
+  //   //   // Gérer l'erreur ici si besoin
+  //   // };
+
+  //   // xhr.send(formData);
+
+  //   try {
+  //     const res = await fetch("https://uploadthing.com/api/uploadFiles", {
+  //       method: "POST",
+  //       body: formData,
+  //     });
+  //     setIsImageLoading(false);
+
+  //     console.log("💛💙💚🤍 res", res);
+
+  //     if (res.ok) {
+  //       console.log("💛💙💚🤍 Ok !!!");
+  //       const result = await res.json();
+  //       // Adapte selon la structure de la réponse
+  //       if (result && result[0] && result[0].url) {
+  //         form.setValue("imgURL", result[0].url);
+  //       }
+  //       console.log("💛💙💚🤍 Ok !!!", result);
+  //     } else {
+  //       const errorData = await res.json();
+  //       console.error("Erreur lors de l'upload de l'image :", errorData);
+  //     }
+  //   } catch (error) {
+  //     setIsImageLoading(false);
+  //     console.error("Erreur lors de l'upload de l'image :", error);
+  //   }
+  // };
 
   const form = useForm<AccountFormType>({
     resolver: zodResolver(accountFormSchema),
@@ -137,7 +278,7 @@ const MyAccount = ({
   });
 
   console.log("form.watch(imgURL)🤍🤎", form.watch("imgURL"));
-  console.log("form.watch(userName)🤍🤎", form.watch("userName"));
+  //console.log("form.watch(userName)🤍🤎", form.watch("userName"));
 
   const { reset } = form;
 
@@ -262,6 +403,7 @@ const MyAccount = ({
                         className="cursor-pointer text-muted mb-1"
                       />
                       {isImageLoading ? (
+                        // <p className="text-muted">Chargement de l'image...</p>
                         <Progress value={progress} />
                       ) : (
                         imageUpload && (

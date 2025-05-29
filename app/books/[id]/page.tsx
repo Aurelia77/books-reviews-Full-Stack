@@ -168,6 +168,7 @@ const Book = async ({ params }: { params: Promise<{ id: string }> }) => {
           alt={`Image de couverture du livre ${book?.title}`}
           width={192}
           height={288}
+          unoptimized
         />
         <CardHeader className="flex flex-col justify-between overflow-hidden gap-4">
           <CardTitle>{book?.title}</CardTitle>
