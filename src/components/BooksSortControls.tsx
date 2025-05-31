@@ -5,9 +5,6 @@ import { Button } from "./ui/button";
 type BooksSortControlsType = {
   booksStatus: BookStatusEnum;
   sortState: SortStateType;
-  // {
-  //   [key in BookStatusEnum]: SortStateType;
-  // };
   setSortState: React.Dispatch<React.SetStateAction<SortStateType>>;
   withDateOption?: boolean;
 };
@@ -18,15 +15,7 @@ const BooksSortControls = ({
   setSortState,
   withDateOption = false,
 }: BooksSortControlsType): JSX.Element => {
-  console.log("booksStatus", booksStatus);
-
-  console.log("*-*-sortState", sortState);
-  console.log("*-*-sortState", sortState[booksStatus]);
-
   const handleSort = (criteria: "title" | "date" | "note" | "reviews") => {
-    //console.log("wwwx criteria", criteria);
-    //console.log("wwwx activeTab", activeTab);
-
     setSortState((prevState: SortStateType) => ({
       ...prevState,
       [booksStatus]: {

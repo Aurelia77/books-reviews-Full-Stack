@@ -20,19 +20,18 @@ const NavBar = (): JSX.Element => {
   const { currentUser, profileImage } = useUserStore();
 
   return (
-    <div className="sticky top-0 z-20 flex h-12 items-center bg-primary/70 p-1 text-muted shadow-md">
+    <div className="bg-primary/70 text-muted sticky top-0 z-20 flex h-12 items-center p-1 shadow-md">
       <p className="absolute left-10 top-4 hidden text-xs sm:block">
         {currentUser?.email}
       </p>
       <ArrowLeft
-        className="absolute left-1 top-1 z-20 cursor-pointer text-muted/60"
+        className="text-muted/60 absolute left-1 top-1 z-20 cursor-pointer"
         size={36}
-        //onClick={handleBackClick}
         onClick={() => navigate(-1)}
       />
       <NavigationMenu className="ml-8">
         <NavigationMenuList>
-          {/* ACCUEIL */}
+          {/* HOME */}
           <NavigationMenuItem>
             <Link to="/">
               <NavigationMenuLink asChild>
@@ -47,7 +46,7 @@ const NavBar = (): JSX.Element => {
               </NavigationMenuLink>
             </Link>
           </NavigationMenuItem>
-          {/* RECHERCHE DE LIVRES */}
+          {/* BOOK SEARCH */}
           <NavigationMenuItem>
             <Link to="/searchbooks">
               <NavigationMenuLink asChild>
@@ -65,7 +64,7 @@ const NavBar = (): JSX.Element => {
           </NavigationMenuItem>
           {currentUser ? (
             <div className="flex items-center gap-1">
-              {/* MES LIVRES */}
+              {/* MY BOOKS */}
               <NavigationMenuItem>
                 <Link to="/mybooks">
                   <NavigationMenuLink asChild>
@@ -81,7 +80,7 @@ const NavBar = (): JSX.Element => {
                   </NavigationMenuLink>
                 </Link>
               </NavigationMenuItem>
-              {/* MON COMPTE */}
+              {/* MON ACCOUNT */}
               <NavigationMenuItem className={cn(profileImage && "mt-1")}>
                 <Link to={`/account`}>
                   <NavigationMenuLink asChild>
@@ -100,18 +99,17 @@ const NavBar = (): JSX.Element => {
                           />
                         </Avatar>
                       ) : (
-                        <Avatar className="flex size-8 items-center justify-center rounded-full bg-secondary">
+                        <Avatar className="bg-secondary flex size-8 items-center justify-center rounded-full">
                           {currentUser?.email
                             ? currentUser.email.charAt(0).toUpperCase()
                             : ""}
                         </Avatar>
-                        // <CircleUserRound />
                       )}
                     </span>
                   </NavigationMenuLink>
                 </Link>
               </NavigationMenuItem>
-              {/* DECONNEXION */}
+              {/* LOGOUT */}
               <NavigationMenuItem>
                 <Link to="/" onClick={signoutFirebase}>
                   <NavigationMenuLink asChild>
@@ -123,7 +121,7 @@ const NavBar = (): JSX.Element => {
               </NavigationMenuItem>
             </div>
           ) : (
-            // CONNEXION
+            // LOGIN
             <NavigationMenuItem>
               <Link to="/login">
                 <NavigationMenuLink asChild>
@@ -131,7 +129,7 @@ const NavBar = (): JSX.Element => {
                     className={cn(
                       navigationMenuTriggerStyle(),
                       location.pathname === "/login" &&
-                        "bg-primary/90 text-foreground" // Ajout de classes conditionnelles pour l'élément actif
+                        "bg-primary/90 text-foreground"
                     )}
                   >
                     <LogIn />

@@ -30,18 +30,9 @@ const booksReadByUsersFetcher = (
   currentUserId: string,
   isSearchOnFriendsBooks: boolean
 ): Promise<UsersBooksReadType[]> => {
-  console.log("8888 fetcher");
-  console.log("8888 currentUserId", currentUserId);
-  console.log("8888 isSearchOnFriendsBooks", isSearchOnFriendsBooks);
   return getUsersReadBooksIdsFirebase(currentUserId, isSearchOnFriendsBooks)
     .then((usersReadBooksIds) => {
-      console.log("555 friendsBooksReadIds", usersReadBooksIds);
       const promises = usersReadBooksIds.map((bookId) => {
-        ///////////////
-        ///////////////
-        ///////////////
-        ///////////////
-        ///////////////
         return getUsersWhoReadBookFirebase(bookId, currentUserId).then(
           (friendsWhoReadBook) => ({
             bookId,
@@ -54,17 +45,9 @@ const booksReadByUsersFetcher = (
       return Promise.all(promises);
     })
     .then((booksIdsAndFriendsWhoReadBooksIds) => {
-      console.log(
-        "555666 friendsWhoReadBook",
-        booksIdsAndFriendsWhoReadBooksIds
-      );
-      // promise2 contient une fonction async, donc on doit utiliser Promise.all(promises2) mais aussi Promise.all(promises1) car promises1 contient promises2.
+      // promise2 contains an async function, so we must use Promise.all(promises2) but also Promise.all(promises1) because promises1 contains promises2.
       const promises1 = booksIdsAndFriendsWhoReadBooksIds.map(
         (bookIdAndFriendsWhoReadBooksIds) => {
-          console.log(
-            "56 bookIdAndFriendsWhoReadBooksIds",
-            bookIdAndFriendsWhoReadBooksIds
-          );
           const promises2 =
             bookIdAndFriendsWhoReadBooksIds.friendsWhoReadBookIds.map(
               (userId) => {
@@ -74,7 +57,6 @@ const booksReadByUsersFetcher = (
                   BookStatusEnum.booksReadList
                 ).then(
                   (userInfo): UsersWhoReadBookType => ({
-                    //bookId: bookIdAndFriendsWhoReadBooksIds.bookId,
                     userId,
                     userInfoYear: userInfo?.year,
                     userInfoMonth: userInfo?.month,
@@ -85,7 +67,6 @@ const booksReadByUsersFetcher = (
               }
             );
 
-          console.log("555666 Promise.all(promises2)", Promise.all(promises2));
           return Promise.all(promises2).then((usersWhoReadBook) => ({
             bookId: bookIdAndFriendsWhoReadBooksIds.bookId,
             usersWhoReadBook,
@@ -111,17 +92,10 @@ const UsersBooksReadPage = (): JSX.Element => {
     BookTypePlusUsersWhoRead[]
   >([]);
 
-  console.log("*-*-displayedSortedBooks", displayedSortedBooks);
-
-  console.log("*-*-displayedBooks", booksWithAllInfos);
-  console.log("*-*-displayedBooks 0", booksWithAllInfos[0]?.title);
-
-  // const [sortState, setSortState] = useState<{ [key in BookStatusEnum]: SortStateType }>({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [sortState, setSortState] = useState<any>({
     [BookStatusEnum.booksReadList]: { criteria: "title", order: "desc" },
   });
-
-  console.log("*-*- sortState", sortState);
 
   useEffect(() => {
     getDocsByQueryFirebase<UserType>("users", "id", currentUser?.uid).then(
@@ -138,20 +112,12 @@ const UsersBooksReadPage = (): JSX.Element => {
     error,
     isLoading,
   } = useSWR<UsersBooksReadType[]>(
-    //currentUser?.uid,
-    //booksReadByFriendsFetcher
     [currentUser?.uid, isSearchOnFriendsBooks],
     ([currentUserId, isSearchOnFriendsBooks]: [string, boolean]) =>
       booksReadByUsersFetcher(currentUserId, isSearchOnFriendsBooks)
   );
 
-  // ici on utilise une constante et pas un state car les message ne change pas et s'affiche seulement si useSWR renvoie une erreur
   const message = `Un problème est survenu dans la récupération des informations sur les livres => ${error?.message}`;
-
-  console.log(
-    "88856 friendsReadBooks",
-    friendsOrUsersReadBooksWithInfo?.length
-  );
 
   useEffect(() => {
     if (friendsOrUsersReadBooksWithInfo) {
@@ -162,7 +128,6 @@ const UsersBooksReadPage = (): JSX.Element => {
             "id",
             bookUsersBooksReadType.bookId
           ).then((booksBookType) => {
-            console.log("books", booksBookType);
             return {
               ...booksBookType[0],
               usersWhoRead: bookUsersBooksReadType.usersWhoReadBook,
@@ -171,22 +136,20 @@ const UsersBooksReadPage = (): JSX.Element => {
         }
       );
       Promise.all(promises).then((books) => {
-        setBooksWithAllInfos(books); // Mise à jour de l'état displayedBooks
+        setBooksWithAllInfos(books);
       });
     }
   }, [friendsOrUsersReadBooksWithInfo]);
 
   useEffect(() => {
-    console.log("*-*- useEffect sortBookTypes sortState = ", sortState);
     const sortedBooks = sortBook(booksWithAllInfos, sortState);
-    console.log("*-*- useEffect sortBookTypes sortedBooks = ", sortedBooks);
     setDisplayedSortedBooks(sortedBooks);
   }, [sortState, booksWithAllInfos]);
 
   return (
     <div className="h-full min-h-screen max-w-3xl sm:p-2 md:m-auto md:mt-8">
       <div className="flex h-full flex-col gap-6">
-        <div className="sticky top-10 z-10 flex flex-col gap-3 bg-background/70 duration-500">
+        <div className="bg-background/70 sticky top-10 z-10 flex flex-col gap-3 duration-500">
           <Title>Livres lus par les membres</Title>
         </div>
         <div className="mb-4 flex items-center justify-center gap-4 text-center">
@@ -198,7 +161,7 @@ const UsersBooksReadPage = (): JSX.Element => {
             onCheckedChange={() =>
               setIsSearchOnFriendsBooks(!isSearchOnFriendsBooks)
             }
-            className="border-2 border-foreground/20"
+            className="border-foreground/20 border-2"
           />
           <p
             className={cn(
@@ -233,17 +196,14 @@ const UsersBooksReadPage = (): JSX.Element => {
               {displayedSortedBooks.map((book: BookTypePlusUsersWhoRead) => (
                 <li
                   key={book.id}
-                  className="mb-4 rounded-xl border-4 border-foreground/60"
+                  className="border-foreground/60 mb-4 rounded-xl border-4"
                 >
-                  {/* Ici on passe le book en props (et pas le bookId comme dans MyBooksPage) */}
-                  <BookInfos
-                    bookId={book.id}
-                    //friendsWhoReadBook={friendsWhoReadBook(book.bookId)}
-                  />
+                  {/* Here we pass the book as a prop (and not the bookId as in MyBooksPage or..) */}
+                  <BookInfos bookId={book.id} />
 
                   {book.usersWhoRead.map((friendBookInfo) => (
                     <div
-                      className="border-4 border-primary/20 p-2"
+                      className="border-primary/20 border-4 p-2"
                       key={friendBookInfo.userId}
                     >
                       <BookUserInfo
@@ -263,7 +223,7 @@ const UsersBooksReadPage = (): JSX.Element => {
       </div>
       {isSearchOnFriendsBooks && (
         <div>
-          <div className="mb-2 bg-friend/35 p-2">
+          <div className="bg-friend/35 mb-2 p-2">
             <p>Vous avez {nbFriends} amis, vous pouvez en ajouter ici :</p>
           </div>
           <CustomLinkButton className="bg-secondary/60" linkTo="/searchusers">

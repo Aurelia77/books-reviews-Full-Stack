@@ -50,12 +50,6 @@ const MyAccountPage = (): JSX.Element => {
   const { currentUser } = useUserStore();
   const { toast } = useToast();
 
-  console.log("🤡🤡MY ACCOUNT friendsInfo", friendsInfo);
-  console.log(
-    "🤡🤡MY ACCOUNT friendsInfo[0] isMyFriend ?",
-    friendsInfo[0]?.isMyFriend ?? "non"
-  );
-
   const [imageUpload, setImageUpload] = useState<File | null>(null);
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -97,7 +91,6 @@ const MyAccountPage = (): JSX.Element => {
   }, [currentUserInfo, reset]);
 
   const onSubmit: SubmitHandler<AccountFormType> = (data) => {
-    //console.log("data", data);
     addOrUpdateUserFirebase(currentUser?.uid, data);
     useUserStore.getState().setProfileImage(data.imgURL);
     toast({
@@ -223,21 +216,6 @@ const MyAccountPage = (): JSX.Element => {
       {friendsInfo.length > 0 ? (
         <UsersListView userInfoList={friendsInfo} />
       ) : (
-        // friendsInfo.map((friendInfo, index) => (
-
-        // <Link
-        //   key={index}
-        //   to={`/account/${friendInfo.id}`}
-        //   className="font-semibold text-muted"
-        // >
-        //   <div className="flex items-center gap-2">
-        //     <Avatar>
-        //       <AvatarImage src={friendInfo.imgURL} />
-        //     </Avatar>
-        //     <p>{friendInfo.userName}</p>
-        //   </div>
-        // </Link>
-        // ))
         <FeedbackMessage message="Aucun ami pour l'instant" />
       )}
 

@@ -18,7 +18,7 @@ const StarRating = ({
   return (
     <div className="flex">
       {[...Array(5)].map((_, index) => {
-        const isHalf = value - index === 0.5; // Vérification si l'étoile doit être à moitié remplie
+        const isHalf = value - index === 0.5;
         return (
           <div
             key={index}

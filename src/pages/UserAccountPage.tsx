@@ -18,12 +18,9 @@ import { useParams } from "react-router-dom";
 const UserAccountPage = (): JSX.Element => {
   const [userInfo, setUserInfo] = useState<UserType>();
   const [isFriend, setIsFriend] = useState<boolean>();
-  console.log("isFriend", isFriend);
 
-  //console.log("USER INFO", userInfo);
 
   const userInUrl = useParams<{ userId: string }>();
-  console.log("userId", userInUrl);
 
   const { currentUser } = useUserStore();
 
@@ -52,9 +49,7 @@ const UserAccountPage = (): JSX.Element => {
   return (
     <div
       className={cn("min-h-screen max-w-3xl sm:p-2 md:m-auto md:mt-8", {
-        //"bg-friend/20": isFriend,
       })}
-      //key={userInUrl.userId}
     >
       <Card className="mb-6">
         <div className="mr-2 flex max-w-md items-center justify-between gap-10 pl-2">

@@ -630,9 +630,6 @@ const AdminPage = (): JSX.Element => {
   const { currentUser } = useUserStore();
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
-  //   console.log("isAdmin", isAdmin);
-  //   console.log("currentUser", currentUser?.uid);
-
   useEffect(() => {
     getDocsByQueryFirebase<UserType>("users", "id", currentUser?.uid)
       .then((docs) => {
@@ -645,24 +642,22 @@ const AdminPage = (): JSX.Element => {
       });
   }, [currentUser]);
 
-  // !! Avec le .then ne fonctionne pas ! (les livres s'ajoute mais les info user n'ajoute qu'un livre !)
+  // !! With .then it doesn't work! (the books are added but the user info only adds one book!)
   const addBooksAndUsersInfos = async (
     userId: string | undefined,
     dataBooksInfo: MyInfoBookFormType[]
   ) => {
     for (let index = 0; index < DATA_BOOKS.length; index++) {
       await addBookFirebase(userId, DATA_BOOKS[index], dataBooksInfo[index]);
-      console.log(`UserAH : livre ${index} OK !!!`);
     }
-    console.log("All books and user info added for AH");
   };
 
   return (
-    <div className="min-h-screen max-w-3xl m-auto">
+    <div className="m-auto min-h-screen max-w-3xl">
       <Title>Admin Page</Title>
       <Title level={2}>AJOUT</Title>
 
-      <ol className="flex flex-col gap-4 m-2">
+      <ol className="m-2 flex flex-col gap-4">
         <li>Créer compte AAA</li>
         <li>Créer compte AH</li>
         <li>AJOUTER l'id de AAA dans fonction addBooksAndUsersInfos</li>
@@ -672,9 +667,6 @@ const AdminPage = (): JSX.Element => {
       </ol>
       {isAdmin ? (
         <div className="flex flex-col gap-4">
-          {/* <Button className="bg-secondary/60" onClick={addUsers}>
-            Ajouter Users
-          </Button> */}
           <Button
             className="bg-primary/80"
             onClick={() =>
@@ -684,20 +676,15 @@ const AdminPage = (): JSX.Element => {
             Ajouter livres + infos user AH
           </Button>
           <Button
-            className="bg-secondary/50 flex gap-6"
-            ////////////////////////////////////////////////////////////////////////////
-            ////////////////////////////////////////////////////////////////////////////
-            /////////////////////   REMPLACER L'ID !!!    //////////////////////////////
-            ////////////////////////////////////////////////////////////////////////////
-            ////////////////////////////////////////////////////////////////////////////
+            className="flex gap-6 bg-secondary/50"
             onClick={() =>
               addBooksAndUsersInfos(
-                "B2GY4BUoZoRWe5hrhgGksWv82AN2", //////////////////////////// ID AAA ICI
+                "B2GY4BUoZoRWe5hrhgGksWv82AN2",
                 DATA_BOOKS_INFO_AAA
               )
             }
           >
-            <span className="text-red-500 font-bold text-xl">
+            <span className="text-xl font-bold text-red-500">
               REMPLACER L'ID !!!
             </span>
             Ajouter livres + infos user AAA
@@ -706,7 +693,7 @@ const AdminPage = (): JSX.Element => {
             Supprimer toutes les données
           </Button>
           <Title level={2}>SUPPRESSION</Title>
-          <ol className="flex flex-col gap-4 m-2">
+          <ol className="m-2 flex flex-col gap-4">
             <li>Clic sur BOUTON Supprimer toutes les données</li>
             <li>SUPPRIMER les utilisateurs enregistrés, à la main</li>
           </ol>

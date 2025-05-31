@@ -8,13 +8,13 @@ import {
 export const cleanDescription = (description: string) => {
   return (
     description
-      // Supprimer toutes les balises HTML
+      // Remove all HTML tags
       .replace(/<\/?[^>]+(>|$)/g, "")
-      // Supprimer les espaces en début et fin
+      // Remove leading and trailing spaces
       .trim()
-      // Remplacer les balises <br> par des sauts de ligne
+      // Replace <br> tags with line breaks
       .replace(/<br\s*\/?>\s*(<br\s*\/?>)*/g, "\n")
-      // Supprimer les guillemets français et anglais en début et fin de texte
+      // Remove French and English quotation marks at the beginning and end of the text
       .replace(/^[«"]+|[»"]+$/g, "")
   );
 };
@@ -24,16 +24,11 @@ export const sortBooksByStatus = (
   bookStatus: BookStatusEnum,
   sortState: { [key in BookStatusEnum]: { criteria: string; order: string } }
 ): MyInfoBookPlusTitleAndNote[] => {
-  console.log("sortBooksByStatus");
-
   if (books.length <= 1) {
     return books;
   }
 
   const { criteria, order } = sortState[bookStatus];
-
-  console.log("*-*-sortBooksByStatus criteria", criteria);
-  console.log("*-*-sortBooksByStatus order", order);
 
   return books.sort((a, b) => {
     let comparison = 0;
@@ -57,7 +52,6 @@ export const sortBooksByStatus = (
         comparison = ratingA - ratingB;
         break;
       case "reviews":
-        console.log("REVIEW", a.bookNote?.count, b.bookNote?.count);
         comparison = (a.bookNote?.count ?? 0) - (b.bookNote?.count ?? 0);
         break;
     }
@@ -65,10 +59,6 @@ export const sortBooksByStatus = (
   });
 };
 
-// export const sortBook = (
-//   books: BookTypePlusUsersWhoRead[] | BookType[],
-//   sortState: { [key in BookStatusEnum]: { criteria: string; order: string } }
-// ): BookType[] => {
 export const sortBook = <T extends BookTypePlusUsersWhoRead | BookType>(
   books: T[],
   sortState: { [key in BookStatusEnum]: { criteria: string; order: string } }
@@ -77,12 +67,7 @@ export const sortBook = <T extends BookTypePlusUsersWhoRead | BookType>(
     return books;
   }
 
-  console.log("sortBookTypes sortState", sortState);
-
-  //const { criteria, order } = sortState;
   const { criteria, order } = sortState[BookStatusEnum.booksReadList];
-
-  console.log("*-*-sortBook", books, criteria, order);
 
   const sortedBooks = books.sort((a, b) => {
     let comparison = 0;
@@ -102,13 +87,12 @@ export const sortBook = <T extends BookTypePlusUsersWhoRead | BookType>(
         break;
       }
       case "reviews":
-        console.log("REVIEW", a.rating?.count, b.rating?.count);
         comparison = (a.rating?.count ?? 0) - (b.rating?.count ?? 0);
         break;
     }
 
     return order === "asc" ? comparison : -comparison;
   });
-  console.log("*-*- RETURN", sortedBooks);
+
   return sortedBooks;
 };

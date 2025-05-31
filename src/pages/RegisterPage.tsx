@@ -68,7 +68,6 @@ const RegisterPage = (): JSX.Element => {
   });
 
   const onSubmit: SubmitHandler<RegisterFormType> = (data) => {
-    console.log("data", data);
     registerFirebase(data.email, data.password)
       .then((newUser) => {
         addOrUpdateUserFirebase(newUser.uid, {
@@ -169,14 +168,9 @@ const RegisterPage = (): JSX.Element => {
           </Button>
         </form>
       </Form>
-      <CustomLinkButton className="mb-4 bg-primary/50" linkTo="/login">
+      <CustomLinkButton className="bg-primary/50 mb-4" linkTo="/login">
         Connexion
       </CustomLinkButton>
-
-      {/* <p>Déja inscrit ?</p>
-      <CustomLinkButton className="bg-secondary/70" linkTo="/login">
-        Se connecter
-      </CustomLinkButton> */}
     </div>
   );
 };

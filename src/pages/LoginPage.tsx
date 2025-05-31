@@ -45,8 +45,7 @@ const LoginPage = (): JSX.Element => {
 
   const onSubmit: SubmitHandler<LoginFormType> = (data) => {
     loginFirebase(data.email, data.password)
-      .then((user) => {
-        console.log("user login", user.email);
+      .then(() => {
         navigate("/");
       })
       .catch((error) => {
@@ -103,7 +102,7 @@ const LoginPage = (): JSX.Element => {
         </form>
       </Form>
       <CustomLinkButton
-        className="mb-4 bg-secondary/60"
+        className="bg-secondary/60 mb-4"
         linkTo="/resetpassword"
       >
         Mot de passe oublié ?

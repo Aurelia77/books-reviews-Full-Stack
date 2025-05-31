@@ -2,7 +2,7 @@ import { Sparkles } from "lucide-react";
 
 const FriendSparkles = (): JSX.Element => {
   return (
-    <Sparkles className="bg-friend rounded-full p-2" size={40} color="black" />
+    <Sparkles className="rounded-full bg-friend p-2" size={40} color="black" />
   );
 };
 

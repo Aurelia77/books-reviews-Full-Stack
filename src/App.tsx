@@ -19,7 +19,7 @@ import UsersSearchPage from "./pages/UsersSearchPage";
 const App = (): JSX.Element => {
   return (
     <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-      <div className="h-auto min-h-screen bg-background text-foreground">
+      <div className="bg-background text-foreground h-auto min-h-screen">
         <BrowserRouter>
           <NavBar />
           <div className="mb-6">

@@ -36,34 +36,9 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import useSWR, { useSWRConfig } from "swr";
 
-// const bookFormSchema = z.object({
-//   bookStatus: z.nativeEnum(BookStatusEnum),
-//   year: z
-//     .number()
-//     .int()
-//     .min(1900, { message: "L'année doit être suppérieur à 1900" })
-//     .max(currentYear, {
-//       message: "Impossible d'ajouter une année dans le future !",
-//     })
-//     .optional(),
-//   note: z.number().int().min(0).max(5).optional(),
-//   commentaires: z.string(),
-// });
-
 const fetchBookInfoDB = async (bookId: string): Promise<BookType | null> => {
-  // throw new Error(
-  //   "Erreur simulée !"
-  // );
-
-  console.log("zzz FETCHING-1 BookInfos", bookId);
-
   return getDocsByQueryFirebase<BookType>("books", "id", bookId)
     .then((books: BookType[]) => {
-      console.log(
-        "zzz FETCHING-1 books (après getDocsByQueryFirebase (.then))",
-        bookId,
-        books[0]
-      );
       if (books.length > 0) {
         return books[0];
       } else {
@@ -80,131 +55,66 @@ const BookDetailPage = (): JSX.Element => {
   const { mutate } = useSWRConfig();
 
   const bookId = useParams().bookId;
-  console.log("bookId", bookId);
 
   const { currentUser } = useUserStore();
 
-  console.log("zzz currentUser", currentUser?.uid);
-
   const [bookInfos, setBookInfos] = useState<BookType>();
-  console.log("zzz bookInfos", bookInfos);
-  console.log("zzz bookInfos description", bookInfos?.description);
-  //console.log("zzz bookInfos rating", bookInfos?.rating);
-
-  //const [bookInMyBooks, setBookInMyBooks] = useState<BookStatusEnum | "">(""); //////////////////////////////////////////////////
-  //  const [bookInMyBooks, setBookInMyBooks] = useState<BookStatusEnum>();
   const [isBookInDB, setIsBookInDB] = useState<boolean>(true);
-  console.log("zzz isBookInDB", isBookInDB);
 
   const handleUpdate = () => {
-    console.log("handleUpdate BOOKDETAIL");
     // To rerender this page when the user updates the component AddOrUpdateBookOrBookStatus
     mutate(bookId);
   };
 
-  // 1-DEBUT==================================FAIRE HOOK PERSO !!!
-  // 1 - Fonction appelée en 1er : va chercher les info du livre en fonction de son id (si dans notre BDD)
-  //  FETCHER mis en dehors
-
+  // 1-BEGINING==================================
+  // Function called first: fetches the book info based on its id (if present in our DB)
   const {
     data: fetchedBookFromId,
     error,
     isLoading,
   } = useSWR<BookType | null>(currentUser ? bookId : null, fetchBookInfoDB);
 
-  console.log(
-    "zzz after FETCHING-1 fetchedBookFromId n'est plus undefined !",
-    fetchedBookFromId?.title
-  );
-
-  //////// A SUPPRIMER !!!!!!!!!!!!!!!!!
-  useEffect(() => {
-    console.log(
-      "USEFFECT /*/*/*/*/ zzz after FETCHING-1 fetchedBookFromId n'est plus undefined !",
-      fetchedBookFromId
-    );
-  }, [fetchedBookFromId]);
-
-  // ici on utilise une constante et pas un state car les message ne change pas et s'affiche seulement si useSWR renvoie une erreur
-  const message = `Un problème est survenu dans la récupération du livre => ${error?.message}`; // VOIR !!!!
+  const message = `Un problème est survenu dans la récupération du livre => ${error?.message}`;
 
   useEffect(() => {
-    console.log(
-      "USEEFFECT-1 zzz currentUser",
-      currentUser?.uid,
-      fetchedBookFromId
-    );
-
     if (fetchedBookFromId === null) {
       setIsBookInDB(false);
     } else {
       setBookInfos(fetchedBookFromId);
     }
-
-    // if (fetchedBookFromId !== null) {
-    //   // bien mettre la condition !== null sinon peut causer des pbms (compliqué, j'ai pas tt compris)
-    //   console.log(
-    //     "fetchedBookFromId OUI zzz bookFromId after FETCHING useEffect",
-    //     fetchedBookFromId
-    //   );
-    //   setBookInfos(fetchedBookFromId);
-    // } else {
-    //   console.log(
-    //     "fetchedBookFromId NON zzz bookFromId after FETCHING useEffect",
-    //     fetchedBookFromId
-    //   );
-    //   if (currentUser) {
-    //     console.log("zzz currentUser OUI", currentUser?.uid);
-    //     setIsBookInDB(false);
-    //   } else {
-    //     console.log("zzz currentUser NON");
-    //   }
-    // }
   }, [fetchedBookFromId, currentUser]);
 
-  // 1-FIN============================FAIRE HOOK PERSO !!!
+  // 1-END============================
 
-  // 3-DEBUT============================FAIRE HOOK PERSO !!!
+  // 2-BEGINING============================
   const fetchAPIBooks = (booksApiUrl: string): Promise<BookType> => {
-    console.log("zzz FETCHING-2 booksApiUrl", booksApiUrl);
-
-    //throw new Error("Erreur simulée !");
-    return (
-      fetch(booksApiUrl)
-        //.then((res) => res.json())    // idem sans TS
-        .then((res: Response): Promise<BookAPIType> => res.json())
-        /// voir si je px retourner avant (res.json() ????????)
-        .then((data) => {
-          console.log("DATA", data);
-          const bookFromAPI: BookType = {
-            id: data.id,
-            title: data.volumeInfo.title,
-            authors: data.volumeInfo.authors, // ?? "Auteur inconnu",
-            description: data.volumeInfo.description,
-            categories: data.volumeInfo.categories,
-            pageCount: data.volumeInfo.pageCount,
-            publishedDate: data.volumeInfo.publishedDate,
-            publisher: data.volumeInfo.publisher,
-            imageLink: data.volumeInfo.imageLinks?.thumbnail,
-            language: data.volumeInfo.language,
-            isFromAPI: true,
-            rating: {
-              totalRating: 0,
-              count: 0,
-            },
-          };
-          console.log("bookFromAPI", bookFromAPI.title);
-          return bookFromAPI;
-        })
-        .catch((error) => {
-          console.error("Error fetching books:", error);
-          throw error;
-        })
-    );
+    return fetch(booksApiUrl)
+      .then((res: Response): Promise<BookAPIType> => res.json())
+      .then((data) => {
+        const bookFromAPI: BookType = {
+          id: data.id,
+          title: data.volumeInfo.title,
+          authors: data.volumeInfo.authors,
+          description: data.volumeInfo.description,
+          categories: data.volumeInfo.categories,
+          pageCount: data.volumeInfo.pageCount,
+          publishedDate: data.volumeInfo.publishedDate,
+          publisher: data.volumeInfo.publisher,
+          imageLink: data.volumeInfo.imageLinks?.thumbnail,
+          language: data.volumeInfo.language,
+          isFromAPI: true,
+          rating: {
+            totalRating: 0,
+            count: 0,
+          },
+        };
+        return bookFromAPI;
+      })
+      .catch((error) => {
+        console.error("Error fetching books:", error);
+        throw error;
+      });
   };
-
-  // const [booksApiUrl, setBooksApiUrl] = useState(`${GOOGLE_BOOKS_API_URL}?q=${bookInfos.}`);
-  //`${GOOGLE_BOOKS_API_URL}?q=${queryApi}&maxResults=${MAX_RESULTS}`;
 
   const {
     data: fetchedBookFromApi,
@@ -214,21 +124,17 @@ const BookDetailPage = (): JSX.Element => {
     isBookInDB === false ? `${GOOGLE_BOOKS_API_URL}/${bookId}` : null,
     fetchAPIBooks
   );
-  // 3-FIN============================FAIRE HOOK PERSO !!!
+  // 2-END============================
 
   useEffect(() => {
-    console.log("zzz USEEFFECT-2 ");
     if (fetchedBookFromApi) {
-      console.log("333 USEEFFECT apiBooks", fetchedBookFromApi?.title);
       setBookInfos(fetchedBookFromApi);
     }
   }, [fetchedBookFromApi]);
 
-  console.log("333 data bookFromApi", fetchedBookFromApi?.title);
-
   const addLineBreaks = (description: string) => {
     return (
-      // Ajoute un saut de ligne après chaque : ".", "!", ou "?" suivi d'une lettre majuscule => pour plus de lisibilité
+      // Add a line break after each ".", "!", or "?" followed by an uppercase letter => for better readability
       description.replace(/([.!?])\s*(?=[A-Z])/g, "$1\n")
     );
   };
@@ -238,16 +144,10 @@ const BookDetailPage = (): JSX.Element => {
     setUsersWhoReadBookCommentsAndNotes,
   ] = useState<UserBookInfoType[]>([]);
 
-  console.log(
-    "usersWhoReadBookCommentsAndNotes",
-    usersWhoReadBookCommentsAndNotes
-  );
-
   const fillUserCommentsTab = () => {
     if (bookInfos)
       getUsersWhoReadBookCommentsAndNotesFirebase(bookInfos.id).then(
         (commentsAndNotes) => {
-          console.log("comments", commentsAndNotes);
           setUsersWhoReadBookCommentsAndNotes(commentsAndNotes);
         }
       );
@@ -320,7 +220,6 @@ const BookDetailPage = (): JSX.Element => {
                                     />
                                   </li>
                                 );
-                                <p>{userCommentsAndNote.userNote} </p>;
                               }
                             )}
                           </ul>
