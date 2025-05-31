@@ -5,7 +5,6 @@ import { Button } from "./ui/button";
 
 type CustomLinkButtonProps = React.HTMLAttributes<HTMLButtonElement> & {
   children: ReactNode;
-  //opacity?: number;
   linkTo?: string;
   className?: string;
 };

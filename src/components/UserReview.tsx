@@ -13,7 +13,7 @@ const UserReview = ({ userCommentsAndNote }: UserReviewProps): JSX.Element => {
   const { currentUser } = useUserStore();
 
   return (
-    <div className="p-4 flex flex-col gap-2">
+    <div className="flex flex-col gap-2 p-4">
       <div className="flex justify-between">
         <Link
           to={

@@ -14,8 +14,6 @@ const fetcher = async (uid: string) => {
 };
 
 const MyBooksPage = (): JSX.Element => {
-  //const [userInfo, setUserInfo] = useState<UserType>();
-
   const { currentUser } = useUserStore();
   const {
     data: userInfo,
@@ -23,29 +21,9 @@ const MyBooksPage = (): JSX.Element => {
     isLoading,
   } = useSWR(currentUser ? currentUser.uid : null, fetcher);
 
-  // ici on utilise une constante et pas un state car les message ne change pas et s'affiche seulement si useSWR renvoie une erreur
-  const message = `Un problème est survenu dans la récupération du livre => ${error?.message}`; // VOIR !!!!
-
-  //console.log("99999 currentUser", currentUser);
-
-  //console.log(currentUser);
-
-  // useEffect(() => {
-  //   //console.log("999 USEEFFECT");
-  //   //console.log("999 currentUser?.uid", currentUser?.uid);
-
-  //   if (currentUser)
-  //     getDocsByQueryFirebase<UserType>("users", "id", currentUser?.uid).then(
-  //       (users) => {
-  //         setUserInfo(users[0]);
-  //         return users[0];
-  //       }
-  //     );
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [currentUser?.uid]);
+  const message = `Un problème est survenu dans la récupération du livre => ${error?.message}`;
 
   return isLoading ? (
-    // {/* Mettre un Spinner pour pas voir rapidement le message Aucun membre ??? */}
     <div>
       <BookSkeleton />
       <BookSkeleton />

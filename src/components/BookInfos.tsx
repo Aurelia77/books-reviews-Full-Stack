@@ -24,10 +24,9 @@ import FeedbackMessage from "./FeedbackMessage";
 import FriendsWhoReadBook from "./FriendsWhoReadBook";
 import BookSkeleton from "./skeletons/BookSkeleton";
 
-// Soit à partir de BooksSearchPage => on passe un objet "book" en props car on a les info nécessaires
-// Soit à partir de MyBooksPage / UserAccountPage => on passe un bookId (et ensuite on va chercher les infos nécessaires dans la BDD avec useSWR)
-//// ou mettre avec hook perso.............
-// userViewId = id du user à ne pas compter dans les amis qui ont lu le livre (si on est sur UserAccountPage) + qd on est sur UserAccountPage => on voit ses info et non celles du user connecté
+// Either from BooksSearchPage => we pass a "book" object as props because we already have the necessary info
+// Or from MyBooksPage / UserAccountPage => we pass a bookId (and then fetch the necessary info from the DB with useSWR)
+// userViewId = id of the user to exclude from friends who have read the book (if on UserAccountPage) + when on UserAccountPage => we see their info and not those of the logged-in user
 type BookInfosProps =
   | { book: BookType; bookId?: never; userViewId?: string }
   | { book?: never; bookId: string; userViewId?: string };
@@ -37,43 +36,19 @@ const BookInfos = ({
   bookId,
   userViewId,
 }: BookInfosProps): JSX.Element => {
-  ////console.log("bookId", bookId);
-
   const [bookInfos, setBookInfos] = useState<BookType | null>(book || null);
-  console.log("bookInfos", bookInfos);
-  console.log("bookInfos description", bookInfos?.description);
 
   const [bookInMyList, setBookInMyList] = useState<BookStatusEnum | "">("");
   const [bookInFriendList, setBookInFriendList] = useState<BookStatusEnum | "">(
     ""
   );
 
-  //   const [bookInMyList, setBookInMyList] = useState<BookStatusEnum>();
-
-  //   (bookInMyList) => setBookInMyList(BOOK_STATUS_TRANSLATIONS[bookInMyList])
-  // );
-
   const { currentUser } = useUserStore();
 
-  //console.log("5555 userViewId", userViewId);
-  //console.log("5555 currentUser", currentUser?.uid);
-  //console.log("55555 bookInMyList", bookInMyList);
-  //console.log("55555 bookInFriendList", bookInFriendList);
-  // VOIR !!!!!!!!!! avec hook Perso !!!!!!
-  //const { data: bookFromId, error, isLoading } = useBookId(bookId);
-
-  // 1-DEBUT============================FAIRE HOOK PERSO !!! (aussi pour BookDetailPage)
   const fetchBookInfoDB = async (bookId: string): Promise<BookType | null> => {
-    // throw new Error(
-    //   "Erreur simulée !"
-    // );
-
-    ////console.log("FETCHING BookInfos", bookId);
-
     return getDocsByQueryFirebase<BookType>("books", "id", bookId)
       .then((books) => {
         if (books.length > 0) {
-          ////console.log("BOOKS", books);
           return books[0];
         } else {
           return null;
@@ -91,7 +66,6 @@ const BookInfos = ({
     isLoading,
   } = useSWR<BookType | null>(bookId, fetchBookInfoDB);
 
-  // ici on utilise une constante et pas un state car le message ne change pas et s'affiche seulement si useSWR renvoie une erreur
   const message = `Un problème est survenu dans la récupération du livre => ${error?.message}`;
 
   useEffect(() => {
@@ -99,11 +73,8 @@ const BookInfos = ({
       setBookInfos(bookFromId);
     }
   }, [bookFromId]);
-  // 1-FIN==============
-  // ==============FAIRE HOOK PERSO !!!
 
   useEffect(() => {
-    // ou gérer le undefined dans fonction bookInMyBooksFirebase ??????????
     if (currentUser)
       findBookCatInUserLibraryFirebase(bookInfos?.id, currentUser?.uid).then(
         (bookInMyList) => setBookInMyList(bookInMyList)

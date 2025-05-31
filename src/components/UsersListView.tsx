@@ -9,61 +9,47 @@ const UsersListView = ({
 }: {
   userInfoList: UserType[];
 }): JSX.Element => {
-  ////////////////////////////////////////
-  ////////////////////////////////////////
-  userInfoList.map((friend: UserType) => {
-    console.log(friend);
-    console.log(friend.userName);
-  });
-  ////////////////////////////////////////
-  ////////////////////////////////////////
-
-  return (
-    // <ul className="flex items-center gap-4 p-5">
-
-    userInfoList.length > 0 ? (
-      <ul className="flex flex-col gap-8">
-        {userInfoList.map((friend: UserType) => (
-          <li key={friend.id} className="flex items-center gap-6">
-            <Link
-              to={`/account/${friend.id}`}
-              className="relative flex items-center gap-3 p-3"
-            >
-              {friend.imgURL !== "" ? (
-                <Avatar>
-                  <AvatarImage src={friend.imgURL} className="object-cover" />
-                </Avatar>
-              ) : (
-                <Avatar className="flex items-center justify-center bg-secondary">
-                  {friend.userName.charAt(0).toUpperCase()}
-                </Avatar>
-              )}
-              <p className="font-semibold text-muted">{friend.userName}</p>
-            </Link>
-
-            {/* /////////////////////////////////////////////// */}
-            {friend.isMyFriend ? (
-              <p>Ami</p>
+  return userInfoList.length > 0 ? (
+    <ul className="flex flex-col gap-8">
+      {userInfoList.map((friend: UserType) => (
+        <li key={friend.id} className="flex items-center gap-6">
+          <Link
+            to={`/account/${friend.id}`}
+            className="relative flex items-center gap-3 p-3"
+          >
+            {friend.imgURL !== "" ? (
+              <Avatar>
+                <AvatarImage src={friend.imgURL} className="object-cover" />
+              </Avatar>
             ) : (
-              <p className="text-sm text-muted-foreground">NON</p>
+              <Avatar className="flex items-center justify-center bg-secondary">
+                {friend.userName.charAt(0).toUpperCase()}
+              </Avatar>
             )}
+            <p className="font-semibold text-muted">{friend.userName}</p>
+          </Link>
 
-            {friend.isMyFriend && friend.isMyFriend && (
-              <div className="flex items-center gap-4">
-                <FriendSparkles />
-                <p>Ami</p>
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
-    ) : (
-      <FeedbackMessage
-        message="Aucun membre trouvé."
-        type="info"
-        className="p-5"
-      />
-    )
+          {friend.isMyFriend ? (
+            <p>Ami</p>
+          ) : (
+            <p className="text-sm text-muted-foreground">NON</p>
+          )}
+
+          {friend.isMyFriend && friend.isMyFriend && (
+            <div className="flex items-center gap-4">
+              <FriendSparkles />
+              <p>Ami</p>
+            </div>
+          )}
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <FeedbackMessage
+      message="Aucun membre trouvé."
+      type="info"
+      className="p-5"
+    />
   );
 };
 

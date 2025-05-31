@@ -20,19 +20,16 @@ const FriendsWhoReadBook = ({
       userName: string;
     }[]
   >([]);
-  console.log("***friendsWhoReadBook", friendsWhoReadBook);
 
   const { currentUser } = useUserStore();
 
   useEffect(() => {
     getUsersWhoReadBookFirebase(bookId, currentUser?.uid, userViewId).then(
       (users) => {
-        console.log("xxx***USERS", users);
         const friends = users.map((user) => ({
           id: user.id,
           userName: user.userName,
         }));
-        //console.log("xxx***FRIENDS", friends);
         setFriendsWhoReadBook(friends);
       }
     );

@@ -7,14 +7,10 @@ const AverageBookRating = ({
   bookInfos: BookType;
 }): JSX.Element => {
   return (
-    <div className="flex gap-2 justify-around items-center">
+    <div className="flex items-center justify-around gap-2">
       <StarRating
         value={bookInfos.rating?.totalRating / bookInfos.rating?.count}
       />
-      {/* <p className="text-xs">
-        {bookInfos.rating?.totalRating} / {bookInfos.rating?.count}=
-        {bookInfos.rating?.totalRating / bookInfos.rating?.count}
-      </p> */}
       <p>sur {bookInfos.rating?.count} avis</p>
     </div>
   );

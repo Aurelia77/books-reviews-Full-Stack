@@ -108,21 +108,12 @@ export type BookTypePlusUsersWhoRead = BookType & {
   usersWhoRead: UsersWhoReadBookType[];
 };
 
-// export enum BookStatusEnum {
-//   bookRead = "lu",
-//   bookInProgress = "en cours",
-//   bookToRead = "à lire",
-// }
 export enum BookStatusEnum {
   booksReadList = "booksRead",
   booksInProgressList = "booksInProgress",
   booksToReadList = "booksToRead",
 }
 
-// export type SortStateType = {
-//   criteria: "title" | "date" | "note";
-//   order: "asc" | "desc";
-// };
 export type SortStateType = {
   [key in BookStatusEnum]: {
     criteria: "title" | "date" | "note" | "reviews";

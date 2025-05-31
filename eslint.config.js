@@ -19,8 +19,8 @@ export default [
     rules: {
       "react/react-in-jsx-scope": 0,
       "react/no-unescaped-entities": 0,
-      "react-hooks/rules-of-hooks": "error", // Vérifie les règles des hooks
-      "react-hooks/exhaustive-deps": "warn", // Vérifie les dépendances des hooks
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "warn",
     },
   },
 ];
