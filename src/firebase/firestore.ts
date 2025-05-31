@@ -35,7 +35,7 @@ import {
   UserBookInfoType,
   UserInfoBookType,
   UserType,
-} from "../types";
+} from "../lib/types";
 import { firebaseConfig } from "./firebaseConfig";
 
 const app = initializeApp(firebaseConfig);

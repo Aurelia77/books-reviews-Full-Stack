@@ -1,10 +1,10 @@
-import { MONTHS } from "@/constants";
 import {
   getDocsByQueryFirebase,
   getUserInfosBookFirebase,
 } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
-import { BookStatusEnum, UserInfoBookType, UserType } from "@/types";
+import { MONTHS } from "@/lib/constants";
+import { BookStatusEnum, UserInfoBookType, UserType } from "@/lib/types";
 import { useEffect, useState } from "react";
 import StarRating from "./StarRating";
 
@@ -67,7 +67,7 @@ const BookUserInfo = ({
         {/* Pour les livres lus on a des info en plus :
                      - Livre lu par moi => on affiche mes info données sur ce livre,
                      - Livre lu par le user visité => on affiche ses info */}
-        <div className="flex flex-col gap-3 rounded-sm bg-background/50 p-2 md:p-3 pr-6">
+        <div className="flex flex-col gap-3 rounded-sm bg-background/50 p-2 pr-6 md:p-3">
           <h2 className="font-semibold text-muted">
             {currentUser?.uid !== userId
               ? "Info et Avis de " + userName + "\u00A0:"

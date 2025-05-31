@@ -1,6 +1,5 @@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getDocsByQueryFirebase } from "@/firebase/firestore";
-import { cn } from "@/lib/utils";
 import {
   BookStatusEnum,
   BookType,
@@ -9,7 +8,8 @@ import {
   UserInfoBookType,
   UserType,
   UserTypePlusBooksTitleAndNote,
-} from "@/types";
+} from "@/lib/types";
+import { cn } from "@/lib/utils";
 import { sortBooksByStatus } from "@/utils";
 import { BookOpenCheck, Ellipsis, Smile } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -168,21 +168,21 @@ const AllBooksLists = ({ userInfo }: AllBooksListsProps): JSX.Element => {
         >
           <TabsTrigger
             value={BookStatusEnum.booksReadList}
-            className="w-full flex gap-2"
+            className="flex w-full gap-2"
           >
             Lus
             <BookOpenCheck className="rounded-full bg-green-500/40 p-1 shadow-sm shadow-foreground" />
           </TabsTrigger>
           <TabsTrigger
             value={BookStatusEnum.booksInProgressList}
-            className="w-full flex gap-2"
+            className="flex w-full gap-2"
           >
             En cours
             <Ellipsis className="rounded-full bg-blue-500/40 p-1 shadow-sm shadow-foreground" />
           </TabsTrigger>
           <TabsTrigger
             value={BookStatusEnum.booksToReadList}
-            className="w-full flex gap-2"
+            className="flex w-full gap-2"
           >
             À lire
             <Smile className="rounded-full bg-pink-500/40 p-1 shadow-sm shadow-foreground" />

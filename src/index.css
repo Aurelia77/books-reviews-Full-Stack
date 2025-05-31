@@ -62,11 +62,10 @@ h1.form-sticky-active {
     --secondary-foreground: hsl(16.9, 71.8%, 0.3%);
     --muted: hsl(270 94% 28%);    
     --muted-foreground: hsl(192.9, 59.1%, 14.6%);
-    --accent: hsl(270, 100%, 95%);
-    
+--accent: hsl(270, 50%, 70%);    
     --accent-foreground: hsl(16.9, 71.8%, 0.3%);
     --destructive: hsl(187.9, 47.7%, 65.1%);    
-    --destructive-foreground: hsl(hsl(357, 100%, 31%)%);
+    --destructive-foreground: hsl(357, 100%, 31%);
     --border: hsl(192.9, 22.7%, 83.9%);
     --input: hsl(192.9, 22.7%, 83.9%);
     --ring: hsl(197.9, 87.4%, 7.7%);

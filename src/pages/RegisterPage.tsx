@@ -10,12 +10,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { EMPTY_USER } from "@/constants";
 import {
   addOrUpdateUserFirebase,
   registerFirebase,
 } from "@/firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
+import { EMPTY_USER } from "@/lib/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";

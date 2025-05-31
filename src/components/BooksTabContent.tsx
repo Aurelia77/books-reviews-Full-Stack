@@ -1,4 +1,4 @@
-import { BookStatusEnum, SortStateType } from "@/types";
+import { BookStatusEnum, SortStateType } from "@/lib/types";
 import React from "react";
 import BookInfos from "./BookInfos";
 import BooksSortControls from "./BooksSortControls";

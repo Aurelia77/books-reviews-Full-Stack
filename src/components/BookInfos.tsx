@@ -4,15 +4,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { DEFAULT_BOOK_IMAGE, NO_DESCRIPTION } from "@/constants";
 import {
   findBookCatInUserLibraryFirebase,
   getDocsByQueryFirebase,
 } from "@/firebase/firestore";
 import { toast } from "@/hooks/use-toast";
 import useUserStore from "@/hooks/useUserStore";
+import { DEFAULT_BOOK_IMAGE, NO_DESCRIPTION } from "@/lib/constants";
+import { BookStatusEnum, BookType } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { BookStatusEnum, BookType } from "@/types";
 import { cleanDescription } from "@/utils";
 import { Check, Ellipsis, Quote, Smile } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -134,7 +134,6 @@ const BookInfos = ({
           <Card className="relative">
             <Link
               to={currentUser?.uid ? `/books/${bookInfos.id}` : "/login"}
-              className=""
               onClick={handleLinkClick}
             >
               <CardDescription className="absolute right-2 top-2 rounded-full bg-secondary/60 px-3 py-1 text-secondary-foreground shadow-sm shadow-foreground">

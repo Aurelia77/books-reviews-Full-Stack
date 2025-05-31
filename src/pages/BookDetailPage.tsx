@@ -20,16 +20,16 @@ import {
 } from "@/components/ui/dialog";
 import UserReview from "@/components/UserReview";
 import {
-  DEFAULT_BOOK_IMAGE,
-  GOOGLE_BOOKS_API_URL,
-  NO_DESCRIPTION,
-} from "@/constants";
-import {
   getDocsByQueryFirebase,
   getUsersWhoReadBookCommentsAndNotesFirebase,
 } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
-import { BookAPIType, BookType, UserBookInfoType } from "@/types";
+import {
+  DEFAULT_BOOK_IMAGE,
+  GOOGLE_BOOKS_API_URL,
+  NO_DESCRIPTION,
+} from "@/lib/constants";
+import { BookAPIType, BookType, UserBookInfoType } from "@/lib/types";
 import { cleanDescription } from "@/utils";
 import { Quote } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -269,12 +269,12 @@ const BookDetailPage = (): JSX.Element => {
               <img
                 src={bookInfos.imageLink || DEFAULT_BOOK_IMAGE}
                 onError={(e) => (e.currentTarget.src = DEFAULT_BOOK_IMAGE)}
-                className="w-32 sm:w-40 md:w-48 rounded-sm border border-border  object-contain shadow-md shadow-foreground/70"
+                className="w-32 rounded-sm border border-border object-contain shadow-md  shadow-foreground/70 sm:w-40 md:w-48"
                 alt={`Image de couverture du livre ${bookInfos?.title}`}
               />
-              <CardHeader className="flex flex-col justify-between overflow-hidden gap-4">
+              <CardHeader className="flex flex-col justify-between gap-4 overflow-hidden">
                 <CardTitle>{bookInfos?.title}</CardTitle>
-                <div className="flex gap-2 flex-wrap">
+                <div className="flex flex-wrap gap-2">
                   {bookInfos?.authors &&
                     bookInfos.authors.map((author, index) => (
                       <Link
@@ -294,7 +294,7 @@ const BookDetailPage = (): JSX.Element => {
                   ))}
                 </div>
                 {bookInfos.rating?.count > 0 ? (
-                  <div className="flex gap-2 flex-col">
+                  <div className="flex flex-col gap-2">
                     <AverageBookRating bookInfos={bookInfos} />
                     <Dialog>
                       <DialogTrigger asChild className="flex justify-center">

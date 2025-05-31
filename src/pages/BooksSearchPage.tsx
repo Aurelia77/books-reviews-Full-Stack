@@ -11,9 +11,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { GOOGLE_BOOKS_API_URL, LANGUAGES } from "@/constants";
 import { getDocsByQueryFirebase } from "@/firebase/firestore";
-import { BookAPIType, BookStatusEnum, BookType } from "@/types";
+import { GOOGLE_BOOKS_API_URL, LANGUAGES } from "@/lib/constants";
+import { BookAPIType, BookStatusEnum, BookType } from "@/lib/types";
 import { sortBook } from "@/utils";
 import { X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -409,10 +409,11 @@ const BooksSearchPage = (): JSX.Element => {
     }
   };
 
+  // SERT à rien !!!
   useEffect(() => {
     console.log("*-*- useEffect sortBookTypes sortState = ", sortState);
+    // faire plutôt (ms boucle infinie ???):     setDisplayedBooks(sortBook(displayedBooks, sortState));
     sortBook(bdAndApiBooks, sortState);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortState, bdAndApiBooks]);
 
   return (
@@ -487,7 +488,7 @@ const BooksSearchPage = (): JSX.Element => {
         ) : error ? (
           <FeedbackMessage message={message} type="error" />
         ) : bdAndApiBooks?.length > 0 ? (
-          <div className="flex flex-col gap-4 items-center">
+          <div className="flex flex-col items-center gap-4">
             <BooksSortControls
               booksStatus={BookStatusEnum.booksReadList}
               sortState={sortState}
@@ -500,7 +501,7 @@ const BooksSearchPage = (): JSX.Element => {
               {bdAndApiBooks.map((book: BookType) => (
                 <li
                   key={book.id}
-                  className="mb-4 border-muted border-4 rounded-xl"
+                  className="mb-4 rounded-xl border-4 border-muted"
                 >
                   {/* Ici on passe le book en props (et pas le bookId comme dans MyBooksPage) */}
                   <BookInfos
