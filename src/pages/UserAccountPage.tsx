@@ -10,8 +10,8 @@ import {
   isUserMyFriendFirebase,
 } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
+import { UserType } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { UserType } from "@/types";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -57,17 +57,17 @@ const UserAccountPage = (): JSX.Element => {
       //key={userInUrl.userId}
     >
       <Card className="mb-6">
-        <div className="mr-2 flex items-center justify-between gap-10 pl-2 max-w-md">
+        <div className="mr-2 flex max-w-md items-center justify-between gap-10 pl-2">
           <Title>{userInfo?.userName ?? ""}</Title>
           <CardDescription>
             {isFriend ? (
-              <div className="flex gap-4 items-center">
+              <div className="flex items-center gap-4">
                 <FriendSparkles />
                 <p>Ami</p>
                 <Button onClick={deleteFriendHandler}>Supprimer</Button>
               </div>
             ) : (
-              <div className="flex gap-4 items-center">
+              <div className="flex items-center gap-4">
                 <p>Non ami</p>
                 <Button onClick={addFriendHandler}>Ajouter</Button>
               </div>

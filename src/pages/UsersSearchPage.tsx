@@ -6,7 +6,7 @@ import {
   isUserMyFriendFirebase,
 } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
-import { UserType } from "@/types";
+import { UserType } from "@/lib/types";
 //import { books } from "@/data";
 import UsersListView from "@/components/UsersListView";
 import UserViewSkeleton from "@/components/skeletons/UserViewSkeleton";
@@ -15,42 +15,40 @@ import { useRef, useState } from "react";
 import useSWR from "swr";
 
 const otherUsersFetcher = ([userNameInput, currentUserId]: string[]): Promise<
-UserType[]
+  UserType[]
 > => {
-console.log("otherUsersFetcher", [userNameInput, currentUserId]);
+  console.log("otherUsersFetcher", [userNameInput, currentUserId]);
 
-return getDocsByQueryFirebase<UserType>("users")
-  .then((allUsers) => {
-    console.log("otherUsersFetcher allUsers", allUsers);
-    return allUsers.filter((user: UserType) => user.id !== currentUserId);
-  })
-  .then((otherUsers: UserType[]) => {
-    console.log("otherUsersFetcher otherUsers", otherUsers);
-    return otherUsers.filter((user) =>
-      user.userName.toLowerCase().includes(userNameInput.toLowerCase())
-    );
-  })
-  .then((filteredUsers: UserType[]) => {
-    console.log("otherUsersFetcher filteredUsers", filteredUsers);
-    const promises = filteredUsers.map((user: UserType) =>
-      isUserMyFriendFirebase(user.id, currentUserId).then(
-        (isFriend: boolean) => ({
-          ...user,
-          isMyFriend: isFriend,
-        })
-      )
-    );
+  return getDocsByQueryFirebase<UserType>("users")
+    .then((allUsers) => {
+      console.log("otherUsersFetcher allUsers", allUsers);
+      return allUsers.filter((user: UserType) => user.id !== currentUserId);
+    })
+    .then((otherUsers: UserType[]) => {
+      console.log("otherUsersFetcher otherUsers", otherUsers);
+      return otherUsers.filter((user) =>
+        user.userName.toLowerCase().includes(userNameInput.toLowerCase())
+      );
+    })
+    .then((filteredUsers: UserType[]) => {
+      console.log("otherUsersFetcher filteredUsers", filteredUsers);
+      const promises = filteredUsers.map((user: UserType) =>
+        isUserMyFriendFirebase(user.id, currentUserId).then(
+          (isFriend: boolean) => ({
+            ...user,
+            isMyFriend: isFriend,
+          })
+        )
+      );
 
-    return Promise.all(promises).then(
-      (otherUsersFriendType: UserType[]) => {
+      return Promise.all(promises).then((otherUsersFriendType: UserType[]) => {
         const sortedUsers = otherUsersFriendType.sort(
           (a: UserType, b: UserType) => (a.userName > b.userName ? 1 : -1)
         );
         return sortedUsers;
         //setOtherUsers(sortedUsers);
-      }
-    );
-  });
+      });
+    });
 };
 
 const UsersSearchPage = (): JSX.Element => {
@@ -67,8 +65,6 @@ const UsersSearchPage = (): JSX.Element => {
 
   // const [inFriendsLists, setInFriendsLists] = useState(true);
   // const [inApi, setInApi] = useState(true);
-
- 
 
   // useEffect(() => {
   //   const filteredUsers = otherUsers.filter((user) =>
@@ -87,7 +83,11 @@ const UsersSearchPage = (): JSX.Element => {
       otherUsersFetcher([searchUserName, currentUserId])
   ); // impossible to add only userNameInput as param because if it's null or "", otherUsersFetcher will not work
 
-  console.log("otherUsers", otherUsers);
+  // console.log("🤡🤡🤡SEARCH PAGE otherUsers", otherUsers);
+  // console.log(
+  //   "🤡🤡🤡SEARCH PAGE otherUsers[0] isMyFriend ?",
+  //   otherUsers[0].isMyFriend
+  // );
 
   // useEffect(() => {
   //   getDocsByQueryFirebase<UserType>("users")

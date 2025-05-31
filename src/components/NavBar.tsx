@@ -21,7 +21,7 @@ const NavBar = (): JSX.Element => {
 
   return (
     <div className="sticky top-0 z-20 flex h-12 items-center bg-primary/70 p-1 text-muted shadow-md">
-      <p className="hidden sm:block absolute left-10 top-4 text-xs">
+      <p className="absolute left-10 top-4 hidden text-xs sm:block">
         {currentUser?.email}
       </p>
       <ArrowLeft
@@ -96,11 +96,11 @@ const NavBar = (): JSX.Element => {
                         <Avatar className="flex items-center justify-center">
                           <AvatarImage
                             src={profileImage}
-                            className="w-8 h-8 object-cover rounded-full"
+                            className="size-8 rounded-full object-cover"
                           />
                         </Avatar>
                       ) : (
-                        <Avatar className="flex items-center justify-center bg-secondary rounded-full w-8 h-8">
+                        <Avatar className="flex size-8 items-center justify-center rounded-full bg-secondary">
                           {currentUser?.email
                             ? currentUser.email.charAt(0).toUpperCase()
                             : ""}

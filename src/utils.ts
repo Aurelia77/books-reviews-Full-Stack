@@ -3,7 +3,7 @@ import {
   BookType,
   BookTypePlusUsersWhoRead,
   MyInfoBookPlusTitleAndNote,
-} from "./types";
+} from "./lib/types";
 
 export const cleanDescription = (description: string) => {
   return (

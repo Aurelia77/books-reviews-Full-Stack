@@ -36,7 +36,7 @@ const StarRating = ({
                 <StarHalf
                   color="#878787"
                   strokeWidth={0.5}
-                  className="size-6 text-secondary absolute top-0 left-0"
+                  className="absolute left-0 top-0 size-6 text-secondary"
                   fill="currentColor"
                 />
               </div>

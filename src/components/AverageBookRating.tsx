@@ -1,4 +1,4 @@
-import { BookType } from "@/types";
+import { BookType } from "@/lib/types";
 import StarRating from "./StarRating";
 
 const AverageBookRating = ({

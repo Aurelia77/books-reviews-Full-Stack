@@ -1,4 +1,4 @@
-import { UserType } from "@/types";
+import { UserType } from "@/lib/types";
 import { Link } from "react-router-dom";
 import FeedbackMessage from "./FeedbackMessage";
 import FriendSparkles from "./FriendSparkles";
@@ -9,6 +9,15 @@ const UsersListView = ({
 }: {
   userInfoList: UserType[];
 }): JSX.Element => {
+  ////////////////////////////////////////
+  ////////////////////////////////////////
+  userInfoList.map((friend: UserType) => {
+    console.log(friend);
+    console.log(friend.userName);
+  });
+  ////////////////////////////////////////
+  ////////////////////////////////////////
+
   return (
     // <ul className="flex items-center gap-4 p-5">
 
@@ -32,8 +41,15 @@ const UsersListView = ({
               <p className="font-semibold text-muted">{friend.userName}</p>
             </Link>
 
+            {/* /////////////////////////////////////////////// */}
+            {friend.isMyFriend ? (
+              <p>Ami</p>
+            ) : (
+              <p className="text-sm text-muted-foreground">NON</p>
+            )}
+
             {friend.isMyFriend && friend.isMyFriend && (
-              <div className="flex gap-4 items-center">
+              <div className="flex items-center gap-4">
                 <FriendSparkles />
                 <p>Ami</p>
               </div>
@@ -43,7 +59,7 @@ const UsersListView = ({
       </ul>
     ) : (
       <FeedbackMessage
-        message="Aucun autre utilisateur pour l'instant."
+        message="Aucun membre trouvé."
         type="info"
         className="p-5"
       />

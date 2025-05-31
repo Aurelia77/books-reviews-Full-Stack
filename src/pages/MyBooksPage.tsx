@@ -5,7 +5,7 @@ import BookSkeleton from "@/components/skeletons/BookSkeleton";
 import Title from "@/components/Title";
 import { getDocsByQueryFirebase } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
-import { UserType } from "@/types";
+import { UserType } from "@/lib/types";
 import useSWR from "swr";
 
 const fetcher = async (uid: string) => {
@@ -45,7 +45,7 @@ const MyBooksPage = (): JSX.Element => {
   // }, [currentUser?.uid]);
 
   return isLoading ? (
-    // {/* Mettre un Spinner pour pas voir rapidement le message Aucun membre */}
+    // {/* Mettre un Spinner pour pas voir rapidement le message Aucun membre ??? */}
     <div>
       <BookSkeleton />
       <BookSkeleton />

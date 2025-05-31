@@ -1,4 +1,4 @@
-import { BookStatusEnum, SortStateType } from "@/types";
+import { BookStatusEnum, SortStateType } from "@/lib/types";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "./ui/button";
 
@@ -42,10 +42,10 @@ const BooksSortControls = ({
   };
 
   return (
-    <div className="flex items-center justify-around rounded-md bg-secondary p-1 sm:gap-1 w-full max-w-lg">
+    <div className="flex w-full max-w-lg items-center justify-around rounded-md bg-secondary p-1 sm:gap-1">
       <Button
         onClick={() => handleSort("title")}
-        className={`flex w-[25%] gap-1 sm:gap-2 border border-foreground text-foreground ${
+        className={`flex w-1/4 gap-1 border border-foreground text-foreground sm:gap-2 ${
           sortState[booksStatus].criteria === "title"
             ? "bg-background/90 hover:bg-background/80"
             : "bg-muted-foreground/20"
@@ -62,7 +62,7 @@ const BooksSortControls = ({
       {booksStatus === BookStatusEnum.booksReadList && withDateOption && (
         <Button
           onClick={() => handleSort("date")}
-          className={`flex w-[25%] gap-1 sm:gap-2 border border-foreground text-foreground ${
+          className={`flex w-1/4 gap-1 border border-foreground text-foreground sm:gap-2 ${
             sortState[booksStatus].criteria === "date"
               ? "bg-background/90 hover:bg-background/80"
               : "bg-muted-foreground/20"
@@ -79,7 +79,7 @@ const BooksSortControls = ({
       )}
       <Button
         onClick={() => handleSort("note")}
-        className={`flex w-[25%] gap-1 sm:gap-2 border border-foreground text-foreground ${
+        className={`flex w-1/4 gap-1 border border-foreground text-foreground sm:gap-2 ${
           sortState[booksStatus].criteria === "note"
             ? "bg-background/90 hover:bg-background/80"
             : "bg-muted-foreground/20"
@@ -95,7 +95,7 @@ const BooksSortControls = ({
       </Button>
       <Button
         onClick={() => handleSort("reviews")}
-        className={`flex w-[25%] gap-2 border border-foreground text-foreground ${
+        className={`flex w-1/4 gap-2 border border-foreground text-foreground ${
           sortState[booksStatus].criteria === "reviews"
             ? "bg-background/90 hover:bg-background/80"
             : "bg-muted-foreground/20"

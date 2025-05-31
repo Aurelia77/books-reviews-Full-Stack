@@ -2,6 +2,7 @@ import { ThemeProvider } from "@/components/Theme-provider";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Footer from "./components/Footer";
 import NavBar from "./components/NavBar";
+import AdminPage from "./pages/AdminPage";
 import BookDetailPage from "./pages/BookDetailPage";
 import BooksSearchPage from "./pages/BooksSearchPage";
 import HomePage from "./pages/HomePage";
@@ -14,7 +15,6 @@ import ResetPasswordPage from "./pages/ResetPasswordPage";
 import UserAccountPage from "./pages/UserAccountPage";
 import UsersBooksReadPage from "./pages/UsersBooksReadPage";
 import UsersSearchPage from "./pages/UsersSearchPage";
-import AdminPage from "./pages/AdminPage";
 
 const App = (): JSX.Element => {
   return (
@@ -38,10 +38,6 @@ const App = (): JSX.Element => {
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/searchusers" element={<UsersSearchPage />} />
               <Route path="/usersbooksread" element={<UsersBooksReadPage />} />
-              <Route
-                path="/allusersbooksread"
-                element={<UsersBooksReadPage />}
-              />
               <Route path="/resetpassword" element={<ResetPasswordPage />} />
               <Route path="*" element={<NotFound404Page />} />
               <Route path="/admin" element={<AdminPage />} />

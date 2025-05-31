@@ -1,19 +1,19 @@
 import FeedbackMessage from "@/components/FeedbackMessage";
 import Title from "@/components/Title";
 import { Button } from "@/components/ui/button";
-import { EMPTY_BOOK } from "@/constants";
 import {
   addBookFirebase,
   deleteAllDatas,
   getDocsByQueryFirebase,
 } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
+import { EMPTY_BOOK } from "@/lib/constants";
 import {
   BookStatusEnum,
   BookType,
   MyInfoBookFormType,
   UserType,
-} from "@/types";
+} from "@/lib/types";
 import { useEffect, useState } from "react";
 
 const DATA_BOOKS: BookType[] = [

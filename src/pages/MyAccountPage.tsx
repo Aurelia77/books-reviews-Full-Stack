@@ -21,7 +21,7 @@ import {
 } from "@/firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import useUserStore from "@/hooks/useUserStore";
-import { AccountFormType, UserType } from "@/types";
+import { AccountFormType, UserType } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronsRight, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -50,7 +50,11 @@ const MyAccountPage = (): JSX.Element => {
   const { currentUser } = useUserStore();
   const { toast } = useToast();
 
-  console.log("999 userId", currentUser?.uid);
+  console.log("🤡🤡MY ACCOUNT friendsInfo", friendsInfo);
+  console.log(
+    "🤡🤡MY ACCOUNT friendsInfo[0] isMyFriend ?",
+    friendsInfo[0]?.isMyFriend ?? "non"
+  );
 
   const [imageUpload, setImageUpload] = useState<File | null>(null);
   const [isImageLoading, setIsImageLoading] = useState(false);
@@ -211,7 +215,7 @@ const MyAccountPage = (): JSX.Element => {
       <div className="flex items-center gap-2">
         <Title level={2}>Mes amis</Title>
         <Sparkles
-          className="bg-friend rounded-full p-2"
+          className="rounded-full bg-friend p-2"
           size={40}
           color="black"
         />

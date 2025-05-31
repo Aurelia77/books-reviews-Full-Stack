@@ -31,7 +31,6 @@ import {
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
-import { MONTHS } from "@/constants";
 import {
   addBookFirebase,
   addOrUpdateBookInfoToMyBooksFirebase,
@@ -39,12 +38,13 @@ import {
   findBookCatInUserLibraryFirebase,
   getUserInfosBookFirebase,
 } from "@/firebase/firestore";
+import { MONTHS } from "@/lib/constants";
 import {
   BookStatusEnum,
   BookType,
   MyInfoBookFormType,
   UserInfoBookType,
-} from "@/types";
+} from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, Ellipsis, Smile, X } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -241,8 +241,8 @@ const AddOrUpdateBookOrBookStatus = ({
         </DialogTrigger>
       ) : (
         <div className="relative flex flex-col">
-          <div className="flex items-center justify-between mb-2">
-            <div className="border border-border bg-secondary/60 p-2 shadow-md rounded-md shadow-foreground/70">
+          <div className="mb-2 flex items-center justify-between">
+            <div className="rounded-md border border-border bg-secondary/60 p-2 shadow-md shadow-foreground/70">
               {bookInMyBooks === BookStatusEnum.booksReadList && (
                 <div className="flex justify-center gap-2">
                   <p>Je l'ai lu !</p>
@@ -250,7 +250,7 @@ const AddOrUpdateBookOrBookStatus = ({
                 </div>
               )}
               {bookInMyBooks === BookStatusEnum.booksInProgressList && (
-                <div className="flex justify-center gap-2 items-center">
+                <div className="flex items-center justify-center gap-2">
                   <p>Je suis en train de le lire</p>
                   <Ellipsis className="rounded-full bg-primary/50 p-1  shadow-sm shadow-foreground" />
                 </div>
@@ -264,7 +264,7 @@ const AddOrUpdateBookOrBookStatus = ({
             </div>
             <AlertDialog>
               <AlertDialogTrigger>
-                <Button className="bg-red-600/70 flex items-center gap-1">
+                <Button className="flex items-center gap-1 bg-red-600/70">
                   Supprimer
                   <X className="bottom-8 mr-0 text-destructive-foreground" />
                 </Button>
@@ -308,7 +308,7 @@ const AddOrUpdateBookOrBookStatus = ({
           <DialogTrigger asChild className="flex justify-center">
             {/* absolute -top-1 left-1/4  */}
             <Button
-              className="m-auto md:mt-2 mb-6 h-10 w-full md:w-1/2 border-2 border-background bg-primary/60 shadow-md shadow-foreground/70"
+              className="m-auto mb-6 h-10 w-full border-2 border-background bg-primary/60 shadow-md shadow-foreground/70 md:mt-2 md:w-1/2"
               onClick={() => form.reset(defaultValues)}
             >
               Modifier mes infos

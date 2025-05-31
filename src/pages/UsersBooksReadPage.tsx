@@ -13,7 +13,6 @@ import {
   getUsersWhoReadBookFirebase,
 } from "@/firebase/firestore";
 import useUserStore from "@/hooks/useUserStore";
-import { cn } from "@/lib/utils";
 import {
   BookStatusEnum,
   BookType,
@@ -21,7 +20,8 @@ import {
   UsersBooksReadType,
   UsersWhoReadBookType,
   UserType,
-} from "@/types";
+} from "@/lib/types";
+import { cn } from "@/lib/utils";
 import { sortBook } from "@/utils";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
@@ -181,7 +181,6 @@ const UsersBooksReadPage = (): JSX.Element => {
     const sortedBooks = sortBook(booksWithAllInfos, sortState);
     console.log("*-*- useEffect sortBookTypes sortedBooks = ", sortedBooks);
     setDisplayedSortedBooks(sortedBooks);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortState, booksWithAllInfos]);
 
   return (
@@ -190,8 +189,8 @@ const UsersBooksReadPage = (): JSX.Element => {
         <div className="sticky top-10 z-10 flex flex-col gap-3 bg-background/70 duration-500">
           <Title>Livres lus par les membres</Title>
         </div>
-        <div className="flex gap-4 mb-4 items-center justify-center text-center">
-          <p className={isSearchOnFriendsBooks ? "text-gray-500 p-1" : "p-1"}>
+        <div className="mb-4 flex items-center justify-center gap-4 text-center">
+          <p className={isSearchOnFriendsBooks ? "p-1 text-gray-500" : "p-1"}>
             Tous les membres
           </p>
           <Switch
@@ -211,7 +210,7 @@ const UsersBooksReadPage = (): JSX.Element => {
             Seulement mes amis
           </p>
         </div>
-        <p className="text-right mr-3">
+        <p className="mr-3 text-right">
           Nombre de résultats : {friendsOrUsersReadBooksWithInfo?.length}{" "}
         </p>
 
@@ -224,7 +223,7 @@ const UsersBooksReadPage = (): JSX.Element => {
         ) : error ? (
           <FeedbackMessage message={message} type="error" />
         ) : displayedSortedBooks && displayedSortedBooks.length > 0 ? (
-          <div className="flex flex-col gap-4 items-center">
+          <div className="flex flex-col items-center gap-4">
             <BooksSortControls
               booksStatus={BookStatusEnum.booksReadList}
               sortState={sortState}
@@ -234,7 +233,7 @@ const UsersBooksReadPage = (): JSX.Element => {
               {displayedSortedBooks.map((book: BookTypePlusUsersWhoRead) => (
                 <li
                   key={book.id}
-                  className="border-4 border-foreground/60 mb-4 rounded-xl"
+                  className="mb-4 rounded-xl border-4 border-foreground/60"
                 >
                   {/* Ici on passe le book en props (et pas le bookId comme dans MyBooksPage) */}
                   <BookInfos

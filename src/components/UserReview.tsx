@@ -1,9 +1,9 @@
-import { UserBookInfoType } from "@/types";
+import useUserStore from "@/hooks/useUserStore";
+import { UserBookInfoType } from "@/lib/types";
 import { Link } from "react-router-dom";
 import StarRating from "./StarRating";
 import { Avatar, AvatarImage } from "./ui/avatar";
 import { DialogDescription } from "./ui/dialog";
-import useUserStore from "@/hooks/useUserStore";
 
 type UserReviewProps = {
   userCommentsAndNote: UserBookInfoType;
