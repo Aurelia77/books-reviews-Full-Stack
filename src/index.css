@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  height: auto;
+  min-height: 100vh;
+}
+
+form.form-sticky-active {
+  gap: 0;
+  transition: gap 0.5s;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+h1.form-sticky-active {
+  display: none;
+}
+
+@layer base {
+  :root {
+    --background: 30 20% 90%;
+    --foreground: 197.9 87.4% 7.7%;
+    --card: 30 20% 90%;
+    --card-foreground: 197.9 87.4% 7.7%;
+    --popover: 30 20% 90%;
+    --popover-foreground: 197.9 87.4% 7.7%;
+    --primary: 187.9 47.7% 65.1%;
+    --primary-foreground: 197.9 87.4% 7.7%;
+    --secondary: 270 50% 70%;
+    --secondary-foreground: 16.9 71.8% 0.3%;
+    --muted: 270 94% 28%;
+    --muted-foreground: 192.9 59.1% 14.6%;
+    --accent: 270 50% 70%;
+    --accent-foreground: 16.9 71.8% 0.3%;
+    --destructive: 187.9 47.7% 65.1%;
+    --destructive-foreground: 357 100% 31%;
+    --border: 192.9 22.7% 83.9%;
+    --input: 192.9 22.7% 83.9%;
+    --ring: 197.9 87.4% 7.7%;
+    --radius: 0.5rem;
+    --friend: 54 100% 45%;
+  }
+
+  .dark {
+    --background: 216 94% 19%;
+    --foreground: 272.3 16.2% 92.3%;
+    --card: 216 94% 19%;
+    --card-foreground: 272.3 16.2% 92.3%;
+    --popover: 216 94% 19%;
+    --popover-foreground: 272.3 16.2% 92.3%;
+    --primary: 194 76% 37%;
+    --primary-foreground: 275.2 2.8% 85.5%;
+    --secondary: 279 71% 32%;
+    --secondary-foreground: 272.3 16.2% 92.3%;
+    --muted: 277.2 96.1% 82.2%;
+    --muted-foreground: 279 71% 42%;
+    --accent: 279 71% 42%;
+    --accent-foreground: 272.3 16.2% 92.3%;
+    --destructive: 277.3 45.6% 42.4%;
+    --destructive-foreground: 343 94% 82%;
+    --border: 279 71% 42%;
+    --input: 279 71% 42%;
+    --ring: 279.2 74.7% 69.8%;
+    --friend: 54 100% 50%;
+  }
+}

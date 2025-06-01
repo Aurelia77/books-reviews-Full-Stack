@@ -1,0 +1,63 @@
+import { getUsersWhoReadBookFirebase } from "@/firebase/firestore";
+import useUserStore from "@/hooks/useUserStore";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import FriendSparkles from "./FriendSparkles";
+import { CardFooter } from "./ui/card";
+
+type FriendsWhoReadBookType = {
+  bookId: string;
+  userViewId?: string;
+};
+
+const FriendsWhoReadBook = ({
+  bookId,
+  userViewId,
+}: FriendsWhoReadBookType): JSX.Element => {
+  const [friendsWhoReadBook, setFriendsWhoReadBook] = useState<
+    {
+      id: string;
+      userName: string;
+    }[]
+  >([]);
+
+  const { currentUser } = useUserStore();
+
+  useEffect(() => {
+    getUsersWhoReadBookFirebase(bookId, currentUser?.uid, userViewId).then(
+      (users) => {
+        const friends = users.map((user) => ({
+          id: user.id,
+          userName: user.userName,
+        }));
+        setFriendsWhoReadBook(friends);
+      }
+    );
+  }, [bookId, userViewId, currentUser?.uid]);
+
+  return friendsWhoReadBook.length > 0 ? (
+    <CardFooter className="flex gap-2 border border-friend bg-gray-500/40">
+      <FriendSparkles />
+      <div className="flex flex-row gap-2 ">
+        {friendsWhoReadBook.length > 1 ? (
+          <p className="font-semibold">Amis qui ont lu ce livre :</p>
+        ) : (
+          <p className="font-semibold">Ami qui a lu ce livre :</p>
+        )}
+        {friendsWhoReadBook.map((friend) => (
+          <Link
+            key={friend.id}
+            to={`/account/${friend.id}`}
+            className="font-semibold text-muted"
+          >
+            {friend.userName}
+          </Link>
+        ))}
+      </div>
+    </CardFooter>
+  ) : (
+    <p></p>
+  );
+};
+
+export default FriendsWhoReadBook;
