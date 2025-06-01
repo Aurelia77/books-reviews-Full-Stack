@@ -5,7 +5,7 @@ import { PropsWithChildren } from "react";
 import { Toaster } from "sonner";
 import "./globals.css";
 
-export default function RootLayout({ children }: PropsWithChildren) {
+const RootLayout = ({ children }: PropsWithChildren) => {
   return (
     <html lang="fr">
       <body>
@@ -20,4 +20,6 @@ export default function RootLayout({ children }: PropsWithChildren) {
       </body>
     </html>
   );
-}
+};
+
+export default RootLayout;

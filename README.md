@@ -5,6 +5,13 @@
 This is a web application that lets you search for books using the Google Books API and organize them into personal lists (read, to read, currently reading). Users can view, sort (by title, date, rating, favorites), and manage their book collections.
 You can also add friends, see books read by all members, your friends, or a specific friend.
 
+# Book-Reviews FullStack 🗣️
+
+## Introduction 📚
+
+This is a web application that lets you search for books using the Google Books API and organize them into personal lists (read, to read, currently reading). Users can view, sort (by title, date, rating, favorites), and manage their book collections.
+You can also add friends, see books read by all members, your friends, or a specific friend.
+
 ## Getting Started 🚀
 
 To get started with the project, follow these steps in your terminal:

@@ -1,3 +1,6 @@
+import { BookStatusValues } from "./constants";
+
+// Types related to Books
 export type BookType = {
   id: string;
   title: string;
@@ -10,50 +13,66 @@ export type BookType = {
   imageLink: string;
   language: string;
   isFromAPI: boolean;
-  rating: BookRatingType;
+  totalRating: number;
+  countRating: number;
 };
 
-export type BookRatingType = {
-  totalRating: number;
-  count: number;
+export type BookTypePlusDate = BookType & {
+  year?: number | null;
+  month?: number | null;
 };
+
+export type BooksSearchQueryType = {
+  title: string;
+  author: string;
+  lang: string;
+};
+
+export type BookStatusType =
+  (typeof BookStatusValues)[keyof typeof BookStatusValues];
 
 export type UserInfoBookType = {
   id: string;
+  userId: string;
+  bookId: string;
   year?: number | null;
   month?: number | null;
-  userNote?: number | null;
-  userComments: string;
+  note?: number | null;
+  comments?: string | null;
+  status: BookStatusType;
 };
 
+// Types related to UserInfoBook
 export type MyInfoBookPlusTitleAndNote = UserInfoBookType & {
   bookTitle: string;
-  bookNote?: BookRatingType;
+  totalRating: number;
+  countRating: number;
 };
 
 export type MyInfoBookFormType = {
-  bookStatus: BookStatusEnum;
+  bookStatus: BookStatusType;
   year?: number;
-  month?: number | null;
+  month?: number;
   userNote?: number;
   userComments: string;
 };
 
-export type UserType = {
+// Types related to AppUser
+export type AppUserType = {
   id: string;
   email: string;
   userName: string;
   imgURL: string;
   description: string;
-  booksRead: UserInfoBookType[];
-  booksInProgress: UserInfoBookType[];
-  booksToRead: UserInfoBookType[];
   friends: string[];
-  isMyFriend?: boolean;
   isAdmin: boolean;
 };
 
-export type UserTypePlusBooksTitleAndNote = UserType & {
+export type UserTypePlusIsMyFriend = AppUserType & {
+  isMyFriend: boolean;
+};
+
+export type UserTypePlusBooksTitleAndNote = AppUserType & {
   booksRead: MyInfoBookPlusTitleAndNote[];
   booksInProgress: MyInfoBookPlusTitleAndNote[];
   booksToRead: MyInfoBookPlusTitleAndNote[];
@@ -67,6 +86,7 @@ export type UserBookInfoType = {
   userNote?: number;
 };
 
+// Other types
 export type AccountFormType = {
   userName: string;
   imgURL: string;
@@ -104,27 +124,9 @@ export type UsersBooksReadType = {
   usersWhoReadBook: UsersWhoReadBookType[];
 };
 
-export type BookTypePlusUsersWhoRead = BookType & {
-  usersWhoRead: UsersWhoReadBookType[];
-};
-
-// export enum BookStatusEnum {
-//   bookRead = "lu",
-//   bookInProgress = "en cours",
-//   bookToRead = "à lire",
-// }
-export enum BookStatusEnum {
-  booksReadList = "booksRead",
-  booksInProgressList = "booksInProgress",
-  booksToReadList = "booksToRead",
-}
-
-// export type SortStateType = {
-//   criteria: "title" | "date" | "note";
-//   order: "asc" | "desc";
-// };
 export type SortStateType = {
-  [key in BookStatusEnum]: {
+  // eslint-disable-next-line no-unused-vars
+  [key in BookStatusType]: {
     criteria: "title" | "date" | "note" | "reviews";
     order: "asc" | "desc";
   };

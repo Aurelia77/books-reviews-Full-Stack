@@ -1,7 +1,11 @@
 {
-  "extends": ["next/core-web-vitals", "plugin:tailwindcss/recommended"],
+  "extends": "next",
+  "plugins": ["react-hooks"],
   "rules": {
-    "@next/next/no-html-link-for-pages": "off",
-    "tailwindcss/no-custom-classname": "off"
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
+    "no-unused-vars": "error",
+    "react/react-in-jsx-scope": "off",
+    "react/no-unescaped-entities": "off"
   }
 }

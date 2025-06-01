@@ -1,16 +1,13 @@
-import { BookType, UserType } from "./types";
+import { AppUserType, BookType } from "./types";
 
 export const APP_NAME = "Book Reviews";
 
-export const EMPTY_USER: UserType = {
+export const EMPTY_USER: AppUserType = {
   id: "",
   email: "",
   userName: "",
   imgURL: "",
   description: "",
-  booksRead: [],
-  booksInProgress: [],
-  booksToRead: [],
   friends: [],
   isAdmin: false,
 };
@@ -27,7 +24,8 @@ export const EMPTY_BOOK: BookType = {
   imageLink: "",
   language: "",
   isFromAPI: true,
-  rating: { totalRating: 0, count: 0 },
+  countRating: 0,
+  totalRating: 0,
 };
 
 export const DEFAULT_BOOK_IMAGE =
@@ -79,3 +77,9 @@ export const LANGUAGES = [
   //{ name: "Russe", code: "ru" },
   //{ name: "Turc", code: "tr" },
 ];
+
+export const BookStatusValues = {
+  READ: "READ",
+  IN_PROGRESS: "IN_PROGRESS",
+  TO_READ: "TO_READ",
+} as const; // turns the values into literal values ("READ" instead of string...)

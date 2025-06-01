@@ -7,11 +7,12 @@ import { ComponentPropsWithRef, useState } from "react";
 
 const LogOutButton = (props: ComponentPropsWithRef<"button">) => {
   const [isLoading, setIsLoading] = useState(false);
+
   const router = useRouter();
 
   return (
     <button
-      {...props} // à mettre avant le onClick pour pas que ça l'écrase
+      {...props} // place before onClick so it doesn't overwrite it
       onClick={() =>
         authClient.signOut(
           {},
@@ -21,8 +22,7 @@ const LogOutButton = (props: ComponentPropsWithRef<"button">) => {
             },
             onSuccess: () => {
               setIsLoading(false);
-              router.push("/");
-              router.refresh();
+              router.refresh(); // to update the navbar
             },
             onError: (ctx) => {
               console.error(ctx.error.message);
@@ -30,9 +30,13 @@ const LogOutButton = (props: ComponentPropsWithRef<"button">) => {
           }
         )
       }
-      {...props}
+      className="cursor-pointer"
     >
-      {isLoading ? "Logging out..." : <X />}
+      {isLoading ? (
+        <div className="w-7 h-7 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      ) : (
+        <X />
+      )}
     </button>
   );
 };

@@ -1,6 +1,5 @@
 import CustomLinkButton from "@/components/CustomLinkButton";
-//import useUserStore from "@/hooks/useUserStore";
-import { getUser } from "@/lib/auth-session";
+import { getConnectedUser } from "@/lib/auth-session";
 import {
   ArrowDownToLine,
   BookOpen,
@@ -12,12 +11,11 @@ import {
 } from "lucide-react";
 
 const HomePage = async () => {
-  // const { currentUser: user } = useUserStore();
-  const user = await getUser();
+  const currentUser = await getConnectedUser();
 
   return (
     <div className="flex min-h-screen max-w-3xl flex-col gap-4 py-12 md:m-auto md:mt-8">
-      {user ? (
+      {currentUser ? (
         <div className="flex flex-col gap-4">
           <CustomLinkButton className="bg-primary" linkTo="/mybooks">
             Mes Livres
@@ -31,14 +29,14 @@ const HomePage = async () => {
             linkTo="/usersbooksread"
           >
             Lus par les membres
-            <BookOpen size={40} className="rounded-full bg-foreground/10 p-2" />
+            <BookOpen size={40} className="rounded-2xl bg-foreground/10 p-2" />
             <Users size={40} className="rounded-full bg-foreground/10 p-2" />
           </CustomLinkButton>
-          <CustomLinkButton className="bg-primary/60" linkTo="/searchusers">
+          <CustomLinkButton className="bg-primary/60" linkTo="/users">
             Les Membres
             <Users size={40} className="rounded-full bg-foreground/10 p-2" />
           </CustomLinkButton>
-          <CustomLinkButton className="bg-secondary/60" linkTo="/account">
+          <CustomLinkButton className="bg-secondary/60" linkTo="/myaccount">
             Mon compte
             <CircleUser
               size={40}
@@ -61,9 +59,8 @@ const HomePage = async () => {
           </CustomLinkButton>
         </div>
       )}
-      {/* <CustomLinkButton className="bg-primary/50">Suggestions</CustomLinkButton> */}
-      <CustomLinkButton className="bg-primary/50" linkTo="/searchbooks">
-        Recherche de livre
+      <CustomLinkButton className="bg-primary/50" linkTo="/books">
+        Recherche de livres
         <Search size={40} className="rounded-full bg-foreground/10 p-2" />
       </CustomLinkButton>
     </div>
