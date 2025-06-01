@@ -80,7 +80,7 @@ const NavBar = (): JSX.Element => {
                   </NavigationMenuLink>
                 </Link>
               </NavigationMenuItem>
-              {/* MON ACCOUNT */}
+              {/* MY ACCOUNT */}
               <NavigationMenuItem className={cn(profileImage && "mt-1")}>
                 <Link to={`/account`}>
                   <NavigationMenuLink asChild>
