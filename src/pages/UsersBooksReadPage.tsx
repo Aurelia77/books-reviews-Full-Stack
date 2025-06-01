@@ -82,7 +82,6 @@ const booksReadByUsersFetcher = (
 };
 
 const UsersBooksReadPage = (): JSX.Element => {
-  const { currentUser } = useUserStore();
   const [isSearchOnFriendsBooks, setIsSearchOnFriendsBooks] = useState(false);
   const [nbFriends, setNbFriends] = useState<number>(0);
   const [booksWithAllInfos, setBooksWithAllInfos] = useState<
@@ -91,21 +90,12 @@ const UsersBooksReadPage = (): JSX.Element => {
   const [displayedSortedBooks, setDisplayedSortedBooks] = useState<
     BookTypePlusUsersWhoRead[]
   >([]);
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [sortState, setSortState] = useState<any>({
     [BookStatusEnum.booksReadList]: { criteria: "title", order: "desc" },
   });
 
-  useEffect(() => {
-    getDocsByQueryFirebase<UserType>("users", "id", currentUser?.uid).then(
-      (user) => {
-        if (user) {
-          setNbFriends(user[0].friends.length);
-        }
-      }
-    );
-  }, [currentUser?.uid]);
+  const { currentUser } = useUserStore();
 
   const {
     data: friendsOrUsersReadBooksWithInfo,
@@ -118,6 +108,16 @@ const UsersBooksReadPage = (): JSX.Element => {
   );
 
   const message = `Un problème est survenu dans la récupération des informations sur les livres => ${error?.message}`;
+
+  useEffect(() => {
+    getDocsByQueryFirebase<UserType>("users", "id", currentUser?.uid).then(
+      (user) => {
+        if (user) {
+          setNbFriends(user[0].friends.length);
+        }
+      }
+    );
+  }, [currentUser?.uid]);
 
   useEffect(() => {
     if (friendsOrUsersReadBooksWithInfo) {

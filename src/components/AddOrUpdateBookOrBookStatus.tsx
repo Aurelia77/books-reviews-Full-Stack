@@ -89,18 +89,7 @@ const AddOrUpdateBookOrBookStatus = ({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [bookInMyBooks, setBookInMyBooks] = useState<BookStatusEnum | "">("");
   const [userBookInfos, setUserBookInfos] = useState<UserInfoBookType | null>();
-
   const [refreshKey, setRefreshKey] = useState(0); // to force MyInfosBook re-render when userBookInfos changes
-
-  const handleUpdate = () => {
-    setRefreshKey((prevKey) => prevKey + 1);
-    onUpdate(); // Call the parent update function
-  };
-
-  useEffect(() => {
-    handleUpdate();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userBookInfos]);
 
   const defaultValues = {
     bookStatus: bookInMyBooks || BookStatusEnum.booksReadList,
@@ -115,15 +104,10 @@ const AddOrUpdateBookOrBookStatus = ({
     defaultValues: defaultValues,
   });
 
-  const updateUserBookInfos = () => {
-    if (bookInMyBooks && bookInfos) {
-      getUserInfosBookFirebase(userId, bookInfos.id, bookInMyBooks).then(
-        (myBook) => {
-          setUserBookInfos(myBook);
-        }
-      );
-    }
-  };
+  useEffect(() => {
+    handleUpdate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userBookInfos]);
 
   useEffect(() => {
     if (bookInMyBooks && bookInfos) {
@@ -139,6 +123,27 @@ const AddOrUpdateBookOrBookStatus = ({
   useEffect(() => {
     form.reset(defaultValues); // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userBookInfos, form]);
+
+  useEffect(() => {
+    findBookCatInUserLibraryFirebase(bookInfos?.id, userId).then((res) =>
+      setBookInMyBooks(res)
+    );
+  }, [bookInfos, userId]);
+
+  const handleUpdate = () => {
+    setRefreshKey((prevKey) => prevKey + 1);
+    onUpdate(); // Call the parent update function
+  };
+
+  const updateUserBookInfos = () => {
+    if (bookInMyBooks && bookInfos) {
+      getUserInfosBookFirebase(userId, bookInfos.id, bookInMyBooks).then(
+        (myBook) => {
+          setUserBookInfos(myBook);
+        }
+      );
+    }
+  };
 
   const handleDeleteBook = async (bookId: string) => {
     await deleteBookFromMyBooksFirebase(userId, bookId, bookInMyBooks);
@@ -168,12 +173,6 @@ const AddOrUpdateBookOrBookStatus = ({
     setIsDialogOpen(false);
     setRefreshKey((prevKey) => prevKey + 1); // Increment refreshKey to trigger re-render of this component
   };
-
-  useEffect(() => {
-    findBookCatInUserLibraryFirebase(bookInfos?.id, userId).then((res) =>
-      setBookInMyBooks(res)
-    );
-  }, [bookInfos, userId]);
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

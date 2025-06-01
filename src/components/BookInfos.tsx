@@ -37,7 +37,6 @@ const BookInfos = ({
   userViewId,
 }: BookInfosProps): JSX.Element => {
   const [bookInfos, setBookInfos] = useState<BookType | null>(book || null);
-
   const [bookInMyList, setBookInMyList] = useState<BookStatusEnum | "">("");
   const [bookInFriendList, setBookInFriendList] = useState<BookStatusEnum | "">(
     ""

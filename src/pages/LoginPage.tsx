@@ -32,8 +32,9 @@ const loginFormSchema = z.object({
 });
 
 const LoginPage = (): JSX.Element => {
-  const navigate = useNavigate();
   const [firebaseError, setFirebaseError] = useState<string | null>(null);
+  
+  const navigate = useNavigate();
 
   const form = useForm<LoginFormType>({
     resolver: zodResolver(loginFormSchema),

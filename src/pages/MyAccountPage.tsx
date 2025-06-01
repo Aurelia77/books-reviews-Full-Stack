@@ -47,12 +47,12 @@ const accountFormSchema = z.object({
 const MyAccountPage = (): JSX.Element => {
   const [currentUserInfo, setCurrentUserInfo] = useState<UserType | null>(null);
   const [friendsInfo, setFriendsInfo] = useState<UserType[]>([]);
-  const { currentUser } = useUserStore();
-  const { toast } = useToast();
-
   const [imageUpload, setImageUpload] = useState<File | null>(null);
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [progress, setProgress] = useState(0);
+
+  const { currentUser } = useUserStore();
+  const { toast } = useToast();
 
   const uploadImage = () => {
     setIsImageLoading(true);
@@ -90,14 +90,6 @@ const MyAccountPage = (): JSX.Element => {
     }
   }, [currentUserInfo, reset]);
 
-  const onSubmit: SubmitHandler<AccountFormType> = (data) => {
-    addOrUpdateUserFirebase(currentUser?.uid, data);
-    useUserStore.getState().setProfileImage(data.imgURL);
-    toast({
-      title: "Profil enregistré !",
-    });
-  };
-
   useEffect(() => {
     if (currentUser)
       // otherwise error if page reload
@@ -118,6 +110,14 @@ const MyAccountPage = (): JSX.Element => {
         }
       ); // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser?.uid]);
+
+  const onSubmit: SubmitHandler<AccountFormType> = (data) => {
+    addOrUpdateUserFirebase(currentUser?.uid, data);
+    useUserStore.getState().setProfileImage(data.imgURL);
+    toast({
+      title: "Profil enregistré !",
+    });
+  };
 
   return (
     <div className="min-h-screen max-w-3xl sm:p-2 md:m-auto md:mt-8">
@@ -166,7 +166,7 @@ const MyAccountPage = (): JSX.Element => {
                             setImageUpload(e.target.files[0]);
                           }
                         }}
-                        className="cursor-pointer text-muted"
+                        className="text-muted cursor-pointer"
                       />
                       {isImageLoading ? (
                         <Progress value={progress} />
@@ -208,7 +208,7 @@ const MyAccountPage = (): JSX.Element => {
       <div className="flex items-center gap-2">
         <Title level={2}>Mes amis</Title>
         <Sparkles
-          className="rounded-full bg-friend p-2"
+          className="bg-friend rounded-full p-2"
           size={40}
           color="black"
         />
@@ -230,7 +230,7 @@ const MyAccountPage = (): JSX.Element => {
       <div className="bg-primary/20 p-2">
         <Link
           to="/resetpassword"
-          className="flex gap-5 font-semibold text-foreground"
+          className="text-foreground flex gap-5 font-semibold"
         >
           <p>Changer de mot de passe ?</p>
           <ChevronsRight />

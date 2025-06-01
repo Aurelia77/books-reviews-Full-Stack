@@ -52,14 +52,18 @@ const fetchBookInfoDB = async (bookId: string): Promise<BookType | null> => {
 };
 
 const BookDetailPage = (): JSX.Element => {
-  const { mutate } = useSWRConfig();
+  const [bookInfos, setBookInfos] = useState<BookType>();
+  const [isBookInDB, setIsBookInDB] = useState<boolean>(true);
+  const [
+    usersWhoReadBookCommentsAndNotes,
+    setUsersWhoReadBookCommentsAndNotes,
+  ] = useState<UserBookInfoType[]>([]);
 
   const bookId = useParams().bookId;
 
-  const { currentUser } = useUserStore();
+  const { mutate } = useSWRConfig();
 
-  const [bookInfos, setBookInfos] = useState<BookType>();
-  const [isBookInDB, setIsBookInDB] = useState<boolean>(true);
+  const { currentUser } = useUserStore();
 
   const handleUpdate = () => {
     // To rerender this page when the user updates the component AddOrUpdateBookOrBookStatus
@@ -139,11 +143,6 @@ const BookDetailPage = (): JSX.Element => {
     );
   };
 
-  const [
-    usersWhoReadBookCommentsAndNotes,
-    setUsersWhoReadBookCommentsAndNotes,
-  ] = useState<UserBookInfoType[]>([]);
-
   const fillUserCommentsTab = () => {
     if (bookInfos)
       getUsersWhoReadBookCommentsAndNotesFirebase(bookInfos.id).then(
@@ -162,14 +161,14 @@ const BookDetailPage = (): JSX.Element => {
       ) : (
         bookInfos && (
           <Card className="relative m-4">
-            <CardDescription className="absolute right-2 top-2 rounded-full bg-secondary/60 px-3 py-1 text-secondary-foreground shadow-sm shadow-foreground">
+            <CardDescription className="bg-secondary/60 text-secondary-foreground shadow-foreground absolute right-2 top-2 rounded-full px-3 py-1 shadow-sm">
               {bookInfos.language}
             </CardDescription>
-            <div className="flex items-start gap-5 p-5 py-10 shadow-xl shadow-primary/30">
+            <div className="shadow-primary/30 flex items-start gap-5 p-5 py-10 shadow-xl">
               <img
                 src={bookInfos.imageLink || DEFAULT_BOOK_IMAGE}
                 onError={(e) => (e.currentTarget.src = DEFAULT_BOOK_IMAGE)}
-                className="w-32 rounded-sm border border-border object-contain shadow-md  shadow-foreground/70 sm:w-40 md:w-48"
+                className="border-border shadow-foreground/70 w-32 rounded-sm border object-contain  shadow-md sm:w-40 md:w-48"
                 alt={`Image de couverture du livre ${bookInfos?.title}`}
               />
               <CardHeader className="flex flex-col justify-between gap-4 overflow-hidden">
@@ -213,7 +212,7 @@ const BookDetailPage = (): JSX.Element => {
                                 return (
                                   <li
                                     key={userCommentsAndNote.userId}
-                                    className="m-1 rounded-md bg-primary/50 p-1"
+                                    className="bg-primary/50 m-1 rounded-md p-1"
                                   >
                                     <UserReview
                                       userCommentsAndNote={userCommentsAndNote}
@@ -223,8 +222,6 @@ const BookDetailPage = (): JSX.Element => {
                               }
                             )}
                           </ul>
-
-                          <div className="grid gap-4 py-4"></div>
                         </>
                       </DialogContent>
                     </Dialog>
@@ -238,7 +235,7 @@ const BookDetailPage = (): JSX.Element => {
             </div>
             <FriendsWhoReadBook bookId={bookInfos.id} />
 
-            <CardContent className="relative bg-secondary/30 p-6 shadow-md shadow-primary/30">
+            <CardContent className="bg-secondary/30 shadow-primary/30 relative p-6 shadow-md">
               {currentUser?.uid && (
                 <AddOrUpdateBookOrBookStatus
                   userId={currentUser?.uid}
@@ -251,7 +248,7 @@ const BookDetailPage = (): JSX.Element => {
                   <Quote className="absolute -top-1" />
                   <p
                     style={{ whiteSpace: "pre-line" }}
-                    className="max-w-[90%] text-foreground"
+                    className="text-foreground max-w-[90%]"
                   >
                     &ensp;&ensp;&ensp;&ensp;
                     {cleanDescription(addLineBreaks(bookInfos.description))}

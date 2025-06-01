@@ -1,4 +1,4 @@
-import { Star, StarHalf } from "lucide-react"; // Ajout de StarHalf
+import { Star, StarHalf } from "lucide-react";
 
 type StarRatingProps = {
   value: number;

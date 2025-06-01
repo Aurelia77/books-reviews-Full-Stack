@@ -40,25 +40,23 @@ const AllBooksLists = ({ userInfo }: AllBooksListsProps): JSX.Element => {
     const booksInfoPlusTitle: MyInfoBookPlusTitleAndNote[] = [];
 
     const promises = booksInfo.map((bookInfo) => {
-      return (
-        getDocsByQueryFirebase<BookType>("books", "id", bookInfo.id)
-          .then((books) => {
-            return {
-              ...bookInfo,
-              bookTitle: books[0].title,
-              bookNote: books[0].rating,
-            };
-          })
-          .then((bookInfoPlusTitle) => {
-            if (bookInfoPlusTitle) {
-              booksInfoPlusTitle.push(bookInfoPlusTitle);
-              return booksInfoPlusTitle;
-            }
-          })
-          .catch((error) => {
-            console.error("Error getting document:", error);
-          })
-      );
+      return getDocsByQueryFirebase<BookType>("books", "id", bookInfo.id)
+        .then((books) => {
+          return {
+            ...bookInfo,
+            bookTitle: books[0].title,
+            bookNote: books[0].rating,
+          };
+        })
+        .then((bookInfoPlusTitle) => {
+          if (bookInfoPlusTitle) {
+            booksInfoPlusTitle.push(bookInfoPlusTitle);
+            return booksInfoPlusTitle;
+          }
+        })
+        .catch((error) => {
+          console.error("Error getting document:", error);
+        });
     });
 
     return Promise.all(promises).then(() => {
@@ -130,21 +128,21 @@ const AllBooksLists = ({ userInfo }: AllBooksListsProps): JSX.Element => {
             className="flex w-full gap-2"
           >
             Lus
-            <BookOpenCheck className="shadow-foreground rounded-full bg-green-500/40 p-1 shadow-sm" />
+            <BookOpenCheck className="rounded-full bg-green-500/40 p-1 shadow-sm shadow-foreground" />
           </TabsTrigger>
           <TabsTrigger
             value={BookStatusEnum.booksInProgressList}
             className="flex w-full gap-2"
           >
             En cours
-            <Ellipsis className="shadow-foreground rounded-full bg-blue-500/40 p-1 shadow-sm" />
+            <Ellipsis className="rounded-full bg-blue-500/40 p-1 shadow-sm shadow-foreground" />
           </TabsTrigger>
           <TabsTrigger
             value={BookStatusEnum.booksToReadList}
             className="flex w-full gap-2"
           >
             À lire
-            <Smile className="shadow-foreground rounded-full bg-pink-500/40 p-1 shadow-sm" />
+            <Smile className="rounded-full bg-pink-500/40 p-1 shadow-sm shadow-foreground" />
           </TabsTrigger>
         </TabsList>
         <BooksTabContent
