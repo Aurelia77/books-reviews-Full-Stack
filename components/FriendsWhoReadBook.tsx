@@ -1,7 +1,5 @@
 "use client";
 
-// import { getUsersWhoReadBookFirebase } from "@/firebase/firestore";
-// import useUserStore from "@/hooks/useUserStore";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import FriendSparkles from "./FriendSparkles";
@@ -24,28 +22,8 @@ const FriendsWhoReadBook = ({
       userName: string;
     }[]
   >([]);
-  console.log("***bookId friendsWhoReadBook", bookId, friendsWhoReadBook);
-
-  // useEffect(() => {
-  //   if (userBookStatusState === BookStatus.READ) {
-  //     (async () => {
-  //       try {
-  //         const response = await fetch(
-  //           `/api/userInfoBooks/getOne?userId=${currentUserId}&bookId=${bookInfos.id}`
-  //         );
-  //         if (response.ok) {
-  //           const myBook = await response.json();
-  //           setUserBookInfos(myBook);
-  //         }
-  //       } catch (error) {
-  //         console.error("Error fetching user book info:", error);
-  //       }
-  //     })();
-  //   }
-  // }, [bookInfos.id, currentUserId, userBookStatusState]);
 
   useEffect(() => {
-    console.log("💛💙💚❤️🤍🤎 xxx", bookId);
     const fetchFriends = async () => {
       try {
         const res = await fetch(
@@ -69,20 +47,6 @@ const FriendsWhoReadBook = ({
     fetchFriends();
   }, [bookId, currentUserId, userViewId]);
 
-  // useEffect(() => {
-  //   getUsersWhoReadBookFirebase(bookId, currentUser?.uid, userViewId).then(
-  //     (users) => {
-  //       console.log("xxx***USERS", users);
-  //       const friends = users.map((user) => ({
-  //         id: user.id,
-  //         userName: user.userName,
-  //       }));
-  //       //console.log("xxx***FRIENDS", friends);
-  //       setFriendsWhoReadBook(friends);
-  //     }
-  //   );
-  // }, [bookId, userViewId, currentUser?.uid]);
-
   return friendsWhoReadBook.length > 0 ? (
     <CardFooter className="flex gap-2 border border-friend bg-gray-500/40">
       <FriendSparkles />
@@ -103,9 +67,7 @@ const FriendsWhoReadBook = ({
         ))}
       </div>
     </CardFooter>
-  ) : (
-    <p></p>
-  );
+  ) : null;
 };
 
 export default FriendsWhoReadBook;

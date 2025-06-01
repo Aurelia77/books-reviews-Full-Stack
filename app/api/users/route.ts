@@ -1,7 +1,7 @@
+import { getConnectedUser } from "@/lib/auth-session";
 import { NextResponse } from "next/server";
-import { getUser } from "@/lib/auth-session";
 
 export async function GET() {
-  const user = await getUser();
+  const user = await getConnectedUser();
   return NextResponse.json({ user });
 }

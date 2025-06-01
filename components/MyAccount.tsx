@@ -12,17 +12,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import UsersListView from "@/components/UsersListView";
-// import {
-//   addOrUpdateUserFirebase,
-//   getDocsByQueryFirebase,
-//   storage,
-//   uploadImageOnFirebase,
-// } from "@/firebase/firestore";
-// import { useToast } from "@/hooks/use-toast";
-// import useUserStore from "@/hooks/useUserStore";
 import { AccountFormType, AppUserType } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronsRight, Sparkles } from "lucide-react";
@@ -33,6 +24,7 @@ import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { Progress } from "./ui/progress";
 
 const accountFormSchema = z.object({
   userName: z.string().min(2, {
@@ -54,7 +46,6 @@ const accountFormSchema = z.object({
   description: z.string(),
 });
 
-// remplacer any !!!!!!!!!!
 const MyAccount = ({
   currentAppUser,
   myFriends,
@@ -62,42 +53,41 @@ const MyAccount = ({
   currentAppUser: AppUserType;
   myFriends: AppUserType[];
 }) => {
-  // Voir si on vt utiliser useToast !!!
-  // const { toast } = useToast();
   const router = useRouter();
 
   const [imageUpload, setImageUpload] = useState<File | null>(null);
-  console.log("💛💙💚❤️🤍🤎imageUpload", imageUpload);
 
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [progress, setProgress] = useState<number>();
 
-  // SANS la gestion du progress
+  const form = useForm<AccountFormType>({
+    resolver: zodResolver(accountFormSchema),
+    defaultValues: {
+      userName: "",
+      imgURL: "",
+      description: "",
+    },
+  });
 
-  // const uploadImage = async () => {
-  //   if (!imageUpload) return;
+  const { reset } = form;
 
-  //   setIsImageLoading(true);
-  //   const data = new FormData();
-  //   data.append("file", imageUpload);
-  //   const res = await fetch("/api/uploads", {
-  //     method: "POST",
-  //     body: data,
-  //   });
-  //   const result = await res.json();
-  //   if (result.url) {
-  //     form.setValue("imgURL", result.url);
-  //   }
-  //   setIsImageLoading(false);
-  // };
+  useEffect(() => {
+    if (currentAppUser) {
+      reset({
+        userName: currentAppUser.userName,
+        imgURL: currentAppUser.imgURL,
+        description: currentAppUser.description,
+      });
+    }
+  }, [currentAppUser, reset]);
+
   const uploadImage = async () => {
     if (!imageUpload) return;
-
     setIsImageLoading(true);
     setProgress(0);
 
-    const data = new FormData();
-    data.append("file", imageUpload);
+    const formProfileImgData = new FormData();
+    formProfileImgData.append("file", imageUpload);
 
     const xhr = new XMLHttpRequest();
     xhr.open("POST", "/api/uploads", true);
@@ -113,50 +103,28 @@ const MyAccount = ({
       setIsImageLoading(false);
       if (xhr.status === 200) {
         const result = JSON.parse(xhr.responseText);
-        if (result.url) {
+        if (result && result.url) {
           form.setValue("imgURL", result.url);
+        }
+      } else {
+        try {
+          const errorData = JSON.parse(xhr.responseText);
+          console.error("Erreur upload image :", errorData);
+        } catch (e) {
+          console.error("Erreur upload image :", xhr.responseText);
         }
       }
     };
 
     xhr.onerror = () => {
       setIsImageLoading(false);
-      // Gérer l'erreur ici si besoin
+      console.error("Erreur upload image :", xhr.statusText);
     };
 
-    xhr.send(data);
+    xhr.send(formProfileImgData);
   };
 
-  const form = useForm<AccountFormType>({
-    resolver: zodResolver(accountFormSchema),
-    defaultValues: {
-      userName: "",
-      imgURL: "",
-      description: "",
-    },
-  });
-
-  console.log("form.watch(imgURL)🤍🤎", form.watch("imgURL"));
-  console.log("form.watch(userName)🤍🤎", form.watch("userName"));
-
-  const { reset } = form;
-
-  useEffect(() => {
-    if (currentAppUser) {
-      reset({
-        userName: currentAppUser.userName,
-        imgURL: currentAppUser.imgURL,
-        description: currentAppUser.description,
-      });
-    }
-  }, [currentAppUser, reset]);
-
   const onSubmit: SubmitHandler<AccountFormType> = async (formData) => {
-    console.log("data💛", formData);
-    console.log("data💛💛 img", formData.imgURL);
-    // addOrUpdateUserFirebase(currentUser?.uid, data);
-    // useUserStore.getState().setProfileImage(data.imgURL);
-
     try {
       const response = await fetch("/api/appUsers/update", {
         method: "POST",
@@ -167,11 +135,8 @@ const MyAccount = ({
         }),
       });
 
-      // console.log("💛💙💚❤️🤍🤎 response", response);
-
       if (!response.ok) {
         const errorData = await response.json();
-        console.log("💛💙💚❤️🤍🤎", errorData);
         console.error(
           "Erreur lors de la mise à jour du profil :",
           errorData.error,
@@ -182,7 +147,7 @@ const MyAccount = ({
         );
       } else {
         toast.success("Profil mis à jour avec succès !");
-        router.refresh(); // pour mettre à jour la navBar avec l'img
+        router.refresh(); // to update the navbar with the new profile image
       }
     } catch (error) {
       console.error("Erreur lors de l'appel à l'API /appUser/update :", error);
@@ -191,27 +156,6 @@ const MyAccount = ({
       );
     }
   };
-
-  // useEffect(() => {
-  //   if (currentUser)
-  //     // otherwise error if page reload
-  //     getDocsByQueryFirebase<UserType>("users", "id", currentUser?.uid).then(
-  //       (users) => {
-  //         const userInfo = users[0];
-  //         setCurrentUserInfo(userInfo);
-
-  //         if (userInfo?.friends) {
-  //           Promise.all(
-  //             userInfo.friends.map((friendId) =>
-  //               getDocsByQueryFirebase<UserType>("users", "id", friendId)
-  //             )
-  //           ).then((friends) => {
-  //             setFriendsInfo(friends.map((friend) => friend[0]));
-  //           });
-  //         }
-  //       }
-  //     ); // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [currentUser?.uid]);
 
   return (
     <div>

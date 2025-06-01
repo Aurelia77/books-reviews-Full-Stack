@@ -1,6 +1,5 @@
 import CustomLinkButton from "@/components/CustomLinkButton";
-//import useUserStore from "@/hooks/useUserStore";
-import { getUser } from "@/lib/auth-session";
+import { getConnectedUser } from "@/lib/auth-session";
 import {
   ArrowDownToLine,
   BookOpen,
@@ -12,8 +11,7 @@ import {
 } from "lucide-react";
 
 const HomePage = async () => {
-  // const { currentUser: user } = useUserStore();
-  const currentUser = await getUser();
+  const currentUser = await getConnectedUser();
 
   return (
     <div className="flex min-h-screen max-w-3xl flex-col gap-4 py-12 md:m-auto md:mt-8">
@@ -61,7 +59,6 @@ const HomePage = async () => {
           </CustomLinkButton>
         </div>
       )}
-      {/* <CustomLinkButton className="bg-primary/50">Suggestions</CustomLinkButton> */}
       <CustomLinkButton className="bg-primary/50" linkTo="/books">
         Recherche de livres
         <Search size={40} className="rounded-full bg-foreground/10 p-2" />

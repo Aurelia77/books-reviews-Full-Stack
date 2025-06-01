@@ -12,11 +12,7 @@ export async function DELETE(
   req: NextRequest,
   context: { params: Promise<DeleteBookParams> }
 ) {
-  console.log("xxx-💙❤️🤎 userId, bookId, bookStatus", context.params);
-
   const { userId, bookId, bookStatus } = await context.params;
-
-  console.log("1-💙❤️🤎 userId, bookId, status", userId, bookId, bookStatus);
 
   if (!userId || !bookId || !bookStatus) {
     return NextResponse.json(
@@ -55,6 +51,7 @@ export async function DELETE(
     }
   } catch (error) {
     console.error("Erreur lors de la récupération de userInfoBook :", error);
+
     return NextResponse.json(
       {
         success: false,
@@ -78,6 +75,7 @@ export async function DELETE(
     });
   } catch (error) {
     console.error("Erreur lors de la suppression du userInfoBook :", error);
+
     return NextResponse.json(
       {
         success: false,
@@ -103,6 +101,7 @@ export async function DELETE(
     });
   } catch (error) {
     console.error("Erreur lors de la mise à jour de la note du livre :", error);
+
     return NextResponse.json(
       {
         success: false,

@@ -42,6 +42,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(userInfoBook, { status: 200 });
   } catch (error) {
     console.error("Error fetching UserInfoBook:", error);
+
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

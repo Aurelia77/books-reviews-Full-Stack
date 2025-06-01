@@ -1,4 +1,4 @@
-import { EMPTY_BOOK } from "@/lib/constants";
+import { BookStatusValues, EMPTY_BOOK } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
 import { BookType, MyInfoBookFormType } from "@/lib/types";
 import { NextResponse } from "next/server";
@@ -11,59 +11,53 @@ type NewOrUpdateBookType = {
 };
 
 export async function POST(req: Request) {
+  const {
+    currentUserId,
+    bookInfos,
+    formData,
+    previousNote,
+  }: NewOrUpdateBookType = await req.json();
+
+  if (!currentUserId || !formData) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Paramètres manquants ou invalides",
+        code: "MISSING_PARAMS",
+      },
+      { status: 400 }
+    );
+  }
+
   try {
-    const {
-      currentUserId,
-      bookInfos,
-      formData,
-      previousNote,
-    }: NewOrUpdateBookType = await req.json();
-    //console.log("Données reçues💚💚💚 :", body);
+    const existingBook = await prisma.book.findUnique({
+      where: { id: bookInfos.id },
+    });
 
-    // const { currentUserId, bookInfos, formData, previousNote } = body;
-
-    console.log("💛💙💚❤️🤍🤎 previousNote", previousNote);
-
-    console.log("🤎 userId", currentUserId);
-    console.log("💚 bookInfos", bookInfos);
-    console.log("💚💙💚 formData", formData);
-
-    if (!currentUserId || !formData) {
-      return NextResponse.json(
-        { message: "Paramètres manquants ou invalides" },
-        { status: 400 }
-      );
-    } else {
-      const existingBook = await prisma.book.findUnique({
-        where: { id: bookInfos.id },
+    if (!existingBook) {
+      await prisma.book.create({
+        data: {
+          ...EMPTY_BOOK,
+          ...bookInfos,
+          ...(formData.bookStatus === BookStatusValues.READ
+            ? {
+                totalRating: formData.userNote,
+                countRating: 1,
+              }
+            : {}),
+        },
       });
-
-      // Si le livre n'existe pas => on le crée
-      if (!existingBook) {
-        console.log("💛🤍 book NOT existe");
-
-        await prisma.book.create({
-          data: {
-            ...EMPTY_BOOK,
-            ...bookInfos,
-            totalRating: formData.userNote || 0,
-            countRating: 1,
-          },
-        });
-        // return NextResponse.json(
-        //   { message: "Livre créé avec succès", book: newBook },
-        //   { status: 201 }
-        // );
-        // Sinon, si le livre existe => on met à jour les ratings en fonction de la note donnée par l'utilisateur qui ajoute le livre
-      } else {
-        console.log("💛❤️🤍 book existe");
+      // if the book exists => update ratings based on the rating given by the user who adds the book
+    } else {
+      // If the book is added as "read" (otherwise we don't save date or rating)
+      if (formData.bookStatus === BookStatusValues.READ) {
         let newTotalRating = existingBook.totalRating;
         let newCountRating = existingBook.countRating;
 
-        // Si on a une note => on l'ajoute
+        // If there is a rating => add it
         if (formData.userNote && formData.userNote !== 0) {
           if (previousNote) {
-            // On enlève la note précédente
+            // remove the previous rating before adding the new one
             newTotalRating += formData.userNote - previousNote;
           } else {
             newTotalRating += formData.userNote;
@@ -72,7 +66,7 @@ export async function POST(req: Request) {
           // Sinon si pas de note (donc note = 0) => on supprime la note précédente
         } else {
           if (previousNote) {
-            // On enlève la note précédente si y'en a une
+            // remove the previous rating if there is one
             newTotalRating -= previousNote;
             newCountRating -= 1;
           }
@@ -86,40 +80,45 @@ export async function POST(req: Request) {
           },
         });
       }
+    }
 
-      const bookEntry = await prisma.userInfoBook.upsert({
-        where: {
-          userId_bookId: {
-            userId: currentUserId,
-            bookId: bookInfos.id,
-          },
-        },
-        update: {
-          year: formData.year,
-          month: formData.month,
-          note: formData.userNote,
-          comments: formData.userComments,
-          status: formData.bookStatus,
-        },
-        create: {
+    const userInfoBookEntry = await prisma.userInfoBook.upsert({
+      where: {
+        userId_bookId: {
           userId: currentUserId,
           bookId: bookInfos.id,
-          year: formData.year,
-          month: formData.month,
-          note: formData.userNote,
-          comments: formData.userComments,
-          status: formData.bookStatus,
         },
-      });
+      },
+      // Add the date and the rating only if the book status is "READ"
+      update: {
+        year: formData.bookStatus === BookStatusValues.READ ? formData.year : 0,
+        month:
+          formData.bookStatus === BookStatusValues.READ ? formData.month : 0,
+        note:
+          formData.bookStatus === BookStatusValues.READ ? formData.userNote : 0,
+        comments: formData.userComments,
+        status: formData.bookStatus,
+      },
+      create: {
+        userId: currentUserId,
+        bookId: bookInfos.id,
+        year: formData.bookStatus === BookStatusValues.READ ? formData.year : 0,
+        month:
+          formData.bookStatus === BookStatusValues.READ ? formData.month : 0,
+        note:
+          formData.bookStatus === BookStatusValues.READ ? formData.userNote : 0,
+        comments: formData.userComments,
+        status: formData.bookStatus,
+      },
+    });
 
-      return NextResponse.json(
-        {
-          message: "Book et UserInfoBook créés ou mis à jour avec succès",
-          bookEntry: bookEntry,
-        },
-        { status: 201 }
-      );
-    }
+    return NextResponse.json(
+      {
+        message: "Book et UserInfoBook créés ou mis à jour avec succès",
+        bookEntry: userInfoBookEntry,
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Erreur dans l'API :", error);
     return NextResponse.json(

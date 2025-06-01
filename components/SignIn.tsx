@@ -33,6 +33,8 @@ const loginFormSchema = z.object({
 });
 
 const SignIn = () => {
+  const searchParams = useSearchParams();
+
   const router = useRouter();
 
   const form = useForm<LoginFormType>({
@@ -43,26 +45,6 @@ const SignIn = () => {
     },
   });
 
-  const searchParams = useSearchParams();
-
-  useEffect(() => {
-    if (searchParams.get("unauthorized") === "1") {
-      toast.error("Vous devez être connecté pour accéder à cette page.");
-    }
-  }, [searchParams]);
-
-  // const onSubmit: SubmitHandler<LoginFormType> = (data) => {
-  //   loginFirebase(data.email, data.password)
-  //     .then((user) => {
-  //       console.log("user login", user.email);
-  //       navigate("/");
-  //     })
-  //     .catch((error) => {
-  //       console.error("Firebase login error:", error.message);
-  //       setFirebaseError("Email ou mot de passe incorrect.");
-  //     });
-  // };
-
   const onSubmit: SubmitHandler<LoginFormType> = (data) => {
     const { email, password } = data;
 
@@ -72,27 +54,26 @@ const SignIn = () => {
         password,
       },
       {
-        onRequest: () => {
-          //setIsLoading(true);
-        },
         onSuccess: () => {
           router.push("/");
-          router.refresh(); // la NavBar se met à jour
+          router.refresh(); // to update the navbar
         },
         onError: (ctx: { error: { message: string } }) => {
           console.error("Erreur côté client :", ctx.error);
           toast.error(ctx.error.message);
-          //setIsLoading(false);
         },
       }
     );
   };
 
+  useEffect(() => {
+    if (searchParams.get("unauthorized") === "1") {
+      toast.error("Vous devez être connecté pour accéder à cette page.");
+    }
+  }, [searchParams]);
+
   return (
     <div>
-      {/* {firebaseError && (
-      <FeedbackMessage message={firebaseError} type="error" />
-    )} */}
       <Form {...form}>
         <form
           className="mb-20 flex flex-col gap-3"

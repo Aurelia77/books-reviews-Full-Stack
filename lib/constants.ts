@@ -82,4 +82,4 @@ export const BookStatusValues = {
   READ: "READ",
   IN_PROGRESS: "IN_PROGRESS",
   TO_READ: "TO_READ",
-} as const; // transforme les valeurs en valeurs littérales ("READ" au lieu de string)
+} as const; // turns the values into literal values ("READ" instead of string...)

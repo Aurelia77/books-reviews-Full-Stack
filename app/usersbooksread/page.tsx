@@ -1,16 +1,10 @@
 import UsersBooksRead from "@/components/UsersBooksRead";
-import { getUser } from "@/lib/auth-session";
+import { getConnectedUser } from "@/lib/auth-session";
 import { BookStatusValues } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
 
 const UsersBooksReadPage = async () => {
-  // const delay = (ms: number) =>
-  //   new Promise((resolve) => setTimeout(resolve, ms));
-  // await delay(3000);
-
-  // throw new Error("Erreur simulée pour tester le fichier error.tsx");
-
-  const currentUser = await getUser();
+  const currentUser = await getConnectedUser();
 
   const friendsOfCurrentAppUser = await prisma.appUser.findUnique({
     where: {
@@ -20,7 +14,6 @@ const UsersBooksReadPage = async () => {
       friends: true,
     },
   });
-  console.log("💚💙🤎 friendsOfCurrentAppUser", friendsOfCurrentAppUser);
 
   const booksAndUsersWhoReadGroupedById: Record<string, string[]> =
     await prisma.userInfoBook
@@ -43,28 +36,12 @@ const UsersBooksReadPage = async () => {
         }, {} as Record<string, string[]>)
       );
 
-  console.log(
-    "💚💙🤎 booksAndUsersWhoReadGroupedById",
-    booksAndUsersWhoReadGroupedById
-  );
-
-  //  displayBookStatus,
-  // // sortState,
-  // // setSortState,
-  // books,
-  // bookIds,
-  // displayedAppUserId,
-  // withDateOption = false,
-
   return (
     <UsersBooksRead
       booksAndUsersWhoReadGroupedById={booksAndUsersWhoReadGroupedById}
       friendsOfCurrentAppUser={friendsOfCurrentAppUser?.friends}
-      //usersBooksReadIds={usersBooksReadIdsWithUsersWhoReadIds}
-      //friendsOfCurrentAppUser={friendsOfCurrentAppUser?.friends}
     />
   );
-  // <UsersBooksRead currentUserId={currentUser?.id} />
 };
 
 export default UsersBooksReadPage;

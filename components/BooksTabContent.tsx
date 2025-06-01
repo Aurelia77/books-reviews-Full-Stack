@@ -6,8 +6,6 @@ import { TabsContent } from "./ui/tabs";
 type BooksTabContentProps = {
   value: BookStatusType | string;
   activeTab: BookStatusType;
-  // sortState: SortStateType;
-  // setSortState: React.Dispatch<React.SetStateAction<SortStateType>>;
   displayedBookIds: string[];
   displayedAppUserId: string;
 };
@@ -15,14 +13,9 @@ type BooksTabContentProps = {
 const BooksTabContent = ({
   value,
   activeTab,
-  // A SUPP !!!!!!!!!!!
-  // sortState,
-  // setSortState,
   displayedBookIds,
   displayedAppUserId,
 }: BooksTabContentProps) => {
-  console.log("💛💙💚displayedBookIds❤️🤍🤎", displayedBookIds);
-
   return (
     <TabsContent value={value}>
       {displayedBookIds.length > 0 ? (
@@ -31,31 +24,9 @@ const BooksTabContent = ({
           <BooksWithSortControls
             displayBookStatus={activeTab}
             bookIds={displayedBookIds}
-            // sortState={sortState}
-            // setSortState={setSortState}
             displayedAppUserId={displayedAppUserId}
             withDateOption={true}
           />
-          {/* {displayedBookIds.length > 1 && (
-          <BooksSortControls
-            booksStatus={activeTab}
-            sortState={sortState}
-            setSortState={setSortState}
-            withDateOption={true}
-          />
-        )}
-        <ul>
-          {displayedBookIds.map((bookId: string) => (
-            <li className="mb-4" key={bookId}>
-              <BookInfos
-                bookId={bookId}
-                userViewId={userId}
-                bookUserStatus={BookStatus.READ}
-                />
-            </li>
-          ))}
-        </ul> */}
-          {/* j'ai ajouté bookUserStatus={BookStatus.READ} */}
         </div>
       ) : (
         <FeedbackMessage
