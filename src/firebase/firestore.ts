@@ -43,6 +43,7 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 export const storage = getStorage(app);
 
+// --- Auth functions (register, login, logout, password reset) ---
 export const registerFirebase = (
   email: string,
   password: string
@@ -71,22 +72,6 @@ export const loginFirebase = (
     });
 };
 
-onAuthStateChanged(auth, (user) => {
-  const setUser = useUserStore.getState().setCurrentUser;
-  const setProfileImage = useUserStore.getState().setProfileImage;
-
-  if (user) {
-    setUser(user);
-
-    getDocsByQueryFirebase<UserType>("users", "id", user.uid).then((users) => {
-      setProfileImage(users[0].imgURL);
-    });
-  } else {
-    setUser(null);
-    setProfileImage("");
-  }
-});
-
 export const signoutFirebase = (): Promise<void> => {
   return auth.signOut();
 };
@@ -103,6 +88,24 @@ export const sendPasswordResetEmailFirebase = (
     });
 };
 
+// --- Global auth state listener (onAuthStateChanged) ---
+onAuthStateChanged(auth, (user) => {
+  const setUser = useUserStore.getState().setCurrentUser;
+  const setProfileImage = useUserStore.getState().setProfileImage;
+
+  if (user) {
+    setUser(user);
+
+    getDocsByQueryFirebase<UserType>("users", "id", user.uid).then((users) => {
+      setProfileImage(users[0].imgURL);
+    });
+  } else {
+    setUser(null);
+    setProfileImage("");
+  }
+});
+
+// --- Book CRUD and rating utilities ---
 export const updateBookAverageRatingFirebase = (
   action: "add" | "remove",
   bookId: string,
@@ -291,6 +294,7 @@ export const addBookFirebase = (
   );
 };
 
+// --- User CRUD functions ---
 export const addOrUpdateUserFirebase = (
   currentUserId: string | undefined,
   data: UserType | AccountFormType
@@ -307,6 +311,90 @@ export const addOrUpdateUserFirebase = (
   }
 };
 
+export const addUserIdToMyFriendsFirebase = (
+  currentUserId: string | undefined,
+  friendId: string | undefined
+): Promise<boolean> => {
+  if (currentUserId && friendId) {
+    return getDocsByQueryFirebase<UserType>("users", "id", currentUserId)
+      .then((users) => {
+        const user = users[0];
+        const isAlreadyFriend = user.friends.some(
+          (myFriendId) => myFriendId === friendId
+        );
+        if (!isAlreadyFriend) {
+          user.friends.push(friendId);
+          return addOrUpdateUserFirebase(currentUserId, user).then(() => true);
+        } else {
+          console.warn("Friend already added");
+          return false;
+        }
+      })
+      .catch((error) => {
+        console.error("Error adding user to my friends: ", error);
+        throw error;
+      });
+  } else {
+    return Promise.resolve(false);
+  }
+};
+
+export const deleteUserIdToMyFriendsFirebase = (
+  currentUserId: string | undefined,
+  friendId: string | undefined
+): Promise<void> => {
+  if (currentUserId && friendId) {
+    return getDocsByQueryFirebase<UserType>("users", "id", currentUserId)
+      .then((users) => {
+        const user = users[0];
+        user.friends = user.friends.filter(
+          (myfriendId) => myfriendId !== friendId
+        );
+        return addOrUpdateUserFirebase(currentUserId, user);
+      })
+      .catch((error) => {
+        console.error("Error deleting user from my friends: ", error);
+        throw error;
+      });
+  } else {
+    return Promise.resolve();
+  }
+};
+
+// --- Query helpers ---
+export const getDocsByQueryFirebase = <T extends BookType | UserType>(
+  collectionName: string,
+  fieldToQuery?: string,
+  valueToQuery?: string | boolean | number
+): Promise<T[]> => {
+  const q = query(
+    collection(db, collectionName),
+    ...(fieldToQuery && valueToQuery
+      ? [where(fieldToQuery, "==", valueToQuery)]
+      : [])
+  );
+
+  const currentUser = useUserStore.getState().currentUser;
+
+  if (currentUser) {
+    return getDocs(q)
+      .then((querySnapshot) => {
+        const docs: T[] = [];
+        querySnapshot.forEach((doc) => {
+          docs.push(doc.data() as T);
+        });
+        return docs;
+      })
+      .catch((error) => {
+        console.error("Error getting documents: ", error);
+        throw error;
+      });
+  } else {
+    return Promise.resolve([]);
+  }
+};
+
+// --- GET helpers ---
 export const getUsersWhoReadBookCommentsAndNotesFirebase = (
   bookId: string
 ): Promise<UserBookInfoType[]> => {
@@ -348,38 +436,6 @@ export const getUsersWhoReadBookCommentsAndNotesFirebase = (
       console.error("Error getting comments of users who read book: ", error);
       throw error;
     });
-};
-
-export const getDocsByQueryFirebase = <T extends BookType | UserType>(
-  collectionName: string,
-  fieldToQuery?: string,
-  valueToQuery?: string | boolean | number
-): Promise<T[]> => {
-  const q = query(
-    collection(db, collectionName),
-    ...(fieldToQuery && valueToQuery
-      ? [where(fieldToQuery, "==", valueToQuery)]
-      : [])
-  );
-
-  const currentUser = useUserStore.getState().currentUser;
-
-  if (currentUser) {
-    return getDocs(q)
-      .then((querySnapshot) => {
-        const docs: T[] = [];
-        querySnapshot.forEach((doc) => {
-          docs.push(doc.data() as T);
-        });
-        return docs;
-      })
-      .catch((error) => {
-        console.error("Error getting documents: ", error);
-        throw error;
-      });
-  } else {
-    return Promise.resolve([]);
-  }
 };
 
 export const getUserInfosBookFirebase = (
@@ -572,6 +628,7 @@ export const isUserMyFriendFirebase = (
   }
 };
 
+// --- Image upload utility ---
 export const uploadImageOnFirebase = (
   image: File,
   storage: FirebaseStorage,
@@ -602,55 +659,7 @@ export const uploadImageOnFirebase = (
   });
 };
 
-export const addUserIdToMyFriendsFirebase = (
-  currentUserId: string | undefined,
-  friendId: string | undefined
-): Promise<boolean> => {
-  if (currentUserId && friendId) {
-    return getDocsByQueryFirebase<UserType>("users", "id", currentUserId)
-      .then((users) => {
-        const user = users[0];
-        const isAlreadyFriend = user.friends.some(
-          (myFriendId) => myFriendId === friendId
-        );
-        if (!isAlreadyFriend) {
-          user.friends.push(friendId);
-          return addOrUpdateUserFirebase(currentUserId, user).then(() => true);
-        } else {
-          console.warn("Friend already added");
-          return false;
-        }
-      })
-      .catch((error) => {
-        console.error("Error adding user to my friends: ", error);
-        throw error;
-      });
-  } else {
-    return Promise.resolve(false);
-  }
-};
-
-export const deleteUserIdToMyFriendsFirebase = (
-  currentUserId: string | undefined,
-  friendId: string | undefined
-): Promise<void> => {
-  if (currentUserId && friendId) {
-    return getDocsByQueryFirebase<UserType>("users", "id", currentUserId)
-      .then((users) => {
-        const user = users[0];
-        user.friends = user.friends.filter(
-          (myfriendId) => myfriendId !== friendId
-        );
-        return addOrUpdateUserFirebase(currentUserId, user);
-      })
-      .catch((error) => {
-        console.error("Error deleting user from my friends: ", error);
-        throw error;
-      });
-  } else {
-    return Promise.resolve();
-  }
-};
+// --- Data deletion utilities ---
 
 export const deleteAllDatas = (): void => {
   const usersCollection = collection(db, "users");
@@ -668,7 +677,7 @@ export const deleteAllDatas = (): void => {
     });
   });
 
-  Promise.all([deleteUsers, deleteBooks])
+  Promise.all([deleteUsers, deleteBooks]);
 };
 
 export const deleteBookFromMyBooksFirebase = (

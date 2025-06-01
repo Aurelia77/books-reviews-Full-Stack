@@ -52,14 +52,18 @@ const fetchBookInfoDB = async (bookId: string): Promise<BookType | null> => {
 };
 
 const BookDetailPage = (): JSX.Element => {
-  const { mutate } = useSWRConfig();
+  const [bookInfos, setBookInfos] = useState<BookType>();
+  const [isBookInDB, setIsBookInDB] = useState<boolean>(true);
+  const [
+    usersWhoReadBookCommentsAndNotes,
+    setUsersWhoReadBookCommentsAndNotes,
+  ] = useState<UserBookInfoType[]>([]);
 
   const bookId = useParams().bookId;
 
-  const { currentUser } = useUserStore();
+  const { mutate } = useSWRConfig();
 
-  const [bookInfos, setBookInfos] = useState<BookType>();
-  const [isBookInDB, setIsBookInDB] = useState<boolean>(true);
+  const { currentUser } = useUserStore();
 
   const handleUpdate = () => {
     // To rerender this page when the user updates the component AddOrUpdateBookOrBookStatus
@@ -138,11 +142,6 @@ const BookDetailPage = (): JSX.Element => {
       description.replace(/([.!?])\s*(?=[A-Z])/g, "$1\n")
     );
   };
-
-  const [
-    usersWhoReadBookCommentsAndNotes,
-    setUsersWhoReadBookCommentsAndNotes,
-  ] = useState<UserBookInfoType[]>([]);
 
   const fillUserCommentsTab = () => {
     if (bookInfos)

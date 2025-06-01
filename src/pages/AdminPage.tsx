@@ -627,8 +627,9 @@ const DATA_BOOKS_INFO_AAA: MyInfoBookFormType[] = [
 ];
 
 const AdminPage = (): JSX.Element => {
-  const { currentUser } = useUserStore();
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+
+  const { currentUser } = useUserStore();
 
   useEffect(() => {
     getDocsByQueryFirebase<UserType>("users", "id", currentUser?.uid)

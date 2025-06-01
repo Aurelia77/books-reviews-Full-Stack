@@ -46,11 +46,11 @@ const otherUsersFetcher = ([userNameInput, currentUserId]: string[]): Promise<
 };
 
 const UsersSearchPage = (): JSX.Element => {
-  const { currentUser } = useUserStore();
-
   const [userNameInput, setUserNameInput] = useState<string>("");
 
   const titleInputRef = useRef<HTMLInputElement>(null);
+
+  const { currentUser } = useUserStore();
 
   const {
     data: otherUsers = [],

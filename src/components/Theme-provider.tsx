@@ -30,14 +30,6 @@ export function ThemeProvider({
     () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
   );
 
-  useEffect(() => {
-    const root = window.document.documentElement;
-
-    root.classList.remove("light", "dark");
-
-    root.classList.add(theme);
-  }, [theme]);
-
   const value = {
     theme,
     setTheme: (theme: Theme) => {
@@ -45,6 +37,14 @@ export function ThemeProvider({
       setTheme(theme);
     },
   };
+
+  useEffect(() => {
+    const root = window.document.documentElement;
+
+    root.classList.remove("light", "dark");
+
+    root.classList.add(theme);
+  }, [theme]);
 
   return (
     <ThemeProviderContext.Provider {...props} value={value}>

@@ -20,12 +20,11 @@ const BookUserInfo = ({
   friendBookStatus?: BookStatusEnum | "";
 }) => {
   const [userBookInfos, setUserBookInfos] = useState<UserInfoBookType>();
+  const [userName, setUserName] = useState<string | null>(null);
 
   const { currentUser } = useUserStore();
 
   const status = (friendBookStatus || bookStatus) as BookStatusEnum;
-
-  const [userName, setUserName] = useState<string | null>(null);
 
   // Retrieve the information provided by the user (either the visited user if friendBookStatus !== "" or the logged-in user)
   useEffect(() => {
@@ -51,8 +50,8 @@ const BookUserInfo = ({
             - If the book was read by me, we show my info
             - If the book was read by the visited user,
               we show their info */}
-        <div className="bg-background/50 flex flex-col gap-3 rounded-sm p-2 pr-6 md:p-3">
-          <h2 className="text-muted font-semibold">
+        <div className="flex flex-col gap-3 rounded-sm bg-background/50 p-2 pr-6 md:p-3">
+          <h2 className="font-semibold text-muted">
             {currentUser?.uid !== userId
               ? "Info et Avis de " + userName + "\u00A0:"
               : "Mes Infos et Avis :"}

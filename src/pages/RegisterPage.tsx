@@ -53,8 +53,10 @@ const registerFormSchema = z
   });
 
 const RegisterPage = (): JSX.Element => {
-  const navigate = useNavigate();
   const [firebaseError, setFirebaseError] = useState<string | null>(null);
+
+  const navigate = useNavigate();
+
   const { toast } = useToast();
 
   const form = useForm<RegisterFormType>({
@@ -98,7 +100,6 @@ const RegisterPage = (): JSX.Element => {
       {firebaseError && (
         <FeedbackMessage message={firebaseError} type="error" />
       )}
-
       <Form {...form}>
         <form
           className="mb-20 flex flex-col gap-3"

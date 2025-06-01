@@ -19,7 +19,6 @@ const UserAccountPage = (): JSX.Element => {
   const [userInfo, setUserInfo] = useState<UserType>();
   const [isFriend, setIsFriend] = useState<boolean>();
 
-
   const userInUrl = useParams<{ userId: string }>();
 
   const { currentUser } = useUserStore();
@@ -47,10 +46,7 @@ const UserAccountPage = (): JSX.Element => {
   };
 
   return (
-    <div
-      className={cn("min-h-screen max-w-3xl sm:p-2 md:m-auto md:mt-8", {
-      })}
-    >
+    <div className={cn("min-h-screen max-w-3xl sm:p-2 md:m-auto md:mt-8", {})}>
       <Card className="mb-6">
         <div className="mr-2 flex max-w-md items-center justify-between gap-10 pl-2">
           <Title>{userInfo?.userName ?? ""}</Title>

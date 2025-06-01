@@ -83,15 +83,13 @@ const useDebounceEffect = (
 };
 
 const BooksSearchPage = (): JSX.Element => {
-  const urlParam = useParams<{ author: string }>();
-
   const [dbBooks, setDbBooks] = useState<BookType[] | null>(null);
-
   const [booksApiUrl, setBooksApiUrl] = useState(
     `${GOOGLE_BOOKS_API_URL}?q=subject:general&maxResults=${MAX_RESULTS}`
   );
-
   const [bdAndApiBooks, setDbAndApiBooks] = useState<BookType[]>([]);
+
+  const urlParam = useParams<{ author: string }>();
 
   const [titleInput, setTitleInput] = useState<string>(
     urlParam.author ? "" : localStorage.getItem("titleInput") || ""
@@ -102,14 +100,14 @@ const BooksSearchPage = (): JSX.Element => {
   const [langInput, setLangInput] = useState<string>(
     urlParam.author ? "" : localStorage.getItem("langInput") || ""
   );
-
-  const titleInputRef = useRef<HTMLInputElement>(null);
-  const authorInputRef = useRef<HTMLInputElement>(null);
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [sortState, setSortState] = useState<any>({
     [BookStatusEnum.booksReadList]: { criteria: "title", order: "asc" },
   });
+
+  const titleInputRef = useRef<HTMLInputElement>(null);
+  const authorInputRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLDivElement>(null);
 
   const fetchAPIBooks = (booksApiUrl: string): Promise<BookType[]> => {
     return fetch(booksApiUrl)
@@ -189,7 +187,17 @@ const BooksSearchPage = (): JSX.Element => {
     }
   }, [apiBooks, dbBooks]);
 
-  const formRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (urlParam.author) {
+      localStorage.setItem("titleInput", "");
+      localStorage.setItem("authorInput", urlParam.author);
+      localStorage.setItem("langInput", "");
+    }
+  }, [urlParam.author]);
+
+  useEffect(() => {
+    sortBook(bdAndApiBooks, sortState);
+  }, [sortState, bdAndApiBooks]);
 
   // On component mount, add a window event listener to add a class to the form that shrinks it on scroll
   useEffect(() => {
@@ -299,14 +307,6 @@ const BooksSearchPage = (): JSX.Element => {
     localStorage.setItem(key, value);
   };
 
-  useEffect(() => {
-    if (urlParam.author) {
-      localStorage.setItem("titleInput", "");
-      localStorage.setItem("authorInput", urlParam.author);
-      localStorage.setItem("langInput", "");
-    }
-  }, [urlParam.author]);
-
   const handleClearInput = (
     key: string,
     setState: React.Dispatch<React.SetStateAction<string>>
@@ -319,10 +319,6 @@ const BooksSearchPage = (): JSX.Element => {
       authorInputRef.current?.focus();
     }
   };
-
-  useEffect(() => {
-    sortBook(bdAndApiBooks, sortState);
-  }, [sortState, bdAndApiBooks]);
 
   return (
     <div className="h-full min-h-screen max-w-3xl sm:p-2 md:m-auto md:mt-8">
