@@ -91,20 +91,20 @@ const SignUp = () => {
         email: data.email,
         password: data.password,
         name: data.userName,
-        callbackURL: "/", // URL de redirection après vérification de l'email
+        callbackURL: "/", // Redirect URL after email verification
       },
       {
         onRequest: () => {
           setIsLoading(true);
         },
         onSuccess: async (user) => {
-          // on récupère l'id de l'utilisateur créé pour l'utiliser dans addAppUser => on aura donc les mêmes id dans AppUser et les tables BetterAuth
+          // retrieve the created user's id to use it in addAppUser => so we have the same ids in AppUser and BetterAuth tables
           const userId = user.data.user.id;
 
           await addAppUser(userId, data.email, data.userName);
 
           router.push("/");
-          router.refresh(); // la NavBar se met à jour
+          router.refresh(); // to update the navbar
           toast.success("Inscription réussie", {
             description:
               "Vous êtes connecté, bonne navigation au travers des livres !",
@@ -118,42 +118,8 @@ const SignUp = () => {
     );
   };
 
-  // const handleSubmit: FormEventHandler<HTMLFormElement> = (e) => {
-  //   e.preventDefault();
-  //   const formData = new FormData(e.currentTarget);
-  //   const name = formData.get("name") as string;
-  //   const email = formData.get("email") as string;
-  //   const password = formData.get("password") as string;
-
-  //   authClient.signUp.email(
-  //     {
-  //       name,
-  //       email,
-  //       password,
-  //       callbackURL: "/auth", // a url to redirect to after the user verifies their email (optional)
-  //     },
-  //     {
-  //       onRequest: () => {
-  //         setIsLoading(true);
-  //       },
-  //       onSuccess: () => {
-  //         router.push("/auth");
-  //         router.refresh();
-  //       },
-  //       onError: (ctx) => {
-  //         toast.error(ctx.error.message);
-  //         setIsLoading(false);
-  //       },
-  //     }
-  //   );
-  // };
-
   return (
     <div>
-      {/* {firebaseError && (
-        <FeedbackMessage message={firebaseError} type="error" />
-      )} */}
-
       <Form {...form}>
         <form
           className="mb-20 flex flex-col gap-3"
@@ -232,11 +198,6 @@ const SignUp = () => {
       <CustomLinkButton className="mb-4 bg-primary/50" linkTo="/auth/signin">
         Connexion
       </CustomLinkButton>
-
-      {/* <p>Déja inscrit ?</p>
-      <CustomLinkButton className="bg-secondary/70" linkTo="/login">
-        Se connecter
-      </CustomLinkButton> */}
     </div>
   );
 };

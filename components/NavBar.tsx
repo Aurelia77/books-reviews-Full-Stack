@@ -18,7 +18,6 @@ import { Avatar, AvatarImage } from "./ui/avatar";
 
 const NavBar = async () => {
   const currentUser = await getUser();
-  // const router = useRouter();
 
   let profileImage = null;
 
@@ -40,8 +39,6 @@ const NavBar = async () => {
     }
   }
 
-  console.log("💛💙💚❤️🤍🤎 profileImage", profileImage);
-
   return (
     <div className="sticky top-0 z-20 flex h-12 items-center bg-primary/70 p-1 text-muted shadow-md">
       <p className="hidden sm:block absolute left-10 top-4 text-xs">
@@ -50,23 +47,23 @@ const NavBar = async () => {
       <BackArrow />
       <NavigationMenu>
         <NavigationMenuList>
-          {/* ACCUEIL */}
+          {/* HOME */}
           <NavItem href="/">
             <House />
           </NavItem>
-          {/* RECHERCHE DE LIVRES */}
+          {/* BOOK SEARCH */}
           <NavItem href="/books">
             <Search />
           </NavItem>
 
           {currentUser ? (
             <div className="flex items-center">
-              {/* MES LIVRES */}
+              {/* MY BOOKS */}
               <NavItem href="/mybooks">
                 <BookOpen />
               </NavItem>
 
-              {/* MON COMPTE */}
+              {/* MY ACCOUNT */}
               <NavItem href="/myaccount">
                 {profileImage?.imgURL ? (
                   <Avatar className="flex items-center justify-center">
@@ -83,7 +80,7 @@ const NavBar = async () => {
                   </Avatar>
                 )}
               </NavItem>
-              {/* DECONNEXION */}
+              {/* LOGOUT */}
               <NavigationMenuItem>
                 <Link href="/">
                   <NavigationMenuLink asChild>
@@ -95,7 +92,7 @@ const NavBar = async () => {
               </NavigationMenuItem>
             </div>
           ) : (
-            // CONNEXION
+            // LOGIN
             <NavItem href="/auth/signin">
               <LogIn />
             </NavItem>

@@ -1,6 +1,5 @@
 "use client";
 
-//import BookUserInfo from "@/components/BookUserInfo";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -51,42 +50,6 @@ import {
 } from "./ui/select";
 import { Textarea } from "./ui/textarea";
 
-// const MemoizedTextarea = memo(function MemoizedTextarea({
-//   control,
-// }: {
-//   control: any;
-// }) {
-//   return (
-//     <Controller
-//       name="userComments"
-//       control={control}
-//       render={({ field }) => (
-//         <Textarea placeholder="Mes commentaires" {...field} />
-//       )}
-//     />
-//   );
-// });
-// Pour éviter les re-renders inutiles (sinon très long à chaque ajout de caractère)
-// const MemoizedTextarea = memo(({ field }: { field: any }) => (
-//   <Textarea placeholder="Mes commentaires" {...field} />
-// ));
-
-// const MemoizedTextarea = memo(
-//   ({
-//     value,
-//     onChange,
-//   }: {
-//     value: string;
-//     onChange: (value: string) => void;
-//   }) => (
-//     <Textarea
-//       placeholder="Mes commentaires"
-//       value={value}
-//       onChange={(e) => onChange(e.target.value)}
-//     />
-//   )
-// );
-
 const currentYear = new Date().getFullYear();
 
 const bookFormSchema = z.object({
@@ -99,15 +62,14 @@ const bookFormSchema = z.object({
       message: "Impossible d'ajouter une année dans le future !",
     })
     .optional(),
-  month: z.number().int().min(0).max(12).optional(), // 0 = non précisé
+  month: z.number().int().min(0).max(12).optional(), // 0 = not specified
   userNote: z.number().int().min(0).max(5).optional(),
-  userComments: z.string(), //.optional(),
+  userComments: z.string(),
 });
 
 type AddOrUpdateBookProps = {
   currentUserId: string;
   bookInfos: BookType;
-  //onUpdate: () => void;
   userBookStatus?: BookStatusType | null;
 };
 
@@ -115,28 +77,16 @@ const AddOrUpdateBookOrBookStatus = ({
   currentUserId,
   bookInfos,
   userBookStatus,
-}: //onUpdate,
-AddOrUpdateBookProps) => {
+}: AddOrUpdateBookProps) => {
   const router = useRouter();
 
-  //console.log("💙❤️❤️❤️🤎 currentUserId", currentUserId);
-
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  // console.log("bookInMyBooks", bookInMyBooks);
   const [userBookInfos, setUserBookInfos] = useState<UserInfoBookType | null>();
-  console.log("💛💙💚❤️🤍🤎 userBookInfo", userBookInfos);
 
   const [userBookStatusState, setUserBookStatusState] =
     useState(userBookStatus);
 
-  //console.log("/*-/*-bookInMyBooks userBookInfos", userBookInfos);
-  // console.log("/*-/*-bookInMyBooks userBookInfos", userBookInfos?.userNote);
-
-  // console.log("789 bookInMyBooks", bookInMyBooks);
-
   const [refreshKey, setRefreshKey] = useState(0); // to force MyInfosBook re-render when userBookInfos changes
-
-  //console.log("refreshKey", refreshKey);
 
   const defaultValues = {
     bookStatus: userBookStatusState || BookStatusValues.READ,
@@ -151,14 +101,8 @@ AddOrUpdateBookProps) => {
     defaultValues: defaultValues,
   });
 
-  // const year = useWatch({ control: form.control, name: "year" });
-  // const month = useWatch({ control: form.control, name: "month" });
-  // const userNote = useWatch({ control: form.control, name: "userNote" });
-
   const handleUpdate = async () => {
-    // Logique de mise à jour existante...
-
-    // Appeler l'API pour actualiser la page (pour mettre à jour les infos du livre)
+    // Call the API to refresh the page (to update the book info)
     await fetch("/api/revalidate", {
       method: "POST",
       headers: {
@@ -167,17 +111,11 @@ AddOrUpdateBookProps) => {
       body: JSON.stringify({ path: `/books/${bookInfos.id}` }),
     });
 
-    // Optionnel : forcer un rafraîchissement côté client
     router.refresh();
   };
 
   useEffect(() => {
-    console.log("💛💛💛 getOne userBookStatusState", userBookStatusState);
     if (userBookStatusState === BookStatusValues.READ) {
-      console.log(
-        "💛💛💛 getOne userBookStatusState READ",
-        userBookStatusState
-      );
       (async () => {
         try {
           const response = await fetch(
@@ -194,60 +132,12 @@ AddOrUpdateBookProps) => {
     }
   }, [bookInfos.id, currentUserId, userBookStatusState]);
 
-  // const handleUpdate = () => {
-  //   // console.log("handleUpdate");
-  //   setRefreshKey((prevKey) => prevKey + 1);
-  //   //onUpdate(); // Call the parent update function
-  // };
-
-  // useEffect(() => {
-  //   // console.log("handleUpdate useEffect");
-  //   handleUpdate();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [userBookInfos]);
-
-  // const updateUserBookInfos = () => {
-  //   // console.log("updateUserBookInfos");
-  //   if (userBookStatusState && bookInfos) {
-  //     // getUserInfosBookFirebase(userId, bookInfos.id, bookInMyBooks).then(
-  //     //   (myBook) => {
-  //     //     console.log("updateUserBookInfos !!!!!!!!!!! myBook", myBook);
-  //     //     setUserBookInfos(myBook);
-  //     //     // if (myBook) setUserBookInfos(myBook);
-  //     //   }
-  //     // );
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   // console.log("bookInMyBooks change ??? useEffect setUserBookInfos");
-  //   if (userBookStatusState && bookInfos) {
-  //     // console.log("bookInMyBooks && bookInfos", bookInMyBooks, bookInfos);
-  //     // getUserInfosBookFirebase(userId, bookInfos.id, bookInMyBooks).then(
-  //     //   (myBook) => {
-  //     //     console.log("bookInMyBooks !!!!!!!!!!!!!!", myBook);
-  //     //     if (myBook) setUserBookInfos(myBook);
-  //     //   }
-  //     // );
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [bookInfos?.id, userBookStatusState, currentUserId]);
-
-  // Sinon valeurs par défaut du form sont vides
+  // Otherwise, the form's default values are empty
   useEffect(() => {
     form.reset(defaultValues); // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userBookInfos, form]);
 
-  // ici j'utilise async/await car le .then ne fonctionne pas, pourtant normalement ça fait exactement la même chose !!!
   const handleDeleteBook = async (bookId: string) => {
-    // await deleteBookFromMyBooksFirebase(userId, bookId, bookInMyBooks);
-
-    console.log(
-      "0-💙❤️🤎handleDeleteBook ds composant AddOr... ",
-      currentUserId,
-      bookId,
-      userBookStatusState
-    );
     await fetch(
       `/api/booksAndUserInfoBooks/${currentUserId}/${bookId}/${userBookStatusState}`,
       {
@@ -255,13 +145,10 @@ AddOrUpdateBookProps) => {
       }
     );
     setUserBookStatusState(null);
-    handleUpdate(); // pour mettre à jour le parent et donc la note moyenne du livre
-    //updateUserBookInfos();
+    handleUpdate(); // to update the parent and thus the book's average rating
   };
 
   const onSubmit: SubmitHandler<MyInfoBookFormType> = async (formData) => {
-    console.log("💛💙💚❤️🤍🤎 previousNote", userBookInfos?.note);
-
     try {
       const response = await fetch("/api/books/new-or-update", {
         method: "POST",
@@ -274,12 +161,8 @@ AddOrUpdateBookProps) => {
         }),
       });
 
-      console.log("💛💙💚❤️🤍🤎 response", response);
-      console.log("💛💙💚❤️🤍🤎 response json", response.json());
-
       if (!response.ok) {
         const errorData = await response.json();
-        console.log("💛💙💚❤️🤍🤎", errorData);
         console.error(
           "Erreur lors de l'ajout du livre ou des informations :",
           errorData.error,
@@ -312,20 +195,12 @@ AddOrUpdateBookProps) => {
 
     setUserBookStatusState(formData.bookStatus);
     setIsDialogOpen(false);
-    // ??? besoin ci-dessous ?
     setRefreshKey((prevKey) => prevKey + 1); // Increment refreshKey to trigger re-render of this component
-    handleUpdate(); // pour mettre à jour le parent et donc la note moyenne du livre
+    handleUpdate(); // to update the parent and thus the book's average rating
   };
-
-  useEffect(() => {
-    // findBookCatInUserLibraryFirebase(bookInfos?.id, userId).then((res) =>
-    //   setBookInMyBooks(res)
-    // );
-  }, [bookInfos, currentUserId]);
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-      {/* <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}> */}
       {userBookStatusState ? (
         <div
           className={cn(
@@ -361,18 +236,12 @@ AddOrUpdateBookProps) => {
             </div>
             <AlertDialog>
               <AlertDialogTrigger>
-                {/* <Button
-                 // role="button"
-                 className="bg-red-600/70 flex items-center gap-1"
-               > */}
                 <div
                   className="px-4 py-2 rounded cursor-pointer bg-red-600/70 flex items-center gap-1"
                   role="button"
-                  //tabIndex={0}
-                  //onKeyDown={(e) => e.key === "Enter" && setIsDialogOpen(true)}
                 >
                   Supprimer
-                  <X className="bottom-8 mr-0 text-destructive-foreground" />
+                  <X className="bottom-8 mr-0" />
                 </div>
               </AlertDialogTrigger>
               <AlertDialogContent>
@@ -409,27 +278,19 @@ AddOrUpdateBookProps) => {
               </AlertDialogContent>
             </AlertDialog>
           </div>
-          {/* ????????????????????? */}
-          {/* ????????????????????? */}
-          {/* ????????VOIR PK BookUserInfo a 3 ID en props !!!!                   ????????????? */}
-          {/* ????????VOIR PK BookUserInfo a 3 ID en props !!!!                   ????????????? */}
-          {/* ????????VOIR PK BookUserInfo a 3 ID en props !!!!                   ????????????? */}
-          {/* ????????VOIR PK BookUserInfo a 3 ID en props !!!!                   ????????????? */}
-          {/* ????????????????????? */}
-          {/* ????????????????????? */}
+          <div>
+            <p>userViewId=currentUserId = {currentUserId}</p>
+            <p>bookStatus=userBookStatusState = {userBookStatusState}</p>
+            <p>currentUserId = {currentUserId}</p>
+          </div>
           <BookUserInfo
             key={refreshKey} // refreshKey = key to force re-render when bookInfos changed
             userViewId={currentUserId}
-            //  userViewId=
             bookId={bookInfos.id}
             bookStatus={userBookStatusState}
             currentUserId={currentUserId}
           />
           <DialogTrigger asChild className="flex justify-center">
-            {/* <Button
-             className="m-auto md:mt-2 mb-6 h-10 w-full md:w-1/2 border-2 border-background bg-primary/60 shadow-md shadow-foreground/70"
-             //onClick={() => form.reset(defaultValues)}
-           > */}
             <div
               className="px-4 py-2 rounded cursor-pointer m-auto md:mt-2 mb-6 h-10 w-full md:w-1/2 border-2 border-background bg-primary/60 shadow-md shadow-foreground/70"
               role="button"
@@ -442,25 +303,9 @@ AddOrUpdateBookProps) => {
         </div>
       ) : (
         <DialogTrigger asChild className="flex justify-center">
-          {/* absolute -top-1 left-1/4  */}
-          {/* <Button
-            role="button"
-            // onClick={() =>
-            //   form.reset({
-            //     bookStatus: BookStatusEnum.booksReadList,
-            //     year: currentYear,
-            //     month: 0,
-            //     userNote: 0,
-            //     userComments: "",
-            //   })
-            // }
-            className="m-auto mb-6 h-12 w-1/2 border border-border bg-secondary/60 shadow-md shadow-foreground/70"
-          > */}
           <div
             className="px-4 py-2 rounded cursor-pointer m-auto mb-6 h-12 w-1/2 border border-border bg-secondary/60 shadow-md shadow-foreground/70"
             role="button"
-            //tabIndex={0}
-            //onKeyDown={(e) => e.key === "Enter" && setIsDialogOpen(true)}
           >
             Ajouter à mes livres
           </div>
@@ -528,19 +373,6 @@ AddOrUpdateBookProps) => {
                     )}
                   />
                   {form.watch().bookStatus === BookStatusValues.READ && (
-                    // ??? SUPPRIMER le composant MemoizedFormFields ???
-                    // ??? SUPPRIMER le composant MemoizedFormFields ???
-                    // ??? SUPPRIMER le composant MemoizedFormFields ???
-                    // <MemoizedFormFields
-                    //   year={year}
-                    //   month={month}
-                    //   userNote={userNote}
-                    //   setValue={form.setValue}
-                    //   control={form.control}
-                    //   //form={form}
-                    //   // currentYear={currentYear}
-                    //   // MONTHS={MONTHS}
-                    // />
                     <div className="flex items-center justify-around">
                       <FormField
                         control={form.control}
@@ -623,7 +455,7 @@ AddOrUpdateBookProps) => {
                                 render={({ field }) => (
                                   <StarRating
                                     value={field.value ?? 0}
-                                    //On converti en number sinon : "Expected number, received string"
+                                    // We convert to number, because it always receives a string"
                                     onChange={(value: string) =>
                                       field.onChange(parseInt(value))
                                     }

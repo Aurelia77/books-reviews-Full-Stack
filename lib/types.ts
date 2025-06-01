@@ -15,7 +15,6 @@ export type BookType = {
   imageLink: string;
   language: string;
   isFromAPI: boolean;
-  //rating: BookRatingType;
   totalRating: number;
   countRating: number;
 };
@@ -25,28 +24,16 @@ export type BookTypePlusDate = BookType & {
   month?: number | null;
 };
 
-// export type BookRatingType = {
-//   totalRating: number;
-//   count: number;
-// };
-
 export type BooksSearchQueryType = {
   title: string;
   author: string;
   lang: string;
 };
 
-// export type UserInfoBookType = {
-//   id: string;
-//   year?: number | null;
-//   month?: number | null;
-//   userNote?: number | null;
-//   userComments: string;
-// };
 export type UserInfoBookType = {
-  id: string; // Ajout de l'identifiant unique
-  userId: string; // Ajout de la clé étrangère vers l'utilisateur
-  bookId: string; // Ajout de la clé étrangère vers le livre
+  id: string;
+  userId: string;
+  bookId: string;
   year?: number | null;
   month?: number | null;
   note?: number | null;
@@ -56,17 +43,14 @@ export type UserInfoBookType = {
 
 export type MyInfoBookPlusTitleAndNote = UserInfoBookType & {
   bookTitle: string;
-  //bookNote?: BookRatingType;
   totalRating: number;
   countRating: number;
 };
 
 export type MyInfoBookFormType = {
   bookStatus: BookStatusType;
-  // bookStatus: BookStatusEnum;
   year?: number;
   month?: number;
-  // month?: number | null;
   userNote?: number;
   userComments: string;
 };
@@ -136,31 +120,6 @@ export type UsersBooksReadType = {
   usersWhoReadBook: UsersWhoReadBookType[];
 };
 
-// pas utilisé ???
-export type BookTypePlusUsersWhoRead = BookType & {
-  usersWhoRead: UsersWhoReadBookType[];
-};
-
-// export enum BookStatusEnum {
-//   bookRead = "lu",
-//   bookInProgress = "en cours",
-//   bookToRead = "à lire",
-// }
-// export enum BookStatusEnum {
-//   booksReadList = "booksRead",
-//   booksInProgressList = "booksInProgress",
-//   booksToReadList = "booksToRead",
-// }
-// export enum BookStatusEnum {
-//   booksReadList = "READ",
-//   booksInProgressList = "IN_PROGRESS",
-//   booksToReadList = "TO_READ",
-// }
-
-// export type SortStateType = {
-//   criteria: "title" | "date" | "note";
-//   order: "asc" | "desc";
-// };
 export type SortStateType = {
   // eslint-disable-next-line no-unused-vars
   [key in BookStatusType]: {

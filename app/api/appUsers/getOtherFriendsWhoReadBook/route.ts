@@ -37,15 +37,11 @@ export async function GET(req: NextRequest) {
 
     const friendsIds = connectedUser?.friends ?? [];
 
-    console.log("💛💙💚❤️🤍🤎 connectedUser", connectedUser);
-    console.log("💛💙💚❤️🤍🤎 friendsIds", friendsIds);
-
     const friendsWhoRead = await prisma.appUser.findMany({
       where: {
         id: { in: friendsIds, not: excludeUserId || undefined },
         UserInfoBook: {
           some: { bookId: bookId },
-          //status: BookStatus.READ,
         },
       },
       select: {

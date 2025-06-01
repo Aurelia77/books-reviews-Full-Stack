@@ -17,7 +17,7 @@ export const auth = betterAuth({
       try {
         await resend.emails.send({
           to: user.email,
-          from: "BookReviews <onboarding@resend.dev>", // adresse test de Resend
+          from: "BookReviews <onboarding@resend.dev>", // Resend test email address
           subject: "Redéfinir ton mot de passe BookReviews",
           text: `Hello, clique ici pour redéfinir ton mot de passe : ${url}`,
         });

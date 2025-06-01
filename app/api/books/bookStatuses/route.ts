@@ -7,13 +7,8 @@ type BookStatusesType = {
 };
 
 export async function POST(req: Request) {
-  const { userId, bookIds }: BookStatusesType = await req.json(); // Remplace la récupération de req.body
-  // Remplacez cette ligne pour récupérer un tableau d'IDs
-  // const { userId, bookIds } = body; // Avant : const { userId, bookId } = body;
+  const { userId, bookIds }: BookStatusesType = await req.json();
 
-  console.log("💛💙💚 userId bookIds", userId, bookIds);
-
-  // Ajoutez une vérification pour bookIds
   if (!userId || !bookIds || !Array.isArray(bookIds)) {
     return NextResponse.json(
       {
@@ -29,11 +24,11 @@ export async function POST(req: Request) {
     const userBooks = await prisma.userInfoBook.findMany({
       where: {
         userId,
-        bookId: { in: bookIds }, // Recherche pour plusieurs IDs
+        bookId: { in: bookIds },
       },
     });
 
-    // Transformez les résultats en un objet clé-valeur
+    // Transform the results into a key-value object
     const statuses: Record<string, string | null> = userBooks.reduce(
       (
         acc: Record<string, string | null>,
@@ -42,8 +37,9 @@ export async function POST(req: Request) {
         acc[userBook.bookId] = userBook.status;
         return acc;
       },
-      {} as Record<string, string | null> // Typage explicite ici
+      {} as Record<string, string | null>
     );
+
     return NextResponse.json(
       {
         success: true,
@@ -57,6 +53,7 @@ export async function POST(req: Request) {
       "Erreur lors de la récupération des statuts des livres (dans UserInfoBook) :",
       error
     );
+
     return NextResponse.json(
       {
         success: false,

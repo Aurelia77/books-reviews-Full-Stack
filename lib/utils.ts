@@ -10,13 +10,13 @@ export function cn(...inputs: ClassValue[]) {
 export const cleanDescription = (description: string) => {
   return (
     description
-      // Supprimer toutes les balises HTML
+      // Remove all HTML tags
       .replace(/<\/?[^>]+(>|$)/g, "")
-      // Supprimer les espaces en début et fin
+      // Remove leading and trailing spaces
       .trim()
-      // Remplacer les balises <br> par des sauts de ligne
+      // Replace <br> tags with line breaks
       .replace(/<br\s*\/?>\s*(<br\s*\/?>)*/g, "\n")
-      // Supprimer les guillemets français et anglais en début et fin de texte
+      // Remove French and English quotation marks at the beginning and end of the text
       .replace(/^[«"]+|[»"]+$/g, "")
   );
 };
@@ -32,14 +32,6 @@ export const sortBook = (
     return books;
   }
 
-  console.log("💙🤎 sortBook books", books);
-  console.log("💙🤎 sortBook sortState", sortState);
-
-  //const { criteria, order } = sortState;
-  //const { criteria, order } = sortState[BookStatus.IN_PROGRESS];
-
-  // console.log("*-*-sortBook", books, criteria, order);
-
   const sortedBooks = books.sort((a, b) => {
     let comparison = 0;
 
@@ -54,7 +46,6 @@ export const sortBook = (
         break;
       }
       case "reviews":
-        // console.log("REVIEW", a.rating?.count, b.rating?.count);
         comparison = (b.countRating ?? 0) - (a.countRating ?? 0);
         break;
       case "date":
@@ -75,7 +66,6 @@ export const sortBook = (
 
     return order === "asc" ? comparison : -comparison;
   });
-  // console.log("*-*- RETURN", sortedBooks);
   return sortedBooks;
 };
 

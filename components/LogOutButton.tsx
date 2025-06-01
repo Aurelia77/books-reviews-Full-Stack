@@ -11,7 +11,7 @@ const LogOutButton = (props: ComponentPropsWithRef<"button">) => {
 
   return (
     <button
-      {...props} // à mettre avant onClick pour pas que ça l'écrase
+      {...props} // place before onClick so it doesn't overwrite it
       onClick={() =>
         authClient.signOut(
           {},
@@ -21,8 +21,7 @@ const LogOutButton = (props: ComponentPropsWithRef<"button">) => {
             },
             onSuccess: () => {
               setIsLoading(false);
-              //router.push("/");
-              router.refresh(); // la NavBar se met à jour
+              router.refresh(); // to update the navbar
             },
             onError: (ctx) => {
               console.error(ctx.error.message);

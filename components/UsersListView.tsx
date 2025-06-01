@@ -9,18 +9,8 @@ const UsersListView = ({
 }: {
   userInfoList: (AppUserType | UserTypePlusIsMyFriend)[];
 }) => {
-  ////////////////////////////////////////
-  ////////////////////////////////////////
-  userInfoList.map((friend: AppUserType) => {
-    console.log(friend);
-    console.log(friend.userName);
-  });
-  ////////////////////////////////////////
-  ////////////////////////////////////////
-
+ 
   return (
-    // <ul className="flex items-center gap-4 p-5">
-
     userInfoList.length > 0 ? (
       <ul className="flex flex-col gap-8">
         {userInfoList.map((user: AppUserType) => (

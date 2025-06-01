@@ -6,12 +6,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-// import {
-//   findBookCatInUserLibraryFirebase,
-//   getDocsByQueryFirebase,
-// } from "@/firebase/firestore";
-// import { toast } from "@/hooks/use-toast";
-// import useUserStore from "@/hooks/useUserStore";
 import {
   BookStatusValues,
   DEFAULT_BOOK_IMAGE,
@@ -26,23 +20,13 @@ import { toast } from "sonner";
 import AverageBookRating from "./AverageBookRating";
 import BookUserInfo from "./BookUserInfo";
 import FriendsWhoReadBook from "./FriendsWhoReadBook";
-//import useSWR from "swr";
-// import AverageBookRating from "./AverageBookRating";
-// import BookUserInfo from "./BookUserInfo";
-// import FriendsWhoReadBook from "./FriendsWhoReadBook";
 
-// Que BOOK !!!!!!!!
-// Soit à partir de BooksSearchPage => on passe un objet "book" en props car on a les info nécessaires
-// Soit à partir de MyBooksPage / UserAccountPage => on passe un bookId (et ensuite on va chercher les infos nécessaires dans la BDD avec useSWR)
-//// ou mettre avec hook perso.............
-// userViewId = id du user à ne pas compter dans les amis qui ont lu le livre (si on est sur UserAccountPage) + qd on est sur UserAccountPage => on voit ses info et non celles du user connecté
 type BookInfosProps =
   | {
       currentUserId: string | undefined;
       book: BookType;
       bookId?: never;
       userViewId?: string;
-      // userId?: string | undefined;
       bookConnectedUserStatus: BookStatusType | "";
     }
   | {
@@ -50,145 +34,25 @@ type BookInfosProps =
       book?: never;
       bookId: string;
       userViewId?: string;
-      // userId?: string | undefined;
       bookConnectedUserStatus: BookStatusType | "";
     };
 
 const BookInfos = ({
   currentUserId,
   book,
-  //bookId,
   userViewId,
-  // userId,
   bookConnectedUserStatus = "",
 }: BookInfosProps) => {
-  //console.log("❤️", book);
-  ////console.log("bookId", bookId);
-
-  // const book = await prisma.book.findUnique({
-  //   where: { id: bookId },
-  // });
-
-  // console.log("💛💙💚❤️🤍🤎id", bookId);
-  // console.log("book", book);
-
-  //const [bookInfos, setBookInfos] = useState<BookType | null>(book || null);
-  // console.log("bookInfos description", bookInfos?.description);
-
-  // const [bookStatus, setBookStatus] = useState<BookStatus | "">("");
-  // console.log("💛 bookinmylist", bookStatus);
-  // const [bookInFriendList, setBookInFriendList] = useState<BookStatusType | "">(
-  //   ""
-  // );
-
-  // console.log("❤️💛💚🤍❤️ bookInfos.title", bookInfos?.title);
-  // console.log("❤️💛💚🤍❤️ bookConnectedUserStatus", bookConnectedUserStatus);
-  // console.log("❤️💛💚🤍❤️ bookInFriendList", bookInFriendList);
-  // console.log("❤️💛💚🤍❤️ currentUserId", currentUserId);
-
-  // useEffect(() => {
-  //   const fetchUser = async () => {
-  //     try {
-  //       const res = await fetch("/api/user");
-  //       const data = await res.json();
-  //       setCurrentUserId(data.user?.id);
-  //     } catch (error) {
-  //       console.error("Erreur user :", error);
-  //     }
-  //   };
-  //   fetchUser();
-  // }, []);
-
-  //const { currentUser } = useUserStore();
-
-  // 1-DEBUT============================FAIRE HOOK PERSO !!! (aussi pour BookDetailPage)
-  // const fetchBookInfoDB = async (bookId: string): Promise<BookType | null> => {
-  //   return getDocsByQueryFirebase<BookType>("books", "id", bookId)
-  //     .then((books) => {
-  //       if (books.length > 0) {
-  //         ////console.log("BOOKS", books);
-  //         return books[0];
-  //       } else {
-  //         return null;
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.error(`Error fetching book with id: ${bookId}`, error);
-  //       return null;
-  //     });
-  // };
-
-  // const {
-  //   data: bookFromId,
-  //   error,
-  //   isLoading,
-  // } = useSWR<BookType | null>(bookId, fetchBookInfoDB);
-
-  // ici on utilise une constante et pas un state car le message ne change pas et s'affiche seulement si useSWR renvoie une erreur
-  // const message = `Un problème est survenu dans la récupération du livre => ${error?.message}`;
-
-  // useEffect(() => {
-  //   if (bookFromId) {
-  //     setBookInfos(bookFromId);
-  //   }
-  // }, [bookFromId]);
-  // // 1-FIN==============
-  // // ==============FAIRE HOOK PERSO !!!
-
-  // useEffect(() => {
-  //   console.log(
-  //     "💛💙💚❤️🤍🤎 useEffect userId && bookInfos",
-  //     userId,
-  //     bookInfos
-  //   );
-  //   //ou gérer le undefined dans fonction bookInMyBooksFirebase ??????????
-  //   if (userId && bookInfos) {
-  //     fetch("/api/bookss/bookStatus", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ userId, bookId: bookInfos.id }),
-  //     })
-  //       .then((response) => response.json())
-  //       .then((data) => {
-  //         if (data.status) {
-  //           setBookStatus(data.status);
-  //         }
-  //       })
-  //       .catch((error) => console.error("Error fetching book status:", error));
-  //   }
-
-  //   // if (userViewId !== currentUser?.uid)
-  //   //   findBookCatInUserLibraryFirebase(bookInfos?.id, userViewId).then(
-  //   //     (bookInFriendList) => setBookInFriendList(bookInFriendList)
-  //   //   );
-  // }, []);
-  ////////// AJOUTER LES dépendance là c'était car boucle infinie !!!!!!!!!!!!!
-  ////////// AJOUTER LES dépendance là c'était car boucle infinie !!!!!!!!!!!!!
-  ////////// AJOUTER LES dépendance là c'était car boucle infinie !!!!!!!!!!!!!
-  ////////// AJOUTER LES dépendance là c'était car boucle infinie !!!!!!!!!!!!!
-  ////////// AJOUTER LES dépendance là c'était car boucle infinie !!!!!!!!!!!!!
-  // }, [bookInfos?.id, userId, userViewId]);
-
   const handleLinkClick = () => {
     toast.error("Veuillez vous connecter pour accéder à cette page.");
   };
 
-  {
-    /* {isLoading ? (
-    <BookSkeleton />
-  ) : error ? (
-    <FeedbackMessage message={message} type="error" />
-  ) : ( */
-  }
   return (
     <div>
       {book && (
         <Card className="relative">
           <Link
             href={currentUserId ? `/books/${book.id}` : "/auth/signin"}
-            // Créer un ClientLink pour pouvoir mettre le toast si non connecté ???
             onClick={!currentUserId ? handleLinkClick : undefined}
           >
             <CardDescription className="absolute right-2 top-2 rounded-full bg-secondary/60 px-3 py-1 text-secondary-foreground shadow-sm shadow-foreground">
@@ -198,8 +62,6 @@ const BookInfos = ({
               <div className="relative flex items-start gap-5 p-5 pt-10 shadow-md shadow-secondary/60">
                 <Image
                   src={book.imageLink || DEFAULT_BOOK_IMAGE}
-                  // à voir mettre dans un client
-                  //onError={(e) => (e.currentTarget.src = DEFAULT_BOOK_IMAGE)}
                   className="w-32 rounded-sm border border-border object-contain shadow-md shadow-foreground/70"
                   alt={`Image de couverture du livre ${book?.title}`}
                   width={192}
@@ -260,26 +122,14 @@ const BookInfos = ({
                   </div>
                 )}
               </div>
-              {/* <div className="bg-pink-900">
-                <p>BookUserInfo (on est ds composant BookInfo)</p>
-                <p>bookConnectedUserStatus = {bookConnectedUserStatus} </p>
-                <p>title = {bookInfos?.title} </p>
-                <p>bookInFriendList = {bookInFriendList} </p>
-                <p>userViewId = {userViewId} </p>
-                <p>currentUserId = {currentUserId} </p>
-              </div> */}
               {(bookConnectedUserStatus || userViewId) &&
-                // pk j'avais mis bookInFriendList ???
-                // {(bookUserStatus || bookInFriendList !== "") &&
                 book &&
                 currentUserId && (
                   <BookUserInfo
-                    // userId={userViewId || currentUserId}
                     currentUserId={currentUserId}
                     bookId={book.id}
                     bookStatus={bookConnectedUserStatus}
                     userViewId={userViewId}
-                    // friendBookStatus={bookInFriendList}
                   />
                 )}
             </div>

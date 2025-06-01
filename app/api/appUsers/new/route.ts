@@ -11,11 +11,6 @@ export type NewUserType = {
 export async function POST(req: Request) {
   const { id, email, userName }: NewUserType = await req.json();
 
-  console.log("💛💙 id", id);
-  console.log("💛💙 email", email);
-  console.log("💛💙 userName", userName);
-
-  // Vérification des données
   if (!email || !userName) {
     return NextResponse.json(
       {
@@ -28,7 +23,6 @@ export async function POST(req: Request) {
   }
 
   try {
-    // Création de l'utilisateur dans la base de données
     const newUser = await prisma.appUser.create({
       data: {
         ...EMPTY_USER,
@@ -48,6 +42,7 @@ export async function POST(req: Request) {
       "Erreur lors de la création de l'utilisateur (AppUser) :",
       error
     );
+
     return NextResponse.json(
       {
         success: false,

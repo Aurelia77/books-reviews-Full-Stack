@@ -9,11 +9,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-// import { sendPasswordResetEmailFirebase } from "@/firebase/firestore";
-// import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronsRight } from "lucide-react";
-//import { useState } from "react";
 import Link from "next/link";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -30,11 +27,6 @@ const forgotPasswordSchema = z.object({
 });
 
 const ResetPassword = () => {
-  //const navigate = useNavigate();
-  //const [firebaseError, setFirebaseError] = useState<string | null>(null);
-
-  // const { toast } = useToast();
-
   const form = useForm<ForgotPasswordType>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
@@ -43,7 +35,6 @@ const ResetPassword = () => {
   });
 
   const onSubmit: SubmitHandler<ForgotPasswordType> = async (data) => {
-    console.log("data", data);
     try {
       const res = await fetch("/api/auth/resetPassword", {
         method: "POST",
@@ -67,9 +58,6 @@ const ResetPassword = () => {
 
   return (
     <div>
-      {/* {firebaseError && (
-        <FeedbackMessage message={firebaseError} type="error" />
-      )} */}
       <Form {...form}>
         <form
           className="mb-20 flex flex-col gap-3"
@@ -115,10 +103,6 @@ const ResetPassword = () => {
           <p>Inscrivez-vous ici !</p>
         </Link>
       </div>
-      {/* <p className="ml-1">Pas encore inscrit ?</p>
-      <CustomLinkButton className="bg-secondary/70" linkTo="/register">
-        S'inscrire
-      </CustomLinkButton> */}
     </div>
   );
 };

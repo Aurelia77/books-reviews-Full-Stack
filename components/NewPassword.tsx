@@ -11,11 +11,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import { useRouter, useSearchParams } from "next/navigation";
-// import { sendPasswordResetEmailFirebase } from "@/firebase/firestore";
-// import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronsRight } from "lucide-react";
-//import { useState } from "react";
 import Link from "next/link";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -67,19 +64,6 @@ const ResetPassword = () => {
 
   return (
     <div>
-      {/* <form onSubmit={handleSubmit}>
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Nouveau mot de passe"
-      />
-      <button type="submit">Valider</button>
-    </form> */}
-
-      {/* {firebaseError && (
-            <FeedbackMessage message={firebaseError} type="error" />
-          )} */}
       <Form {...form}>
         <form
           className="mb-20 flex flex-col gap-3"

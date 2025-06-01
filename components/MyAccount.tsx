@@ -14,14 +14,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import UsersListView from "@/components/UsersListView";
-// import {
-//   addOrUpdateUserFirebase,
-//   getDocsByQueryFirebase,
-//   storage,
-//   uploadImageOnFirebase,
-// } from "@/firebase/firestore";
-// import { useToast } from "@/hooks/use-toast";
-// import useUserStore from "@/hooks/useUserStore";
 import { AccountFormType, AppUserType } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronsRight, Sparkles } from "lucide-react";
@@ -54,7 +46,6 @@ const accountFormSchema = z.object({
   description: z.string(),
 });
 
-// remplacer any !!!!!!!!!!
 const MyAccount = ({
   currentAppUser,
   myFriends,
@@ -62,103 +53,12 @@ const MyAccount = ({
   currentAppUser: AppUserType;
   myFriends: AppUserType[];
 }) => {
-  // Voir si on vt utiliser useToast !!!
-  // const { toast } = useToast();
   const router = useRouter();
 
   const [imageUpload, setImageUpload] = useState<File | null>(null);
-  console.log("💛💙💚❤️🤍🤎imageUpload", imageUpload);
 
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [progress, setProgress] = useState<number>();
-
-  // ********************************************************
-  // STOCKE LES IMAGES EN LOCALE SANS LE PROGRESS
-  // const uploadImage = async () => {
-  //   if (!imageUpload) return;
-
-  //   setIsImageLoading(true);
-  //   const data = new FormData();
-  //   data.append("file", imageUpload);
-  //   const res = await fetch("/api/uploads", {
-  //     method: "POST",
-  //     body: data,
-  //   });
-  //   const result = await res.json();
-  //   if (result.url) {
-  //     form.setValue("imgURL", result.url);
-  //   }
-  //   setIsImageLoading(false);
-  // };
-
-  // ********************************************************
-  // STOCKE LES IMAGES EN LOCALE AVEC LE PROGRESS
-  // const uploadImage = async () => {
-  //   if (!imageUpload) return;
-
-  //   setIsImageLoading(true);
-  //   setProgress(0);
-
-  //   const data = new FormData();
-  //   data.append("file", imageUpload);
-
-  //   const xhr = new XMLHttpRequest();
-  //   xhr.open("POST", "/api/uploads", true);
-
-  //   xhr.upload.onprogress = (event) => {
-  //     if (event.lengthComputable) {
-  //       const percent = Math.round((event.loaded / event.total) * 100);
-  //       setProgress(percent);
-  //     }
-  //   };
-
-  //   xhr.onload = () => {
-  //     setIsImageLoading(false);
-  //     if (xhr.status === 200) {
-  //       const result = JSON.parse(xhr.responseText);
-  //       if (result.url) {
-  //         form.setValue("imgURL", result.url);
-  //       }
-  //     }
-  //   };
-
-  //   xhr.onerror = () => {
-  //     setIsImageLoading(false);
-  //     // Gérer l'erreur ici si besoin
-  //   };
-
-  //   xhr.send(data);
-  // };
-
-  // ********************************************************
-  // STOCKE LES IMAGES avec uploadthing
-  // PBM DE HEADER !!!!!!!!!!!!!!!! dc je dois exposer ma var d'env !!!
-  // const uploadImage = async () => {
-  //   if (!imageUpload) return;
-  //   setIsImageLoading(true);
-  //   const formProfileImgData = new FormData();
-  //   formProfileImgData.append("files", imageUpload);
-  //   try {
-  //     const res = await fetch("/api/uploads", {
-  //       method: "POST",
-  //       body: formProfileImgData,
-  //     });
-  //     setIsImageLoading(false);
-  //     if (res.ok) {
-  //       const result = await res.json();
-  //       // uploadthing retourne un tableau
-  //       if (result && result[0] && result[0].url) {
-  //         form.setValue("imgURL", result[0].url);
-  //       }
-  //     } else {
-  //       const errorData = await res.json();
-  //       console.error("Erreur upload image :", errorData);
-  //     }
-  //   } catch (error) {
-  //     setIsImageLoading(false);
-  //     console.error("Erreur upload image :", error);
-  //   }
-  // };
 
   const uploadImage = async () => {
     if (!imageUpload) return;
@@ -202,71 +102,6 @@ const MyAccount = ({
 
     xhr.send(formProfileImgData);
   };
-  // ...fin de la fonction...
-
-  // SANS l'utilisation d'un route API (moins bien car pas sécurisé)
-  // const uploadImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
-  // const uploadImage = async () => {
-  //   if (!imageUpload) return;
-  //   setIsImageLoading(true);
-  //   //setProgress(0);
-  //   const formData = new FormData();
-  //   formData.append("file", imageUpload);
-
-  //   // Impossible d'utiliser uploadthing V8 car non compatible avec React19, donc j'utilise la V7
-  //   // const xhr = new XMLHttpRequest();
-  //   // xhr.open("POST", "/api/uploadthing", true);
-
-  //   // xhr.upload.onprogress = (event) => {
-  //   //   if (event.lengthComputable) {
-  //   //     const percent = Math.round((event.loaded / event.total) * 100);
-  //   //     setProgress(percent);
-  //   //   }
-  //   // };
-
-  //   // xhr.onload = () => {
-  //   //   setIsImageLoading(false);
-  //   //   if (xhr.status === 200) {
-  //   //     const result = JSON.parse(xhr.responseText);
-  //   //     if (result.url) {
-  //   //       form.setValue("imgURL", result.url);
-  //   //     }
-  //   //   }
-  //   // };
-
-  //   // xhr.onerror = () => {
-  //   //   setIsImageLoading(false);
-  //   //   // Gérer l'erreur ici si besoin
-  //   // };
-
-  //   // xhr.send(formData);
-
-  //   try {
-  //     const res = await fetch("https://uploadthing.com/api/uploadFiles", {
-  //       method: "POST",
-  //       body: formData,
-  //     });
-  //     setIsImageLoading(false);
-
-  //     console.log("💛💙💚🤍 res", res);
-
-  //     if (res.ok) {
-  //       console.log("💛💙💚🤍 Ok !!!");
-  //       const result = await res.json();
-  //       // Adapte selon la structure de la réponse
-  //       if (result && result[0] && result[0].url) {
-  //         form.setValue("imgURL", result[0].url);
-  //       }
-  //       console.log("💛💙💚🤍 Ok !!!", result);
-  //     } else {
-  //       const errorData = await res.json();
-  //       console.error("Erreur lors de l'upload de l'image :", errorData);
-  //     }
-  //   } catch (error) {
-  //     setIsImageLoading(false);
-  //     console.error("Erreur lors de l'upload de l'image :", error);
-  //   }
-  // };
 
   const form = useForm<AccountFormType>({
     resolver: zodResolver(accountFormSchema),
@@ -276,9 +111,6 @@ const MyAccount = ({
       description: "",
     },
   });
-
-  console.log("form.watch(imgURL)🤍🤎", form.watch("imgURL"));
-  //console.log("form.watch(userName)🤍🤎", form.watch("userName"));
 
   const { reset } = form;
 
@@ -293,11 +125,6 @@ const MyAccount = ({
   }, [currentAppUser, reset]);
 
   const onSubmit: SubmitHandler<AccountFormType> = async (formData) => {
-    console.log("data💛", formData);
-    console.log("data💛💛 img", formData.imgURL);
-    // addOrUpdateUserFirebase(currentUser?.uid, data);
-    // useUserStore.getState().setProfileImage(data.imgURL);
-
     try {
       const response = await fetch("/api/appUsers/update", {
         method: "POST",
@@ -308,11 +135,8 @@ const MyAccount = ({
         }),
       });
 
-      // console.log("💛💙💚❤️🤍🤎 response", response);
-
       if (!response.ok) {
         const errorData = await response.json();
-        console.log("💛💙💚❤️🤍🤎", errorData);
         console.error(
           "Erreur lors de la mise à jour du profil :",
           errorData.error,
@@ -323,7 +147,7 @@ const MyAccount = ({
         );
       } else {
         toast.success("Profil mis à jour avec succès !");
-        router.refresh(); // pour mettre à jour la navBar avec l'img
+        router.refresh(); // to update the navbar with the new profile image
       }
     } catch (error) {
       console.error("Erreur lors de l'appel à l'API /appUser/update :", error);
@@ -332,27 +156,6 @@ const MyAccount = ({
       );
     }
   };
-
-  // useEffect(() => {
-  //   if (currentUser)
-  //     // otherwise error if page reload
-  //     getDocsByQueryFirebase<UserType>("users", "id", currentUser?.uid).then(
-  //       (users) => {
-  //         const userInfo = users[0];
-  //         setCurrentUserInfo(userInfo);
-
-  //         if (userInfo?.friends) {
-  //           Promise.all(
-  //             userInfo.friends.map((friendId) =>
-  //               getDocsByQueryFirebase<UserType>("users", "id", friendId)
-  //             )
-  //           ).then((friends) => {
-  //             setFriendsInfo(friends.map((friend) => friend[0]));
-  //           });
-  //         }
-  //       }
-  //     ); // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [currentUser?.uid]);
 
   return (
     <div>
@@ -403,7 +206,6 @@ const MyAccount = ({
                         className="cursor-pointer text-muted mb-1"
                       />
                       {isImageLoading ? (
-                        // <p className="text-muted">Chargement de l'image...</p>
                         <Progress value={progress} />
                       ) : (
                         imageUpload && (

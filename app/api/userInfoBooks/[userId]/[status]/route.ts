@@ -13,8 +13,6 @@ export async function GET(
 ) {
   const { userId, status } = await context.params;
 
-  console.log("1-💛💙💚❤️🤍🤎 userId, status", userId, status);
-
   if (!userId || !status) {
     return NextResponse.json(
       {
@@ -27,8 +25,6 @@ export async function GET(
   }
 
   try {
-    console.log("2-💛💙💚");
-
     const books = await prisma.userInfoBook.findMany({
       where: {
         userId: userId,
@@ -48,12 +44,11 @@ export async function GET(
       { status: 200 }
     );
   } catch (error) {
-    console.log("3-error-💛💙💚");
-
     console.error(
       "Erreur lors de la récupération des info du livre de l'utilisateur (UserInfoBook) :",
       error
     );
+
     return NextResponse.json(
       {
         success: false,

@@ -10,8 +10,6 @@ type ByIdsWithDateType = {
 export async function POST(req: NextRequest) {
   const { bookIds, displayedAppUserId }: ByIdsWithDateType = await req.json();
 
-  console.log("💛🤎 bookIds, displayedAppUserId", bookIds, displayedAppUserId);
-
   if (!bookIds || !Array.isArray(bookIds) || !displayedAppUserId) {
     return NextResponse.json(
       { error: "bookIds ou displayedAppUserId manquant" },
@@ -34,9 +32,6 @@ export async function POST(req: NextRequest) {
           select: {
             month: true,
             year: true,
-            // note: true,
-            // comments: true,
-            // status: true,
           },
         },
       },
@@ -45,20 +40,12 @@ export async function POST(req: NextRequest) {
     const booksWithDate: BookTypePlusDate[] = books.map((book: any) => {
       const info = book.UserInfoBook?.[0];
 
-      console.log("🤎🤎🤎🤎", {
-        ...book,
-        year: info?.year ?? null,
-        month: info?.month ?? null,
-      });
-
       return {
         ...book,
         year: info?.year ?? null,
         month: info?.month ?? null,
       };
     });
-
-    console.log("💛💙💚❤️🤍🤎 booksWithDate", booksWithDate);
 
     return NextResponse.json(
       {
@@ -69,6 +56,16 @@ export async function POST(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+    console.error("Erreur lors de la récupération des livres :", error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Erreur lors de la récupération des livres.",
+        code: "INTERNAL_SERVER_ERROR",
+        details: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 }
+    );
   }
 }

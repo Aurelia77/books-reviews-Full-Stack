@@ -11,12 +11,6 @@ const User = async ({ params }: { params: Promise<{ id: string }> }) => {
 
   const currentUser = await getUser();
 
-  // const delay = (ms: number) =>
-  //   new Promise((resolve) => setTimeout(resolve, ms));
-  // await delay(3000);
-
-  // throw new Error("Erreur simulée pour tester le fichier error.tsx");
-
   const displayedAppUser = await prisma.appUser.findUnique({
     where: { id: id },
   });
@@ -31,9 +25,9 @@ const User = async ({ params }: { params: Promise<{ id: string }> }) => {
       status: "READ",
     },
     include: {
-      book: true, // inclut les infos du livre
+      book: true,
     },
-  }); 
+  });
 
   return (
     displayedAppUser && (
@@ -44,11 +38,6 @@ const User = async ({ params }: { params: Promise<{ id: string }> }) => {
         {livres?.length > 0 && currentAppUser ? (
           <AllBooksLists displayedAppUser={displayedAppUser} />
         ) : (
-          // <BooksWithSortControls
-          //   displayBookStatus={BookStatus.READ}
-          //   userId={currentUser?.id}
-          //   books={livres.map((l) => l.book)} // ????????
-          // />
           <FeedbackMessage message="Aucun livre pour l'instant" type="info" />
         )}
       </div>

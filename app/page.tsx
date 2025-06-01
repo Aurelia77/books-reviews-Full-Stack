@@ -1,5 +1,4 @@
 import CustomLinkButton from "@/components/CustomLinkButton";
-//import useUserStore from "@/hooks/useUserStore";
 import { getUser } from "@/lib/auth-session";
 import {
   ArrowDownToLine,
@@ -12,7 +11,6 @@ import {
 } from "lucide-react";
 
 const HomePage = async () => {
-  // const { currentUser: user } = useUserStore();
   const currentUser = await getUser();
 
   return (
@@ -61,7 +59,6 @@ const HomePage = async () => {
           </CustomLinkButton>
         </div>
       )}
-      {/* <CustomLinkButton className="bg-primary/50">Suggestions</CustomLinkButton> */}
       <CustomLinkButton className="bg-primary/50" linkTo="/books">
         Recherche de livres
         <Search size={40} className="rounded-full bg-foreground/10 p-2" />

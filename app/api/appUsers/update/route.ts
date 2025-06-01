@@ -11,8 +11,6 @@ export async function POST(req: Request) {
   try {
     const { currentUserId, data }: UpdateUserType = await req.json();
 
-    console.log("💚💙💚 data", data);
-
     if (!data || !currentUserId) {
       return NextResponse.json(
         {

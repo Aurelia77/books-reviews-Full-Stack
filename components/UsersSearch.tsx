@@ -15,7 +15,6 @@ type UsersSearchProps = {
 const UsersSearch = ({ users }: UsersSearchProps) => {
   const [userNameInput, setUserNameInput] = useState("");
 
-  // Filtrer les utilisateurs en fonction de la recherche
   const filteredUsers = users.filter((user) =>
     user.userName.toLowerCase().includes(userNameInput.toLowerCase())
   );
@@ -27,7 +26,6 @@ const UsersSearch = ({ users }: UsersSearchProps) => {
         <div className="relative">
           <Input
             value={userNameInput}
-            //ref={titleInputRef}
             placeholder="Nom"
             onChange={(e) => setUserNameInput(e.target.value)}
           />
