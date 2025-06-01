@@ -5,7 +5,7 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { getUser } from "@/lib/auth-session";
+import { getConnectedUser } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
 import { cn } from "@/lib/utils";
 import { BookOpen, House, LogIn, Search } from "lucide-react";
@@ -17,7 +17,7 @@ import NavItem from "./NavItem";
 import { Avatar, AvatarImage } from "./ui/avatar";
 
 const NavBar = async () => {
-  const currentUser = await getUser();
+  const currentUser = await getConnectedUser();
 
   let profileImage = null;
 

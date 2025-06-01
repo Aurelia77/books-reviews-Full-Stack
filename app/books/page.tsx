@@ -75,8 +75,9 @@ const SearchBooksPage = async (props: {
 
   // 2-Then we fetch the books from the Google Books API
   let queryApi = "";
+
   if (!query.title && !query.author && !query.lang) {
-    queryApi = getRandomChar(); // résultats aléatoires si pas de recherche
+    queryApi = getRandomChar(); // random results if no search
   } else {
     if (query.title) {
       if (queryApi) queryApi += `+intitle:${encodeURIComponent(query.title)}`;
@@ -115,7 +116,7 @@ const SearchBooksPage = async (props: {
             return {
               id: book.id,
               title: book.volumeInfo.title,
-              authors: book.volumeInfo?.authors, //?.[0] ?? "Auteur inconnu",
+              authors: book.volumeInfo?.authors,
               description: book.volumeInfo.description,
               categories: book.volumeInfo.categories,
               pageCount: book.volumeInfo.pageCount,

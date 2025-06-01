@@ -11,14 +11,11 @@ import BooksWithSortControls from "./BooksWithSortControls";
 const UsersBooksRead = ({
   booksAndUsersWhoReadGroupedById,
   friendsOfCurrentAppUser,
-}:
-{
+}: {
   booksAndUsersWhoReadGroupedById: Record<string, string[]>;
   friendsOfCurrentAppUser: string[] | undefined;
 }) => {
   const [usersBooksReadIds, setUsersBooksReadIds] = useState<string[]>();
-
-
   const [isSearchOnFriendsBooks, setIsSearchOnFriendsBooks] = useState(false);
 
   useEffect(() => {
@@ -35,7 +32,6 @@ const UsersBooksRead = ({
     isSearchOnFriendsBooks,
     friendsOfCurrentAppUser,
   ]);
-
 
   return (
     <div>
@@ -61,7 +57,7 @@ const UsersBooksRead = ({
             Seulement mes amis
           </p>
         </div>
-       
+
         {usersBooksReadIds && usersBooksReadIds.length > 0 ? (
           <BooksWithSortControls
             displayBookStatus={BookStatusValues.READ}

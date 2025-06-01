@@ -1,11 +1,11 @@
 import AllBooksLists from "@/components/AllBooksLists";
 import CustomLinkButton from "@/components/CustomLinkButton";
-import { getUser } from "@/lib/auth-session";
+import { getConnectedUser } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
 import { AppUserType } from "@/lib/types";
 
 const MyBooksPage = async () => {
-  const currentUser = await getUser();
+  const currentUser = await getConnectedUser();
 
   const currentAppUser: AppUserType | null = await prisma.appUser.findUnique({
     where: { id: currentUser?.id },

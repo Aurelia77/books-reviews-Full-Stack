@@ -18,12 +18,6 @@ const UserAccount = ({
 }) => {
   const [isFriend, setIsFriend] = useState<boolean>();
 
-  useEffect(() => {
-    currentUser?.friends?.includes(userInfo.id)
-      ? setIsFriend(true)
-      : setIsFriend(false);
-  }, [currentUser, userInfo]);
-
   const updateFriendHandler = async (action: "add" | "remove") => {
     if (currentUser?.id) {
       const updatedFriends =
@@ -66,6 +60,12 @@ const UserAccount = ({
       }
     }
   };
+
+  useEffect(() => {
+    currentUser?.friends?.includes(userInfo.id)
+      ? setIsFriend(true)
+      : setIsFriend(false);
+  }, [currentUser, userInfo]);
 
   return (
     <div className={cn("max-w-3xl sm:p-2 md:m-auto md:mt-8 w-full")}>

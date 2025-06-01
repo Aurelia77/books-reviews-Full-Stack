@@ -1,11 +1,11 @@
-import { prisma } from "@/lib/prisma";
 import FeedbackMessage from "@/components/FeedbackMessage";
 import UsersSearch from "@/components/UsersSearch";
-import { getUser } from "@/lib/auth-session";
+import { getConnectedUser } from "@/lib/auth-session";
+import { prisma } from "@/lib/prisma";
 import { AppUserType, UserTypePlusIsMyFriend } from "@/lib/types";
 
 const UsersPage = async () => {
-  const currentUser = await getUser();
+  const currentUser = await getConnectedUser();
 
   const otherUsers: AppUserType[] = await prisma.appUser.findMany({
     where: {

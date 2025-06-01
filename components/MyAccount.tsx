@@ -60,6 +60,27 @@ const MyAccount = ({
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [progress, setProgress] = useState<number>();
 
+  const form = useForm<AccountFormType>({
+    resolver: zodResolver(accountFormSchema),
+    defaultValues: {
+      userName: "",
+      imgURL: "",
+      description: "",
+    },
+  });
+
+  const { reset } = form;
+
+  useEffect(() => {
+    if (currentAppUser) {
+      reset({
+        userName: currentAppUser.userName,
+        imgURL: currentAppUser.imgURL,
+        description: currentAppUser.description,
+      });
+    }
+  }, [currentAppUser, reset]);
+
   const uploadImage = async () => {
     if (!imageUpload) return;
     setIsImageLoading(true);
@@ -102,27 +123,6 @@ const MyAccount = ({
 
     xhr.send(formProfileImgData);
   };
-
-  const form = useForm<AccountFormType>({
-    resolver: zodResolver(accountFormSchema),
-    defaultValues: {
-      userName: "",
-      imgURL: "",
-      description: "",
-    },
-  });
-
-  const { reset } = form;
-
-  useEffect(() => {
-    if (currentAppUser) {
-      reset({
-        userName: currentAppUser.userName,
-        imgURL: currentAppUser.imgURL,
-        description: currentAppUser.description,
-      });
-    }
-  }, [currentAppUser, reset]);
 
   const onSubmit: SubmitHandler<AccountFormType> = async (formData) => {
     try {

@@ -19,7 +19,6 @@ const BookUserInfo = ({
   userViewId,
 }: BookUserInfoProps) => {
   const [userBookInfos, setUserBookInfos] = useState<UserInfoBookType>();
-
   const [userName, setUserName] = useState<string | null>(null);
 
   // Retrieve the info provided by the user (either the visited user if friendBookStatus !== "" or the connected user)
@@ -66,7 +65,7 @@ const BookUserInfo = ({
   return (
     userBookInfos && (
       <div>
-       {/* For read books, we display extra info:
+        {/* For read books, we display extra info:
             - If the book was read by me, we show my info
             - If the book was read by the visited user,
               we show their info */}

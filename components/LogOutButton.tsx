@@ -7,6 +7,7 @@ import { ComponentPropsWithRef, useState } from "react";
 
 const LogOutButton = (props: ComponentPropsWithRef<"button">) => {
   const [isLoading, setIsLoading] = useState(false);
+
   const router = useRouter();
 
   return (

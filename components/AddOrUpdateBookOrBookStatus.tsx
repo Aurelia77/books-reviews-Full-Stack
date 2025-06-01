@@ -82,10 +82,8 @@ const AddOrUpdateBookOrBookStatus = ({
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [userBookInfos, setUserBookInfos] = useState<UserInfoBookType | null>();
-
   const [userBookStatusState, setUserBookStatusState] =
     useState(userBookStatus);
-
   const [refreshKey, setRefreshKey] = useState(0); // to force MyInfosBook re-render when userBookInfos changes
 
   const defaultValues = {
@@ -113,29 +111,6 @@ const AddOrUpdateBookOrBookStatus = ({
 
     router.refresh();
   };
-
-  useEffect(() => {
-    if (userBookStatusState === BookStatusValues.READ) {
-      (async () => {
-        try {
-          const response = await fetch(
-            `/api/userInfoBooks/getOne?userId=${currentUserId}&bookId=${bookInfos.id}`
-          );
-          if (response.ok) {
-            const myBook = await response.json();
-            setUserBookInfos(myBook);
-          }
-        } catch (error) {
-          console.error("Error fetching user book info:", error);
-        }
-      })();
-    }
-  }, [bookInfos.id, currentUserId, userBookStatusState]);
-
-  // Otherwise, the form's default values are empty
-  useEffect(() => {
-    form.reset(defaultValues); // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userBookInfos, form]);
 
   const handleDeleteBook = async (bookId: string) => {
     await fetch(
@@ -198,6 +173,30 @@ const AddOrUpdateBookOrBookStatus = ({
     setRefreshKey((prevKey) => prevKey + 1); // Increment refreshKey to trigger re-render of this component
     handleUpdate(); // to update the parent and thus the book's average rating
   };
+
+  useEffect(() => {
+    if (userBookStatusState === BookStatusValues.READ) {
+      (async () => {
+        try {
+          const response = await fetch(
+            `/api/userInfoBooks/getOne?userId=${currentUserId}&bookId=${bookInfos.id}`
+          );
+          if (response.ok) {
+            const myBook = await response.json();
+            setUserBookInfos(myBook);
+          }
+        } catch (error) {
+          console.error("Error fetching user book info:", error);
+        }
+      })();
+    }
+  }, [bookInfos.id, currentUserId, userBookStatusState]);
+
+  // Otherwise, the form's default values are empty
+  useEffect(() => {
+    form.reset(defaultValues);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userBookInfos, form]);
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

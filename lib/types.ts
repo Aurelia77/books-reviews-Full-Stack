@@ -1,8 +1,6 @@
 import { BookStatusValues } from "./constants";
 
-export type BookStatusType =
-  (typeof BookStatusValues)[keyof typeof BookStatusValues];
-
+// Types related to Books
 export type BookType = {
   id: string;
   title: string;
@@ -30,6 +28,9 @@ export type BooksSearchQueryType = {
   lang: string;
 };
 
+export type BookStatusType =
+  (typeof BookStatusValues)[keyof typeof BookStatusValues];
+
 export type UserInfoBookType = {
   id: string;
   userId: string;
@@ -41,6 +42,7 @@ export type UserInfoBookType = {
   status: BookStatusType;
 };
 
+// Types related to UserInfoBook
 export type MyInfoBookPlusTitleAndNote = UserInfoBookType & {
   bookTitle: string;
   totalRating: number;
@@ -55,6 +57,7 @@ export type MyInfoBookFormType = {
   userComments: string;
 };
 
+// Types related to AppUser
 export type AppUserType = {
   id: string;
   email: string;
@@ -83,6 +86,7 @@ export type UserBookInfoType = {
   userNote?: number;
 };
 
+// Other types
 export type AccountFormType = {
   userName: string;
   imgURL: string;

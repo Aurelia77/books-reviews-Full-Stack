@@ -1,9 +1,8 @@
 "use client";
 
-import { Moon, Sun } from "lucide-react";
-
 import { useTheme } from "@/components/Theme-provider";
 import { Button } from "@/components/ui/button";
+import { Moon, Sun } from "lucide-react";
 
 const DarkModeToggle = () => {
   const { theme, setTheme } = useTheme();

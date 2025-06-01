@@ -18,7 +18,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import UserReview from "@/components/UserReview";
-import { getUser } from "@/lib/auth-session";
+import { getConnectedUser } from "@/lib/auth-session";
 import {
   BookStatusValues,
   DEFAULT_BOOK_IMAGE,
@@ -40,7 +40,7 @@ const addLineBreaks = (description: string) => {
 };
 
 const Book = async ({ params }: { params: Promise<{ id: string }> }) => {
-  const currentUser = await getUser();
+  const currentUser = await getConnectedUser();
   const { id } = await params;
 
   const usersInfoWhoReadBook = await prisma.userInfoBook.findMany({
@@ -186,8 +186,6 @@ const Book = async ({ params }: { params: Promise<{ id: string }> }) => {
                         }
                       )}
                     </ul>
-
-                    <div className="grid gap-4 py-4"></div>
                   </>
                 </DialogContent>
               </Dialog>
@@ -209,7 +207,6 @@ const Book = async ({ params }: { params: Promise<{ id: string }> }) => {
             currentUserId={currentUser.id}
             bookInfos={book}
             userBookStatus={userBookStatus}
-            //onUpdate={handleUpdate}
           />
         )}
         {book.description ? (

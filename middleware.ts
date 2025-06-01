@@ -6,14 +6,12 @@ const protectedRoutes = [
   "/mybooks",
   "/users",
   "/usersbooksread",
-  "/users/", // pour matcher les /users/:id
+  "/users/", // to match /users/:id
 ];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get("better-auth.session_token")?.value;
-
-  console.log("💛💙💚 token", token);
 
   const isProtected = protectedRoutes.some((route) =>
     pathname.startsWith(route)
@@ -36,5 +34,5 @@ export const config = {
     "/users",
     "/usersbooksread",
     "/users/:path*",
-  ], // On n’inclut PAS /books ici → donc il reste accessible librement.
+  ], // We do NOT include /books here → so it remains freely accessible (no need to be logged in)
 };

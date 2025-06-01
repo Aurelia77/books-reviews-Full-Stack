@@ -33,6 +33,8 @@ const loginFormSchema = z.object({
 });
 
 const SignIn = () => {
+  const searchParams = useSearchParams();
+
   const router = useRouter();
 
   const form = useForm<LoginFormType>({
@@ -42,14 +44,6 @@ const SignIn = () => {
       password: "",
     },
   });
-
-  const searchParams = useSearchParams();
-
-  useEffect(() => {
-    if (searchParams.get("unauthorized") === "1") {
-      toast.error("Vous devez être connecté pour accéder à cette page.");
-    }
-  }, [searchParams]);
 
   const onSubmit: SubmitHandler<LoginFormType> = (data) => {
     const { email, password } = data;
@@ -71,6 +65,12 @@ const SignIn = () => {
       }
     );
   };
+
+  useEffect(() => {
+    if (searchParams.get("unauthorized") === "1") {
+      toast.error("Vous devez être connecté pour accéder à cette page.");
+    }
+  }, [searchParams]);
 
   return (
     <div>

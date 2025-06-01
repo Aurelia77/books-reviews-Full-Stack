@@ -31,6 +31,14 @@ export const ThemeProvider = ({
 }: ThemeProviderProps) => {
   const [theme, setTheme] = useState<Theme>(defaultTheme);
 
+  const value = {
+    theme,
+    setTheme: (theme: Theme) => {
+      localStorage.setItem(storageKey, theme);
+      setTheme(theme);
+    },
+  };
+
   useEffect(() => {
     const storedTheme = localStorage.getItem(storageKey) as Theme;
     if (storedTheme) {
@@ -45,14 +53,6 @@ export const ThemeProvider = ({
 
     root.classList.add(theme);
   }, [theme]);
-
-  const value = {
-    theme,
-    setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme);
-      setTheme(theme);
-    },
-  };
 
   return (
     <ThemeProviderContext.Provider {...props} value={value}>

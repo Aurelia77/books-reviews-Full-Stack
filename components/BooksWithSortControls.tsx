@@ -39,18 +39,30 @@ const BooksWithSortControls = ({
   const [sortState, setSortState] = useState<any>({
     [displayBookStatus]: { criteria: "title", order: "asc" },
   });
-
   const [booksStatuses, setBooksStatuses] = useState<
     Record<string, BookStatusType | null>
   >({});
-
   const [displayedBooks, setDisplayedBooks] = useState<
     BookType[] | BookTypePlusDate[]
   >(books || []);
-
   const [currentUserId, setCurrentUserId] = useState<string | undefined>(
     undefined
   );
+
+  const handleSort = (criteria: "title" | "date" | "note" | "reviews") => {
+    setSortState((prevState: SortStateType) => ({
+      ...prevState,
+      [displayBookStatus]: {
+        criteria,
+        order:
+          prevState[displayBookStatus].criteria === criteria
+            ? prevState[displayBookStatus].order === "asc"
+              ? "desc"
+              : "asc"
+            : "asc",
+      },
+    }));
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -129,21 +141,6 @@ const BooksWithSortControls = ({
       fetchBooksStatuses();
     }
   }, [currentUserId, displayedBooks]);
-
-  const handleSort = (criteria: "title" | "date" | "note" | "reviews") => {
-    setSortState((prevState: SortStateType) => ({
-      ...prevState,
-      [displayBookStatus]: {
-        criteria,
-        order:
-          prevState[displayBookStatus].criteria === criteria
-            ? prevState[displayBookStatus].order === "asc"
-              ? "desc"
-              : "asc"
-            : "asc",
-      },
-    }));
-  };
 
   useEffect(() => {
     setDisplayedBooks(

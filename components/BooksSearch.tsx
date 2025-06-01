@@ -19,35 +19,12 @@ const BooksSearch = (props: { query: BooksSearchQueryType }) => {
   const [search, setSearch] = useState<BooksSearchQueryType>(props.query);
 
   const router = useRouter();
+
   const pathname = usePathname();
+
   const titleInputRef = useRef<HTMLInputElement>(null);
   const authorInputRef = useRef<HTMLInputElement>(null);
-
   const formRef = useRef<HTMLDivElement>(null);
-
-  // On component mount, add a window event listener to add a class to the form that shrinks it on scroll
-  useEffect(() => {
-    const handleScroll = () => {
-      if (formRef.current) {
-        if (window.scrollY > formRef.current.offsetHeight) {
-          formRef.current.classList.add("form-sticky-active");
-          formRef.current.querySelectorAll("*").forEach((child) => {
-            child.classList.add("form-sticky-active");
-          });
-        } else {
-          formRef.current.classList.remove("form-sticky-active");
-          formRef.current.querySelectorAll("*").forEach((child) => {
-            child.classList.remove("form-sticky-active");
-          });
-        }
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
 
   const handleChangeInput = (
     key: keyof BooksSearchQueryType,
@@ -74,6 +51,30 @@ const BooksSearch = (props: { query: BooksSearchQueryType }) => {
       authorInputRef.current.focus();
     }
   };
+
+  // On component mount, add a window event listener to add a class to the form that shrinks it on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      if (formRef.current) {
+        if (window.scrollY > formRef.current.offsetHeight) {
+          formRef.current.classList.add("form-sticky-active");
+          formRef.current.querySelectorAll("*").forEach((child) => {
+            child.classList.add("form-sticky-active");
+          });
+        } else {
+          formRef.current.classList.remove("form-sticky-active");
+          formRef.current.querySelectorAll("*").forEach((child) => {
+            child.classList.remove("form-sticky-active");
+          });
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   return (
     <div

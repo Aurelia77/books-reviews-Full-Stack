@@ -15,7 +15,6 @@ type AllBooksListsProps = {
 };
 
 const AllBooksLists = ({ displayedAppUser }: AllBooksListsProps) => {
-  //
   const [activeTab, setActiveTab] = useState<BookStatusType>(DEFAULT_TAB);
   const [displayedBookIds, setDisplayedBookIds] = useState<string[]>([]);
 

@@ -1,10 +1,10 @@
 import UsersBooksRead from "@/components/UsersBooksRead";
-import { getUser } from "@/lib/auth-session";
+import { getConnectedUser } from "@/lib/auth-session";
 import { BookStatusValues } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
 
 const UsersBooksReadPage = async () => {
-  const currentUser = await getUser();
+  const currentUser = await getConnectedUser();
 
   const friendsOfCurrentAppUser = await prisma.appUser.findUnique({
     where: {

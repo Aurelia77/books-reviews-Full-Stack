@@ -16,7 +16,6 @@ import { cleanDescription, cn, getStatusColor } from "@/lib/utils";
 import { Check, Ellipsis, Quote, Smile } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { toast } from "sonner";
 import AverageBookRating from "./AverageBookRating";
 import BookUserInfo from "./BookUserInfo";
 import FriendsWhoReadBook from "./FriendsWhoReadBook";
@@ -43,18 +42,11 @@ const BookInfos = ({
   userViewId,
   bookConnectedUserStatus = "",
 }: BookInfosProps) => {
-  const handleLinkClick = () => {
-    toast.error("Veuillez vous connecter pour accéder à cette page.");
-  };
-
   return (
     <div>
       {book && (
         <Card className="relative">
-          <Link
-            href={currentUserId ? `/books/${book.id}` : "/auth/signin"}
-            onClick={!currentUserId ? handleLinkClick : undefined}
-          >
+          <Link href={currentUserId ? `/books/${book.id}` : "/auth/signin"}>
             <CardDescription className="absolute right-2 top-2 rounded-full bg-secondary/60 px-3 py-1 text-secondary-foreground shadow-sm shadow-foreground">
               {book.language}
             </CardDescription>
