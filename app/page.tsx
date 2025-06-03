@@ -1,5 +1,5 @@
 import CustomLinkButton from "@/components/CustomLinkButton";
-import { getConnectedUser } from "@/lib/auth-session";
+import { getCurrentUser } from "@/lib/auth-session";
 import {
   ArrowDownToLine,
   BookOpen,
@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 
 const HomePage = async () => {
-  const currentUser = await getConnectedUser();
+  const currentUser = await getCurrentUser();
 
   return (
     <div className="flex min-h-screen max-w-3xl flex-col gap-4 py-12 md:m-auto md:mt-8">
