@@ -70,10 +70,10 @@ const UserAccount = ({
   return (
     <div className={cn("max-w-3xl sm:p-2 md:m-auto md:mt-8 w-full")}>
       <Card className="mb-6">
-        <div className="mr-2 flex items-center justify-between gap-10 p-4 max-w-md min-w-md mb-10">
+        <div className="p-4 mb-10">
           <div className="flex justify-end w-full">
             {isFriend ? (
-              <div className="flex gap-4 items-center">
+              <div className="flex flex-wrap gap-7 items-center ">
                 <FriendSparkles />
                 <p>Ami</p>
                 <Button onClick={() => updateFriendHandler("remove")}>
@@ -81,7 +81,7 @@ const UserAccount = ({
                 </Button>
               </div>
             ) : (
-              <div className="flex gap-4 items-center">
+              <div className="flex flex-wrap gap-7 items-center ">
                 <p>Non ami</p>
                 <Button onClick={() => updateFriendHandler("add")}>
                   Ajouter

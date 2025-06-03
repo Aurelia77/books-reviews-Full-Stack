@@ -1,9 +1,9 @@
 import MyAccount from "@/components/MyAccount";
-import { getConnectedUser } from "@/lib/auth-session";
+import { getCurrentUser } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
 
 const MyAccountPage = async () => {
-  const currentUser = await getConnectedUser();
+  const currentUser = await getCurrentUser();
 
   const currentAppUser = await prisma.appUser.findUnique({
     where: { id: currentUser?.id },

@@ -31,6 +31,7 @@ export type BooksSearchQueryType = {
 export type BookStatusType =
   (typeof BookStatusValues)[keyof typeof BookStatusValues];
 
+// Types related to UserInfoBook
 export type UserInfoBookType = {
   id: string;
   userId: string;
@@ -42,7 +43,11 @@ export type UserInfoBookType = {
   status: BookStatusType;
 };
 
-// Types related to UserInfoBook
+export type UserInfoBookWithoutUserIdAndId = Omit<
+  UserInfoBookType,
+  "userId" | "id"
+>;
+
 export type MyInfoBookPlusTitleAndNote = UserInfoBookType & {
   bookTitle: string;
   totalRating: number;
