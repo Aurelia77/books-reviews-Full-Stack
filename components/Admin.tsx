@@ -736,14 +736,14 @@ const Admin = ({ currentUserId }: { currentUserId: string }) => {
       <Title level={2}>AJOUT INFO dans BDD</Title>
 
       <ol className="m-2 flex flex-col gap-4">
-        <li>Créer compte Autre</li>
-        <li>Créer compte Moi (propriétaire du site sera en Admin)</li>
+        <li>CREER compte Autre</li>
+        <li>CREER compte Moi (propriétaire du site sera en Admin)</li>
         <li>
           AJOUTER l'id de Autre dans 2ème fonction handleAddBooksAndUsersInfos
         </li>
-        <li>Clic sur BOUTON Ajouter LIVRES</li>
-        <li>Clic sur BOUTON Ajouter INFOS utilisateur connecté</li>
-        <li>Clic sur BOUTON Ajouter INFOS autre utilisateur</li>
+        <li>CLIQUER sur BOUTON Ajouter LIVRES</li>
+        <li>CLIQUER sur BOUTON Ajouter INFOS utilisateur connecté</li>
+        <li>CLIQUER sur BOUTON Ajouter INFOS autre utilisateur</li>
       </ol>
 
       <div className="flex flex-col gap-4">
@@ -766,7 +766,7 @@ const Admin = ({ currentUserId }: { currentUserId: string }) => {
         </Button>
 
         <Button
-          className="flex gap-6 bg-secondary/50"
+          className="flex gap-6 bg-secondary/50 mb-16"
           onClick={() =>
             handleAddBooksAndUsersInfos(
               //  Mettre le bon id !!!
@@ -784,10 +784,13 @@ const Admin = ({ currentUserId }: { currentUserId: string }) => {
         <Button className="bg-red-900" onClick={handledeDeteAllUserBookInfos}>
           1-SUPPRIMER touts les userBookInfos
         </Button>
-        <Button className="bg-red-700" onClick={handledeDeleteAllBooks}>
+        <Button
+          className="bg-red-400 text-black"
+          onClick={handledeDeleteAllBooks}
+        >
           2-SUPPRIMER tous les Books
         </Button>
-        <Button className="bg-red-800" onClick={handledeDeleteAllUsers}>
+        <Button className="bg-red-700" onClick={handledeDeleteAllUsers}>
           3-SUPPRIMER touts les Users (AppUser, User, Sessions, Verification)
         </Button>
       </div>
