@@ -1,20 +1,15 @@
-import FeedbackMessage from "@/components/FeedbackMessage";
-import Title from "@/components/Title";
-import { Button } from "@/components/ui/button";
-import {
-  addBookFirebase,
-  deleteAllDatas,
-  getDocsByQueryFirebase,
-} from "@/firebase/firestore";
-import useUserStore from "@/hooks/useUserStore";
-import { EMPTY_BOOK } from "@/lib/constants";
-import {
-  BookStatusEnum,
-  BookType,
-  MyInfoBookFormType,
-  UserType,
-} from "@/lib/types";
-import { useEffect, useState } from "react";
+"use client";
+
+import { addBooks } from "@/app/actions/addBooks";
+import { addUserBookInfos } from "@/app/actions/addUserBookInfos";
+import { deleteAllBooks } from "@/app/actions/deleteAllBooks";
+import { deleteAllUserBookInfos } from "@/app/actions/deleteAllUserBookInfos";
+import { deleteAllUsers } from "@/app/actions/deleteAllUsers";
+import { BookStatusValues, EMPTY_BOOK } from "@/lib/constants";
+import { BookType, UserInfoBookWithoutUserIdAndId } from "@/lib/types";
+import { toast } from "sonner";
+import Title from "./Title";
+import { Button } from "./ui/button";
 
 const DATA_BOOKS: BookType[] = [
   {
@@ -56,7 +51,8 @@ const DATA_BOOKS: BookType[] = [
     imageLink:
       "http://books.google.com/books/publisher/content?id=ZwboDwAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&imgtk=AFLRE71O5174y3AEytNlk-k6dVxFpFz-YcbsjLQJPwBFfxVZ3-1-FpDPdxb7Vc89upeO9mbpgp3ekmAH5V81yoSXeTB0pthA_G-HoWiMFlafQ_Q8pFtM7DEVf8xctRPjRD7_FIlvB_i8&source=gbs_api",
     language: "fr",
-    rating: { totalRating: 0, count: 0 },
+    totalRating: 0,
+    countRating: 0,
   },
   {
     ...EMPTY_BOOK,
@@ -303,410 +299,503 @@ const DATA_BOOKS: BookType[] = [
   // },
 ];
 
-const DATA_BOOKS_INFO_AH: MyInfoBookFormType[] = [
+const DATA_BOOKS_INFO_CURRENTUSER: UserInfoBookWithoutUserIdAndId[] = [
   // Son odeur après la pluie
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "fW2xEAAAQBAJ",
+    status: BookStatusValues.READ,
     year: 2024,
     //month: 5,
-    userNote: 5,
-    userComments:
+    note: 5,
+    comments:
       "Beau et émouvant, mais parfois un peu trop litéraire et compliqué pour moi...",
   },
   // Aliénor T1
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "lA7MDwAAQBAJ",
+    status: BookStatusValues.READ,
     year: 2024,
-    userNote: 4,
-    userComments:
+    note: 4,
+    comments:
       "Roman avec des références historiques, j'ai beaucoup aimé ! 3 livres de 600 pages !",
   },
   // Aliénor T2
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "ZwboDwAAQBAJ",
+    status: BookStatusValues.READ,
     year: 2024,
     month: 10,
-    userNote: 4,
-    userComments:
+    note: 4,
+    comments:
       "Roman avec des références historiques, j'ai beaucoup aimé ! 3 livres de 600 pages !",
   },
   // Aliénor T3
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "NsgKEAAAQBAJ",
+    status: BookStatusValues.READ,
     year: 2025,
     month: 1,
-    userNote: 4,
-    userComments:
+    note: 4,
+    comments:
       "Roman avec des références historiques, j'ai beaucoup aimé ! 3 livres de 600 pages !",
   },
   // The Chocolate Touch
   {
-    bookStatus: BookStatusEnum.booksInProgressList,
-    userComments: "De bons avis... Je comprends pas tout mais ça va :)",
+    bookId: "OGahkZCah7sC",
+    status: BookStatusValues.IN_PROGRESS,
+    comments: "De bons avis... Je comprends pas tout mais ça va :)",
   },
   // Plus on est de fous
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "MC74zwEACAAJ",
+    status: BookStatusValues.READ,
     year: 2025,
     month: 2,
-    userNote: 2,
-    userComments:
+    note: 2,
+    comments:
       "Roman très léger sur des histoires de gens en hôpital psy, mais pas très intéressant je trouve...",
   },
   // Les pouvoirs insoupçonnés de l'intuition
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "BoGjEAAAQBAJ",
+    status: BookStatusValues.READ,
     year: 2025,
     month: 2,
-    userNote: 4,
-    userComments: "Intéressant !",
+    note: 4,
+    comments: "Intéressant !",
   },
   // The Happy Prince by Oscar Wilde
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "SeMazgEACAAJ",
+    status: BookStatusValues.READ,
     year: 2024,
     month: 11,
-    userNote: 4,
-    userComments: "Mignonnes petites nouvelles en anglais.",
+    note: 4,
+    comments: "Mignonnes petites nouvelles en anglais.",
   },
   // L'homme qui rit
   {
-    bookStatus: BookStatusEnum.booksToReadList,
-    userComments: "Dans mes prochaines lectures...",
+    bookId: "3v_GtgEACAAJ",
+    status: BookStatusValues.TO_READ,
+    comments: "Dans mes prochaines lectures...",
   },
   // Les Hauts de Hurle-vent
   {
-    bookStatus: BookStatusEnum.booksToReadList,
-    userComments: "Dans mes prochaines lectures...",
+    bookId: "UmhZDwAAQBAJ",
+    status: BookStatusValues.TO_READ,
+    comments: "Dans mes prochaines lectures...",
   },
   //   Le Grand voyage de la Marie-Amélie
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "RsrADwAAQBAJ",
+    status: BookStatusValues.READ,
     year: 2024,
-    userNote: 5,
-    userComments:
-      "Super livre sur l'esclavage ! Poignant, beau et dur à la fois !",
+    note: 5,
+    comments: "Super livre sur l'esclavage ! Poignant, beau et dur à la fois !",
   },
   // Desert
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "cbkQIZy-gUEC",
+    status: BookStatusValues.READ,
     year: 2024,
-    userNote: 4,
-    userComments:
+    note: 4,
+    comments:
       "Un peu long parfois... Mais très beau ! (je n'ai pas trouvé la version FR ici pourtant je l'ai lu en français)",
   },
   // Le Silence de la ville blanche
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "e5jxDwAAQBAJ",
+    status: BookStatusValues.READ,
     year: 2024,
-    userNote: 4,
-    userComments: "Polar, pas mal.",
+    note: 4,
+    comments: "Polar, pas mal.",
   },
   // Vieille fille - Une proposition
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "C6h-EAAAQBAJ",
+    status: BookStatusValues.READ,
     year: 2025,
-    userNote: 4,
-    userComments: "Intéressant, on peut se sentir bien seule !",
+    note: 4,
+    comments: "Intéressant, on peut se sentir bien seule !",
   },
   // La Porte des mondes
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "JnDDDwAAQBAJ",
+    status: BookStatusValues.READ,
     year: 2025,
-    userNote: 4,
-    userComments: "Fiction, fait voyager !",
+    note: 4,
+    comments: "Fiction, fait voyager !",
   },
   // Wild (Movie Tie-in Edition) 				FRANCE
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "_lyPEAAAQBAJ",
+    status: BookStatusValues.READ,
     year: 2025,
-    userNote: 5,
-    userComments:
+    note: 5,
+    comments:
       "J'ai adoré ! On part en rando avec elle ! (pas trouvé version française ici pourtant je l'ai lu en français)",
   },
   // Les Chaussures italiennes
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "eek9AwAAQBAJ",
+    status: BookStatusValues.READ,
     year: 2025,
-    userNote: 4,
-    userComments: "Sympa",
+    note: 4,
+    comments: "Sympa",
   },
   // La rencontre, une philosophie
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "pycSEAAAQBAJ",
+    status: BookStatusValues.READ,
     year: 2025,
-    userNote: 4,
-    userComments: "L'importance des rencontres...",
+    note: 4,
+    comments: "L'importance des rencontres...",
   },
   // Immortelle randonnée
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "yVeaoAEACAAJ",
+    status: BookStatusValues.READ,
     year: 2025,
-    userNote: 5,
-    userComments: "Très sympa, et marrant !",
+    note: 5,
+    comments: "Très sympa, et marrant !",
   },
   //   Donne-moi des ailes
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "4bGODwAAQBAJ",
+    status: BookStatusValues.READ,
     year: 2022,
-    userNote: 5,
-    userComments: "Voyage avec les oies sauvages... J'ai adoré !",
+    note: 5,
+    comments: "Voyage avec les oies sauvages... J'ai adoré !",
   },
   // Le Hobbit
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "N9-1ngEACAAJ",
+    status: BookStatusValues.READ,
     year: 2022,
-    userNote: 3,
-    userComments: "Parfois très long...",
+    note: 3,
+    comments: "Parfois très long...",
   },
   // Le Seigneur des Anneaux T1 La fraternité de l'anneau
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "WmOFEAAAQBAJ",
+    status: BookStatusValues.READ,
     year: 2022,
-    userNote: 4,
-    userComments: "Super ! Même si parfois un peu long...",
+    note: 4,
+    comments: "Super ! Même si parfois un peu long...",
   },
   // {
-  //   bookStatus: BookStatusEnum.booksReadList,
+  //   status: BookStatusValues.READ,
   // year: 2025,
-  //   userNote: 4,
-  //   userComments: "Dans mes prochaines lectures...",
+  //   note: 4,
+  //   comments: "Dans mes prochaines lectures...",
   // },
 ];
 
-const DATA_BOOKS_INFO_AAA: MyInfoBookFormType[] = [
+const DATA_BOOKS_INFO_OTHERUSER: UserInfoBookWithoutUserIdAndId[] = [
   // Son odeur après la pluie
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "fW2xEAAAQBAJ",
+    status: BookStatusValues.READ,
     year: 2022,
     month: 5,
-    userNote: 5,
-    userComments: "Super !!!",
+    note: 5,
+    comments: "Super !!!",
   },
   // Aliénor T1
   {
-    bookStatus: BookStatusEnum.booksInProgressList,
-    userComments: "J'aime beaucoup pour l'instant...",
+    bookId: "lA7MDwAAQBAJ",
+    status: BookStatusValues.IN_PROGRESS,
+    comments: "J'aime beaucoup pour l'instant...",
   },
   // Aliénor T2
   {
-    bookStatus: BookStatusEnum.booksToReadList,
-    userComments: "T2 à lire !!!",
+    bookId: "ZwboDwAAQBAJ",
+    status: BookStatusValues.TO_READ,
+    comments: "T2 à lire !!!",
   },
   // Aliénor T3
   {
-    bookStatus: BookStatusEnum.booksToReadList,
-    userComments: "T3 à lire !!!",
+    bookId: "NsgKEAAAQBAJ",
+    status: BookStatusValues.TO_READ,
+    comments: "T3 à lire !!!",
   },
   // The Chocolate Touch
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "OGahkZCah7sC",
+    status: BookStatusValues.READ,
     year: 2020,
-    userNote: 4,
-    userComments: "Good",
+    note: 4,
+    comments: "Good",
   },
   // Plus on est de fous
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "MC74zwEACAAJ",
+    status: BookStatusValues.READ,
     year: 2015,
-    userNote: 1,
-    userComments: "Bof...",
+    note: 1,
+    comments: "Bof...",
   },
   // Les pouvoirs insoupçonnés de l'intuition
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "BoGjEAAAQBAJ",
+    status: BookStatusValues.READ,
     year: 2005,
-    userNote: 5,
-    userComments: "Whaou !!!",
+    note: 5,
+    comments: "Whaou !!!",
   },
   // The Happy Prince by Oscar Wilde
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "SeMazgEACAAJ",
+    status: BookStatusValues.READ,
     year: 2004,
-    userComments: "Sweet...",
+    comments: "Sweet...",
   },
   // L'homme qui rit
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "3v_GtgEACAAJ",
+    status: BookStatusValues.READ,
     year: 2003,
-    userNote: 4,
-    userComments: "Super !!!",
+    note: 4,
+    comments: "Super !!!",
   },
   // Les Hauts de Hurle-vent
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "UmhZDwAAQBAJ",
+    status: BookStatusValues.READ,
     year: 2002,
-    userNote: 4,
-    userComments: "Super !!!",
+    note: 4,
+    comments: "Super !!!",
   },
   //   Le Grand voyage de la Marie-Amélie
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "RsrADwAAQBAJ",
+    status: BookStatusValues.READ,
     year: 2020,
-    userNote: 5,
-    userComments: "Super !",
+    note: 5,
+    comments: "Super !",
   },
   // Desert
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "cbkQIZy-gUEC",
+    status: BookStatusValues.READ,
     year: 2024,
-    userNote: 3,
-    userComments: "",
+    note: 3,
+    comments: "",
   },
   // Le Silence de la ville blanche
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "e5jxDwAAQBAJ",
+    status: BookStatusValues.READ,
     year: 2000,
-    userNote: 3,
-    userComments: "",
+    note: 3,
+    comments: "",
   },
   // Vieille fille - Une proposition
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "C6h-EAAAQBAJ",
+    status: BookStatusValues.READ,
     year: 2025,
     month: 1,
-    userNote: 3,
-    userComments: "Intéressant !",
+    note: 3,
+    comments: "Intéressant !",
   },
   // La Porte des mondes
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "JnDDDwAAQBAJ",
+    status: BookStatusValues.READ,
     year: 2025,
     month: 2,
-    userNote: 4,
-    userComments: "",
+    note: 4,
+    comments: "",
   },
   // Wild (Movie Tie-in Edition)
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "_lyPEAAAQBAJ",
+    status: BookStatusValues.READ,
     year: 2024,
     month: 11,
-    userNote: 5,
-    userComments: "Génail !",
+    note: 5,
+    comments: "Génail !",
   },
   // Les Chaussures italiennes
   {
-    bookStatus: BookStatusEnum.booksToReadList,
-    userComments: "",
+    bookId: "eek9AwAAQBAJ",
+    status: BookStatusValues.TO_READ,
+    comments: "",
   },
   // La rencontre, une philosophie
   {
-    bookStatus: BookStatusEnum.booksInProgressList,
-    userComments: "Sympa pour l'instant...",
+    bookId: "pycSEAAAQBAJ",
+    status: BookStatusValues.IN_PROGRESS,
+    comments: "Sympa pour l'instant...",
   },
   // Immortelle randonnée
   {
-    bookStatus: BookStatusEnum.booksToReadList,
-    userComments: "A lire !!!!!!!!",
+    bookId: "yVeaoAEACAAJ",
+    status: BookStatusValues.TO_READ,
+    comments: "A lire !!!!!!!!",
   },
   //   Donne-moi des ailes
   {
-    bookStatus: BookStatusEnum.booksToReadList,
-    userComments: "Apparemment super livre !",
+    bookId: "4bGODwAAQBAJ",
+    status: BookStatusValues.TO_READ,
+    comments: "Apparemment super livre !",
   },
   // Le Hobbit
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "N9-1ngEACAAJ",
+    status: BookStatusValues.READ,
     year: 2002,
-    userNote: 3,
-    userComments: "...",
+    note: 3,
+    comments: "...",
   },
   // Le Seigneur des Anneaux T1 La fraternité de l'anneau
   {
-    bookStatus: BookStatusEnum.booksReadList,
+    bookId: "WmOFEAAAQBAJ",
+    status: BookStatusValues.READ,
     year: 2000,
-    userNote: 4,
-    userComments: "Sympa...",
+    note: 4,
+    comments: "Sympa...",
   },
   // {
-  //   bookStatus: BookStatusEnum.booksReadList,
+  //   status: BookStatusValues.READ,
   // year: 2025,
-  //   userNote: 4,
-  //   userComments: "Dans mes prochaines lectures...",
+  //   note: 4,
+  //   comments: "Dans mes prochaines lectures...",
   // },
 ];
 
-const AdminPage = (): JSX.Element => {
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
-
-  const { currentUser } = useUserStore();
-
-  useEffect(() => {
-    getDocsByQueryFirebase<UserType>("users", "id", currentUser?.uid)
-      .then((docs) => {
-        if (docs.length > 0) {
-          setIsAdmin(docs[0].isAdmin);
-        }
+const Admin = ({ currentUserId }: { currentUserId: string }) => {
+  const handleAddBooks = (books: BookType[]) => {
+    addBooks(books)
+      .then(() => {
+        toast.success("Livres ajoutés avec succès !");
       })
       .catch((error) => {
-        console.error("getDocsByQueryFirebase error:", error.message);
+        console.error("Erreur lors de l'ajout des livres :", error);
+        toast.error("Erreur lors de l'ajout des livres.");
       });
-  }, [currentUser]);
+  };
 
-  // !! With .then it doesn't work! (the books are added but the user info only adds one book!)
-  const addBooksAndUsersInfos = async (
-    userId: string | undefined,
-    dataBooksInfo: MyInfoBookFormType[]
+  const handleAddBooksAndUsersInfos = (
+    userId: string,
+    booksInfos: UserInfoBookWithoutUserIdAndId[]
   ) => {
-    for (let index = 0; index < DATA_BOOKS.length; index++) {
-      await addBookFirebase(userId, DATA_BOOKS[index], dataBooksInfo[index]);
-    }
+    addUserBookInfos(userId, booksInfos)
+      .then(() => {
+        toast.success("Infos utilisateur ajoutées avec succès !");
+      })
+      .catch((error) => {
+        console.error("Erreur lors de l'ajout des infos utilisateur :", error);
+        toast.error("Erreur lors de l'ajout des infos utilisateur.");
+      });
+  };
+
+  const handledeDeteAllUserBookInfos = () => {
+    deleteAllUserBookInfos()
+      .then(() => {
+        toast.success("Toutes les infos utilisateur ont été supprimées !");
+      })
+      .catch((error) => {
+        console.error(
+          "Erreur lors de la suppression des infos utilisateur :",
+          error
+        );
+        toast.error("Erreur lors de la suppression des infos utilisateur.");
+      });
+  };
+
+  const handledeDeleteAllBooks = () => {
+    deleteAllBooks()
+      .then(() => {
+        toast.success("Toutes les livres ont été supprimés !");
+      })
+      .catch((error) => {
+        console.error("Erreur lors de la suppression des livres :", error);
+        toast.error("Erreur lors de la suppression des livres.");
+      });
+  };
+
+  const handledeDeleteAllUsers = () => {
+    deleteAllUsers()
+      .then(() => {
+        toast.success("Toutes les utilisateurs ont été supprimés !");
+      })
+      .catch((error) => {
+        console.error(
+          "Erreur lors de la suppression des utilisateurs :",
+          error
+        );
+        toast.error("Erreur lors de la suppression des utilisateurs.");
+      });
   };
 
   return (
     <div className="m-auto min-h-screen max-w-3xl">
       <Title>Admin Page</Title>
-      <Title level={2}>AJOUT</Title>
+      <Title level={2}>AJOUT INFO dans BDD</Title>
 
       <ol className="m-2 flex flex-col gap-4">
-        <li>Créer compte AAA</li>
-        <li>Créer compte AH</li>
-        <li>AJOUTER l'id de AAA dans fonction addBooksAndUsersInfos</li>
-        <li>Mettre AH en ADMIN</li>
-        <li>Clic sur BOUTON Ajouter livres + infos user AH</li>
-        <li>Clic sur BOUTON Ajouter livres + infos user AAA</li>
+        <li>CREER compte Autre</li>
+        <li>CREER compte Moi (propriétaire du site sera en Admin)</li>
+        <li>
+          AJOUTER l'id de Autre dans 2ème fonction handleAddBooksAndUsersInfos
+        </li>
+        <li>CLIQUER sur BOUTON Ajouter LIVRES</li>
+        <li>CLIQUER sur BOUTON Ajouter INFOS utilisateur connecté</li>
+        <li>CLIQUER sur BOUTON Ajouter INFOS autre utilisateur</li>
       </ol>
-      {isAdmin ? (
-        <div className="flex flex-col gap-4">
-          <Button
-            className="bg-primary/80"
-            onClick={() =>
-              addBooksAndUsersInfos(currentUser?.uid, DATA_BOOKS_INFO_AH)
-            }
-          >
-            Ajouter livres + infos user AH
-          </Button>
-          <Button
-            className="flex gap-6 bg-secondary/50"
-            onClick={() =>
-              addBooksAndUsersInfos(
-                "B2GY4BUoZoRWe5hrhgGksWv82AN2",
-                DATA_BOOKS_INFO_AAA
-              )
-            }
-          >
-            <span className="text-xl font-bold text-red-500">
-              REMPLACER L'ID !!!
-            </span>
-            Ajouter livres + infos user AAA
-          </Button>
-          <Button className="bg-red-900" onClick={deleteAllDatas}>
-            Supprimer toutes les données
-          </Button>
-          <Title level={2}>SUPPRESSION</Title>
-          <ol className="m-2 flex flex-col gap-4">
-            <li>Clic sur BOUTON Supprimer toutes les données</li>
-            <li>SUPPRIMER les utilisateurs enregistrés, à la main</li>
-          </ol>
-        </div>
-      ) : (
-        <FeedbackMessage
-          type="error"
-          message="Vous n'êtes pas autorisé à accéder à cette page, vous devez être Admin."
-        />
-      )}
+
+      <div className="flex flex-col gap-4">
+        <Button
+          className="bg-primary/80"
+          onClick={() => handleAddBooks(DATA_BOOKS)}
+        >
+          Ajouter LIVRES
+        </Button>
+        <Button
+          className="bg-primary/80"
+          onClick={() =>
+            handleAddBooksAndUsersInfos(
+              currentUserId,
+              DATA_BOOKS_INFO_CURRENTUSER
+            )
+          }
+        >
+          Ajouter INFOS utilisateur connecté
+        </Button>
+
+        <Button
+          className="flex gap-6 bg-secondary/50 mb-16"
+          onClick={() =>
+            handleAddBooksAndUsersInfos(
+              //  Mettre le bon id !!!
+              "d3VXlTJsrsQDyYVONZud8ydjxXv4cqpw",
+              DATA_BOOKS_INFO_OTHERUSER
+            )
+          }
+        >
+          <span className="text-xl font-bold text-red-500">
+            REMPLACER L'ID !!!
+          </span>
+          Ajouter INFOS Autre utilisateur
+        </Button>
+
+        <Button className="bg-red-900" onClick={handledeDeteAllUserBookInfos}>
+          1-SUPPRIMER touts les userBookInfos
+        </Button>
+        <Button
+          className="bg-red-400 text-black"
+          onClick={handledeDeleteAllBooks}
+        >
+          2-SUPPRIMER tous les Books
+        </Button>
+        <Button className="bg-red-700" onClick={handledeDeleteAllUsers}>
+          3-SUPPRIMER touts les Users (AppUser, User, Sessions, Verification)
+        </Button>
+      </div>
     </div>
   );
 };
 
-export default AdminPage;
+export default Admin;

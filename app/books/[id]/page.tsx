@@ -18,7 +18,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import UserReview from "@/components/UserReview";
-import { getConnectedUser } from "@/lib/auth-session";
+import { getCurrentUser } from "@/lib/auth-session";
 import {
   BookStatusValues,
   DEFAULT_BOOK_IMAGE,
@@ -40,7 +40,7 @@ const addLineBreaks = (description: string) => {
 };
 
 const Book = async ({ params }: { params: Promise<{ id: string }> }) => {
-  const currentUser = await getConnectedUser();
+  const currentUser = await getCurrentUser();
   const { id } = await params;
 
   const usersInfoWhoReadBook = await prisma.userInfoBook.findMany({
