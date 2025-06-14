@@ -1,3 +1,4 @@
+import { BookStatusValues } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -41,7 +42,7 @@ export async function GET(req: NextRequest) {
       where: {
         id: { in: friendsIds, not: excludeUserId || undefined },
         UserInfoBook: {
-          some: { bookId: bookId },
+          some: { bookId: bookId, status: BookStatusValues.READ },
         },
       },
       select: {

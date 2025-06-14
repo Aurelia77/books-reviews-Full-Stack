@@ -277,11 +277,6 @@ const AddOrUpdateBookOrBookStatus = ({
               </AlertDialogContent>
             </AlertDialog>
           </div>
-          <div>
-            <p>userViewId=currentUserId = {currentUserId}</p>
-            <p>bookStatus=userBookStatusState = {userBookStatusState}</p>
-            <p>currentUserId = {currentUserId}</p>
-          </div>
           <BookUserInfo
             key={refreshKey} // refreshKey = key to force re-render when bookInfos changed
             userViewId={currentUserId}
