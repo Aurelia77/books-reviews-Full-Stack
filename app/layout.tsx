@@ -13,14 +13,14 @@ const RootLayout = ({ children }: PropsWithChildren) => {
         {/* Google Analytics */}
         <Script
           async
-          src="https://www.googletagmanager.com/gtag/js?id=G-CWF1MEFZ8T"
+          src="https://www.googletagmanager.com/gtag/js?id=G-V034HWED7J"
         />
         <Script id="gtag-init" strategy="afterInteractive">
           {`
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'G-CWF1MEFZ8T');
+    gtag('config', 'G-V034HWED7J');
   `}
         </Script>
       </head>
