@@ -615,7 +615,7 @@ const DATA_BOOKS_INFO_OTHERUSER: UserInfoBookWithoutUserIdAndId[] = [
     year: 2024,
     month: 11,
     note: 5,
-    comments: "Génail !",
+    comments: "Génial !",
   },
   // Les Chaussures italiennes
   {
