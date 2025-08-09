@@ -1,10 +1,12 @@
 import Footer from "@/components/Footer";
 import NavBar from "@/components/NavBar";
+import QueryProvider from "@/components/QueryClientProvider";
 import { ThemeProvider } from "@/components/Theme-provider";
 import Script from "next/script";
 import { PropsWithChildren } from "react";
 import { Toaster } from "sonner";
 import "./globals.css";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const RootLayout = ({ children }: PropsWithChildren) => {
   return (
@@ -25,14 +27,17 @@ const RootLayout = ({ children }: PropsWithChildren) => {
         </Script>
       </head>
       <body>
-        <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-          <div className="h-auto min-h-screen bg-background text-foreground">
-            <NavBar />
-            {children}
-            <Footer />
-            <Toaster />
-          </div>
-        </ThemeProvider>
+        <QueryProvider>
+          <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+            <div className="h-auto min-h-screen bg-background text-foreground">
+              <NavBar />
+              {children}
+              <Footer />
+              <Toaster />
+            </div>
+          </ThemeProvider>
+          <ReactQueryDevtools initialIsOpen={false} />
+        </QueryProvider>
       </body>
     </html>
   );

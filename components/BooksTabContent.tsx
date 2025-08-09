@@ -20,7 +20,14 @@ const BooksTabContent = ({
     <TabsContent value={value}>
       {displayedBookIds.length > 0 ? (
         <div className="flex flex-col items-center gap-1 md:gap-4">
-          <p>{displayedBookIds.length} livres</p>
+          <p>
+            {displayedBookIds.length}
+            {displayedBookIds.length > 1 ? (
+              <span> livres</span>
+            ) : (
+              <span> livre</span>
+            )}
+          </p>
           <BooksWithSortControls
             displayBookStatus={activeTab}
             bookIds={displayedBookIds}

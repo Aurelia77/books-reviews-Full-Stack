@@ -8,6 +8,7 @@ import {
   SortStateType,
 } from "@/lib/types";
 import { sortBook } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import BookInfos from "./BookInfos";
@@ -45,9 +46,11 @@ const BooksWithSortControls = ({
   const [displayedBooks, setDisplayedBooks] = useState<
     BookType[] | BookTypePlusDate[]
   >(books || []);
-  const [currentUserId, setCurrentUserId] = useState<string | undefined>(
-    undefined
-  );
+
+  console.log("123", displayedBooks);
+  // const [currentUserId, setCurrentUserId] = useState<string | undefined>(
+  //   undefined
+  // );
 
   const handleSort = (criteria: "title" | "date" | "note" | "reviews") => {
     setSortState((prevState: SortStateType) => ({
@@ -64,50 +67,105 @@ const BooksWithSortControls = ({
     }));
   };
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await fetch("/api/users");
-        const data = await res.json();
-        setCurrentUserId(data.user?.id);
-      } catch (error) {
-        console.error("Erreur user :", error);
-      }
-    };
-    fetchUser();
-  }, []);
+  const { data: currentUserId } = useQuery({
+    queryKey: ["currentUser"],
+    queryFn: async () => {
+      const res = await fetch("/api/users");
+      const json = await res.json();
+      return json.user?.id || undefined;
+    },
+  });
+
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     try {
+  //       const res = await fetch("/api/users");
+  //       const data = await res.json();
+  //       setCurrentUserId(data.user?.id);
+  //     } catch (error) {
+  //       console.error("Erreur user :", error);
+  //     }
+  //   };
+  //   fetchUser();
+  // }, []);
+
+  const { data: fetchedBooks, isSuccess } = useQuery({
+    queryKey: ["booksByIds", bookIds, displayedAppUserId],
+    queryFn: async () => {
+      if (!bookIds || bookIds.length === 0) return [];
+      const endpoint = displayedAppUserId
+        ? "/api/books/byIdsWithDate"
+        : "/api/books/byIds";
+      const body = displayedAppUserId
+        ? { bookIds, displayedAppUserId }
+        : { bookIds };
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+      if (!response.ok) throw new Error("Erreur API livres");
+      const json = await response.json();
+      return json.data || [];
+    },
+    enabled: !!bookIds && bookIds.length > 0,
+  });
 
   useEffect(() => {
-    if (bookIds && bookIds.length > 0) {
-      (async () => {
-        try {
-          const endpoint = displayedAppUserId
-            ? "/api/books/byIdsWithDate"
-            : "/api/books/byIds";
-          const body = displayedAppUserId
-            ? { bookIds, displayedAppUserId }
-            : { bookIds };
-          const response = await fetch(endpoint, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(body),
-          });
+    if (isSuccess && fetchedBooks) {
+      const booksSortByTitle = [...fetchedBooks].sort(
+        (a: BookType, b: BookType) => a.title.localeCompare(b.title)
+      );
+      console.log("💛💙💚❤️🤍🤎123 USEEFFECT fetchedBooks = ", fetchedBooks);
+      console.log(
+        "💛💙💚❤️🤍🤎123 USEEFFECT booksSortByTitle = ",
+        booksSortByTitle
+      );
 
-          if (response.ok) {
-            const json = await response.json();
-            setDisplayedBooks(json.data || []);
-          }
-        } catch (error) {
-          console.error("Erreur lors de la récupération des livres :", error);
-        }
-      })();
+      setDisplayedBooks(booksSortByTitle);
     }
-  }, [bookIds, displayedAppUserId]);
+  }, [isSuccess, fetchedBooks]);
+
+  // useEffect(() => {
+  //   if (bookIds && bookIds.length > 0) {
+  //     (async () => {
+  //       try {
+  //         const endpoint = displayedAppUserId
+  //           ? "/api/books/byIdsWithDate"
+  //           : "/api/books/byIds";
+  //         const body = displayedAppUserId
+  //           ? { bookIds, displayedAppUserId }
+  //           : { bookIds };
+  //         const response = await fetch(endpoint, {
+  //           method: "POST",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //           body: JSON.stringify(body),
+  //         });
+
+  //         if (response.ok) {
+  //           const json = await response.json();
+  //           console.log("💛💙💚❤️🤍🤎xxx", json.data);
+  //           console.log("💛💙💚❤️🤍🤎xxx", json.data[0].title);
+
+  //           const booksSortByTitle = json.data.sort(
+  //             (a: BookType, b: BookType) => a.title.localeCompare(b.title)
+  //           );
+  //           setDisplayedBooks(booksSortByTitle || []);
+  //         }
+  //       } catch (error) {
+  //         console.error("Erreur lors de la récupération des livres :", error);
+  //       }
+  //     })();
+  //   }
+  // }, [bookIds, displayedAppUserId]);
 
   // To refresh the component when books (i.e. the book search) changes
   useEffect(() => {
+    console.log("💛💙💚❤️🤍🤎777");
     setDisplayedBooks(books || []);
   }, [books]);
 

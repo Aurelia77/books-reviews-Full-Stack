@@ -1,3 +1,5 @@
+Toujours répondre en français
+
 Toujours te souvenir qu'il ne faut pas me réécrire tout le code de la page.
 Quand je demande une modification partielle, donne-moi uniquement les lignes modifiées ou ajoutées, avec des commentaires pour indiquer où elles s'insèrent dans le code existant (par exemple, en mentionnant des balises ou des sections spécifiques).
 
