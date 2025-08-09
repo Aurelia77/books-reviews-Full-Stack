@@ -24,6 +24,8 @@ const DATA_BOOKS: BookType[] = [
       "http://books.google.com/books/publisher/content?id=fW2xEAAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&imgtk=AFLRE71VtGnh_FhexoU5kkTndBNcIGq-YlbG2ZrE9CexvpV_Fin9qeAclOih3POPc1K1yTkl_QneMf1iSJFXiFfrzAxVfkVtMPdzFHq6_TcdIjqa0PTfdOcRC1fsXmy0FYlDesqU5KDZ&source=gbs_api",
     language: "fr",
     isFromAPI: true,
+    totalRating: 10,
+    countRating: 2
   },
   {
     ...EMPTY_BOOK,
@@ -39,6 +41,8 @@ const DATA_BOOKS: BookType[] = [
     imageLink:
       "http://books.google.com/books/publisher/content?id=lA7MDwAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&imgtk=AFLRE73cdkZnHKh7h01kIc8R-8_nNlXZezx7eruyEZ3VgGeIchWHI6xpnIdfoHS76l_6_INePJ8F4YMIybjXjekkkRLY_VhozTxThA3LmERat_eHQsH_GmtpTJkSxsEapfqx-LUWKvbB&source=gbs_api",
     language: "fr",
+    totalRating: 4,
+    countRating: 1
   },
   {
     ...EMPTY_BOOK,
@@ -51,8 +55,8 @@ const DATA_BOOKS: BookType[] = [
     imageLink:
       "http://books.google.com/books/publisher/content?id=ZwboDwAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&imgtk=AFLRE71O5174y3AEytNlk-k6dVxFpFz-YcbsjLQJPwBFfxVZ3-1-FpDPdxb7Vc89upeO9mbpgp3ekmAH5V81yoSXeTB0pthA_G-HoWiMFlafQ_Q8pFtM7DEVf8xctRPjRD7_FIlvB_i8&source=gbs_api",
     language: "fr",
-    totalRating: 0,
-    countRating: 0,
+    totalRating: 4,
+    countRating: 1
   },
   {
     ...EMPTY_BOOK,
@@ -65,6 +69,8 @@ const DATA_BOOKS: BookType[] = [
     imageLink:
       "http://books.google.com/books/publisher/content?id=NsgKEAAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&imgtk=AFLRE724Vn54QOvj3Q4kW8UvZKY9qVhLIiQN8F0owlaxC1l8ZXVuzO-ZzXmpk5WjoM2QMFrS-QieMzedQt5hE4RdJ41SuTN5xmDLvb6EDRhZCHoGtErAiK8_uWhvO76Ngq3ta64qeCd1&source=gbs_api",
     language: "fr",
+    totalRating: 4,
+    countRating: 1
   },
   {
     ...EMPTY_BOOK,
@@ -81,6 +87,8 @@ const DATA_BOOKS: BookType[] = [
     imageLink:
       "http://books.google.com/books/content?id=OGahkZCah7sC&printsec=frontcover&img=1&zoom=1&edge=curl&imgtk=AFLRE7131C0PclFewOhkppUkpAuVYmWgKqq5YieYPc-CH4MIJN_tnvt0dD5zQ0DK6I89UI7xhSHrV4arCHUlT-agJsFR_N3nNSfFU4wiKXYUI4_pdPs_JLh9y3HHS78Co4cGv3sel-2k&source=gbs_api",
     language: "en",
+    totalRating: 4,
+    countRating: 1
   },
   {
     ...EMPTY_BOOK,
@@ -91,6 +99,8 @@ const DATA_BOOKS: BookType[] = [
     categories: [],
     imageLink: "",
     language: "fr",
+    totalRating: 3,
+    countRating: 2
   },
   {
     ...EMPTY_BOOK,
@@ -103,6 +113,8 @@ const DATA_BOOKS: BookType[] = [
     imageLink:
       "http://books.google.com/books/publisher/content?id=BoGjEAAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&imgtk=AFLRE730DLreen8YsGkjf2YYzf8TzCj9Q2i42HQFBm8VWl5rur6ruX4bOpNU2BRagwQPTpwI5k94pZCtuQd4QH-zTgIN5-QlNagDA8CQNW-ZWZCHlOy8YrZu0tjU_lgfTqTY4zd8ZcvZ&source=gbs_api",
     language: "fr",
+    totalRating: 9,
+    countRating: 2
   },
   {
     ...EMPTY_BOOK,
@@ -117,6 +129,8 @@ const DATA_BOOKS: BookType[] = [
     imageLink:
       "http://books.google.com/books/content?id=SeMazgEACAAJ&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE72U4JYVLf3jWRh3r94VkJC_ISfsgO7oqsup2J9cg2W5fdKMCRg4k-wyQRxmON5mrPp0n4P9F0tSQjR00mF_dZBa7NGxjGfANjrO4VWVgX-Kv_ATCeLw8e5pFH9H_4nq1cBkW_h8&source=gbs_api",
     language: "en",
+    totalRating: 4,
+    countRating: 1
   },
   {
     ...EMPTY_BOOK,
@@ -129,6 +143,8 @@ const DATA_BOOKS: BookType[] = [
     imageLink:
       "http://books.google.com/books/content?id=3v_GtgEACAAJ&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE7266wT1RZwpzIcO4U8_qm32QMF4GSdiEYzyLuFmtoZELKMcAughR0r4TIY7qTLtVANQNyx63iDLc3sgRRF2q_R_Qr1caV7UhVGDQGAmVCtHI-tWWMDz4xtPCXgHBDrnSrilvy-q&source=gbs_api",
     language: "fr",
+    totalRating: 2,
+    countRating: 1
   },
   {
     ...EMPTY_BOOK,
@@ -139,6 +155,8 @@ const DATA_BOOKS: BookType[] = [
     categories: ["Fiction / Classics", "Fiction / General"],
     imageLink: "",
     language: "fr",
+    totalRating: 2,
+    countRating: 1
   },
   {
     ...EMPTY_BOOK,
@@ -151,6 +169,8 @@ const DATA_BOOKS: BookType[] = [
     imageLink:
       "http://books.google.com/books/publisher/content?id=RsrADwAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&imgtk=AFLRE73ZaQ7Q-DmuwojvtRo7Fyy8f2iZYHOAhCd34bu7dleyW0llij72xiKpVmwxa8tqPTV1-H4U5g8ZGlc6J8A_i8f6Mvx8IFpuJl_Hs6QYRRiEeACkKCeimGtjIO1aLXcckqk3sNDU&source=gbs_api",
     language: "fr",
+    totalRating: 10,
+    countRating: 2
   },
   {
     ...EMPTY_BOOK,
@@ -163,6 +183,8 @@ const DATA_BOOKS: BookType[] = [
     imageLink:
       "http://books.google.com/books/content?id=cbkQIZy-gUEC&printsec=frontcover&img=1&zoom=1&edge=curl&imgtk=AFLRE71whgIzgn59U4oc4Ihkm5bQFequlwl4gMg3v9uHz9kss89f2zBCaelGRzKdFqfOb1CuMRgXbM42-bJQSEl3x_-MLRkGdAnq3is2C03Ol5MNmpagrwEXCSHYLlWx3Kw6voI0qZOx&source=gbs_api",
     language: "fr",
+    totalRating: 7,
+    countRating: 2
   },
   {
     ...EMPTY_BOOK,
@@ -175,6 +197,8 @@ const DATA_BOOKS: BookType[] = [
     imageLink:
       "http://books.google.com/books/publisher/content?id=e5jxDwAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&imgtk=AFLRE735Mk5pb3JzUArqIPHOihhfPzEAGiMNpoZzURh-bnltQ3GG__0TIz-HYSMC2-asWyEHwiijrYkDMJjMegHmdugpeH8i40l-NMciWJBoFwrJKcU2cyf_4AZMSJJb6INnUiWZpjZc&source=gbs_api",
     language: "fr",
+    totalRating: 7,
+    countRating: 2
   },
   {
     ...EMPTY_BOOK,
@@ -186,6 +210,8 @@ const DATA_BOOKS: BookType[] = [
     imageLink:
       "http://books.google.com/books/publisher/content?id=C6h-EAAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&imgtk=AFLRE70ogf1vL7qhx2SzknUtN1ZCpqE3GKsJOxwIb3IVx-79JOfVTjkPYG6mgU8pxfCmwF9__-SBsCwefwc7EQRDZgX6QSJ0UScPUgWFkI3wK3u4xitqXLc8xxZsXvB0diO0v--1aGCA&source=gbs_api",
     language: "fr",
+    totalRating: 7,
+    countRating: 2
   },
   {
     ...EMPTY_BOOK,
@@ -198,6 +224,8 @@ const DATA_BOOKS: BookType[] = [
     imageLink:
       "http://books.google.com/books/publisher/content?id=JnDDDwAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&imgtk=AFLRE71ulrLCNhDD21ivX5edy4LAB4wm3e54DSo1u09cOuUECFIfTElNbsu2wiJIB7umHkD61mRZsZ-oqVoibeYn08RlplxEfmaKxWjZwdWmK6dApAnGrB9Kqzd_qUfuhfVHEFMvIPmG&source=gbs_api",
     language: "fr",
+    totalRating: 8,
+    countRating: 2
   },
   {
     ...EMPTY_BOOK,
@@ -214,6 +242,8 @@ const DATA_BOOKS: BookType[] = [
     imageLink:
       "http://books.google.com/books/publisher/content?id=_lyPEAAAQBAJ&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE73HDIba6VUWHiYuqQE1iAeEj-3jo8bTpK6cLxD_xguW6PzVdOErzI-YLv70tYxh6cfMTT8ZunorDBEn59lUY3saqPrzRD2OWMhgLsf4Aw-GYE7sjzZO5xcr9EnBU5CeiVxwv49-&source=gbs_api",
     language: "fr",
+    totalRating: 10,
+    countRating: 2
   },
   {
     ...EMPTY_BOOK,
@@ -229,6 +259,8 @@ const DATA_BOOKS: BookType[] = [
     imageLink:
       "http://books.google.com/books/publisher/content?id=eek9AwAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&imgtk=AFLRE73ht2MSExKXgZ6NZUP1a3r7-Xop7Ua0BKTavnMNdE5ZgSculmd9hjSzKQFJ0NlzHL7ehLyEruHbcC0YLBi0E6mt8VSXyvzPoEN15QEPLgPmwmhR-aKUdq_8GpHoqF5rLcF5UtE_&source=gbs_api",
     language: "fr",
+    totalRating: 4,
+    countRating: 1
   },
   {
     ...EMPTY_BOOK,
@@ -240,6 +272,8 @@ const DATA_BOOKS: BookType[] = [
     imageLink:
       "http://books.google.com/books/publisher/content?id=pycSEAAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&imgtk=AFLRE73BKc33uG40POYKNpZ50Uf2wdIAa1lafhcoUsTKg2_ruGhH1Q5IvxShCRskxe-HVLzgZL3JSdRBWJPco6-qTnkgCkne9DiizQU13tJiELVyIdPfKXT7ilF7vt7pDXkFZWzYq9yx&source=gbs_api",
     language: "fr",
+    totalRating: 4,
+    countRating: 1
   },
   {
     ...EMPTY_BOOK,
@@ -251,6 +285,8 @@ const DATA_BOOKS: BookType[] = [
     imageLink:
       "http://books.google.com/books/content?id=yVeaoAEACAAJ&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE72XZjgIpN3KZyISlRT0tiXNYykLUKzTF8z18CfhhbZjXZepUJdnImp_t-S7ed8kEivzGgk8vAIos9MqwBYy8mgBDNbFaYeLiAqA9oPyB1e1HJdTWknXZ3cFBScLLGPrpTx5djR6&source=gbs_api",
     language: "fr",
+    totalRating: 5,
+    countRating: 1
   },
   {
     ...EMPTY_BOOK,
@@ -263,6 +299,8 @@ const DATA_BOOKS: BookType[] = [
     imageLink:
       "http://books.google.com/books/publisher/content?id=4bGODwAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&imgtk=AFLRE73HFvt9m6mu4tOepB4Al6NI9vT6Dr17__Nql2O9UY1HZTyRhAJ-j0vEV1sdNmFmyeB4e7LgN_XEJxFUo0FKNZEDLSw7EvpcG2IfACqndZxbQE5k56JXBWqj22LsMDEMdH4E8yg9&source=gbs_api",
     language: "fr",
+    totalRating: 5,
+    countRating: 1
   },
   {
     ...EMPTY_BOOK,
@@ -274,6 +312,8 @@ const DATA_BOOKS: BookType[] = [
     categories: ["", ""],
     imageLink: "",
     language: "fr",
+    totalRating: 6,
+    countRating: 2
   },
   {
     ...EMPTY_BOOK,
@@ -286,6 +326,8 @@ const DATA_BOOKS: BookType[] = [
     imageLink:
       "http://books.google.com/books/publisher/content?id=WmOFEAAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&imgtk=AFLRE71Y8E0zgEfvbtU79o4puhhQz4-s9ZsUmEOFGAfsLvkCzHJ95t0blsv1TJ47bF4SM5rmi5O9c0QK_j9CMEl4-aDbj4ctyN9kSBy-iaXRnGjYzuQtw05MJGGUmkqPFcopm2pJGh7q&source=gbs_api",
     language: "fr",
+    totalRating: 8,
+    countRating: 2
   },
   // {
   //   ...EMPTY_BOOK,
@@ -555,16 +597,16 @@ const DATA_BOOKS_INFO_OTHERUSER: UserInfoBookWithoutUserIdAndId[] = [
     bookId: "3v_GtgEACAAJ",
     status: BookStatusValues.READ,
     year: 2003,
-    note: 4,
-    comments: "Super !!!",
+    note: 2,
+    comments: "Dur à lire !!!",
   },
   // Les Hauts de Hurle-vent
   {
     bookId: "UmhZDwAAQBAJ",
     status: BookStatusValues.READ,
     year: 2002,
-    note: 4,
-    comments: "Super !!!",
+    note: 2,
+    comments: "Un peu glauque...",
   },
   //   Le Grand voyage de la Marie-Amélie
   {
@@ -770,7 +812,7 @@ const Admin = ({ currentUserId }: { currentUserId: string }) => {
           onClick={() =>
             handleAddBooksAndUsersInfos(
               //  Mettre le bon id !!!
-              "d3VXlTJsrsQDyYVONZud8ydjxXv4cqpw",
+              "LSmYY3eSo7DEI3jXeE167ajOSTkpasNI",
               DATA_BOOKS_INFO_OTHERUSER
             )
           }
